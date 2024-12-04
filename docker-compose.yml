@@ -1,4 +1,19 @@
 services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - drankkas
+    attach: false
+  
   nuxtjs:
     build:
       context: .
@@ -6,13 +21,17 @@ services:
     container_name: nuxtjs
     restart: always
     volumes:
-      - ./:/app
+      - ./:/app  # Map your local app folder to the container
       - /app/node_modules
+      - /app/.nuxt
     ports:
       - '${NUXT_PORT}:3000'
     command: npm run dev
     networks:
       - drankkas
+
+volumes:
+  mongo_data:
 
 networks:
   drankkas:

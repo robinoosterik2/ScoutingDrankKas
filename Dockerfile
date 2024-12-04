@@ -4,17 +4,15 @@ FROM node:18
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
+# Copy package files and install dependencies
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
 
-# Copy the rest of your application code
+# Copy all app files into the container (except those in .dockerignore)
 COPY . .
 
 # Expose port 3000
 EXPOSE 3000
 
-# Start the Nuxt.js application in development mode
+# Default command to run when starting the container
 CMD ["npm", "run", "dev"]
