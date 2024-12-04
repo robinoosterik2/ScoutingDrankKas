@@ -7,12 +7,18 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@pinia/nuxt',
     '@nuxt/fonts',
-    '@nuxtjs/tailwindcss',
   ],
   eslint: {
     // 
   },
   pinia: {
     storesDirs: ['./stores/**'],
+  },
+  css: ['~/assets/css/main.css'],
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
   },
 })
