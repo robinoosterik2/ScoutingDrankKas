@@ -12,10 +12,17 @@ export default defineNuxtConfig({
   eslint: {
     // 
   },
+
   pinia: {
     storesDirs: ['./stores/**'],
   },
+
   css: ['~/assets/css/main.css'],
+
+  colorMode: {
+		classSuffix: '',
+	},
+
   postcss: {
     plugins: {
       tailwindcss: {},

@@ -10,8 +10,20 @@ export default {
   ],
 
   theme: {
-    extend: {},
-  },
+		extend: {
+			colors: {
+				primary: "#1E40AF", // Blue-700
+				"primary-dark": "#3B82F6", // Blue-500
+				secondary: "#6B7280", // Gray-500
+				"secondary-dark": "#9CA3AF", // Gray-400
+				accent: "#D97706", // Amber-600
+				"accent-dark": "#F59E0B", // Amber-500
+				"accent-hover": "#C2410C", // Amber-700
+				"accent-dark-hover": "#FBBF24", // Amber-400
+			},
+		},
+	},
+  darkMode: 'class',
   plugins: [],
 }
 
