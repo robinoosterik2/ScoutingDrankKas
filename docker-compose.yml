@@ -1,0 +1,19 @@
+services:
+  nuxtjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nuxtjs
+    restart: always
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - '${NUXT_PORT}:3000'
+    command: npm run dev
+    networks:
+      - drankkas
+
+networks:
+  drankkas:
+    driver: bridge
