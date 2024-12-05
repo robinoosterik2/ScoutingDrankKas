@@ -13,6 +13,11 @@ export default defineNuxtConfig({
     'nuxt-mongoose',
     'nuxt-auth-utils'
   ],
+
+  runtimeConfig: {
+    authSecret: process.env.AUTH_SECRET || 'your-secret-here',
+  },
+
   mongoose: {
     options: {},
     modelsDir: 'models',

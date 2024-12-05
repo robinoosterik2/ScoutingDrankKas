@@ -26,7 +26,7 @@ export default {
 	methods: {
 		async submitForm() {
 			try {
-				const response = await $fetch("/api/user", {
+				const response = await $fetch("/api/auth/register", {
                     method: "POST",
                     body: {
                         username: this.username,
