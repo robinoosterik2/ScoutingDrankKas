@@ -7,5 +7,6 @@ https://fonts.nuxt.com/
 https://tailwindcss.com/docs/guides/nuxtjs
 https://www.radix-vue.com/
 https://color-mode.nuxtjs.org/
+https://nuxt.com/modules/auth-utils
 
 <!-- https://nuxt.com/modules/i18n FOR MULTIPLE LANGUAGES -->
