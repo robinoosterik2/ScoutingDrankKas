@@ -18,7 +18,7 @@ watch(switchState, (newValue) => {
 </script>
 
 <template>
-<div class="flex gap-1 items-center">
+<div class="flex gap-1 items-center ">
   <label
     class="text-black dark:text-white text-[15px] leading-none select-none"
     for="airplane-mode"

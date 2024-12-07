@@ -29,7 +29,7 @@ const UserSchema = new Schema({
 		default: Date.now,
 	},
 	roles: {
-		type: [Schema.Types.ObjectId],
+		type: [CustomRole.schema],
 		ref: CustomRole,
 	},
 }, {
@@ -40,6 +40,14 @@ const UserSchema = new Schema({
 UserSchema.pre('save', async function (next) {
 	if (this.isNew) {
 		try {
+			if (!this.password || this.password.length < 8 || !this.username || !this.email || !this.firstName || !this.lastName) {
+				throw new Error('Password, username, email, firstName and lastName are required');
+			}
+			// all to lowercase
+			this.username = this.username.toLowerCase();
+			this.email = this.email.toLowerCase();
+			this.firstName = this.firstName.toLowerCase();
+			this.lastName = this.lastName.toLowerCase();
 			this.password = await hashPassword(this.password);
 			next();
 		} catch (error) {
@@ -57,3 +65,20 @@ UserSchema.pre('save', async function (next) {
 // };
 
 export const User = model("User", UserSchema);
+
+export const isAdministrator = async function (userId: string) {
+	const user = await User.findById(userId).populate('roles');
+	if (!user) {
+		return false;
+	}
+	const roles = user.roles;
+	if (!roles) {
+		return false;
+	}
+	for (const role of roles) {
+		if (role.roleName === 'administrator') {
+			return true;
+		}
+	}
+	return false;
+};

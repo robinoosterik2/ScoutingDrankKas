@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxtjs/color-mode',
     'nuxt-mongoose',
-    'nuxt-auth-utils'
+    'nuxt-auth-utils',
   ],
 
   runtimeConfig: {

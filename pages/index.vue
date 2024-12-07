@@ -1,14 +1,15 @@
 <script setup>
-    const { loggedIn, user, session, clear } = useUserSession()
+    const { loggedIn, user, session, clear, fetch } = useUserSession()
     const logout = () => {
         clear()
         navigateTo('/login')
     }
 
-    onMounted(() => {
-        if (!loggedIn.value) {
-            navigateTo('/login')
-        }
+    onMounted(async () => {
+      await fetch()
+      if (!loggedIn.value) {
+        navigateTo('/login')
+      }
     })
 </script>
 

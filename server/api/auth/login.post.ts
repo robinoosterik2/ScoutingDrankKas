@@ -7,6 +7,16 @@ interface CustomError {
 	statusMessage?: string;
 }
 
+interface UserState {
+	email: string;
+	username: string;
+	firstName: string;
+	lastName: string;
+	password: string;
+	loggedInAt: Date;
+	roles: typeof CustomRole[];
+}
+
 function isCustomError(error: unknown): error is CustomError {
 	return (
 		typeof error === "object" &&
@@ -19,9 +29,10 @@ export default defineEventHandler(async (event) => {
   // Validate input
   const body = await readBody(event);
   const { username, password } = body;
+  let normalizedUsername = username.toLowerCase();
 
   // Strict input validation
-  if (!username || typeof username !== 'string' || !password || typeof password !== 'string') {
+  if (!normalizedUsername || typeof normalizedUsername !== 'string' || !password || typeof password !== 'string') {
     throw createError({
       statusCode: 400,
       statusMessage: "Invalid input: Username and password are required"
@@ -30,7 +41,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     // Trim username to prevent whitespace-related issues
-    const trimmedUsername = username.trim();
+    const trimmedUsername = normalizedUsername.trim();
 
     // Find user with a case-insensitive search
     const user = await User.findOne({ 
@@ -54,9 +65,13 @@ export default defineEventHandler(async (event) => {
     return { 
       statusCode: 200, 
       message: "Login successful",
-      data: { 
-        userId: user._id,
-        username: user.username 
+      user: {
+        email: user.email,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        loggedInAt: user.loggedInAt,
+        roles: user.roles
       }
     };
 
