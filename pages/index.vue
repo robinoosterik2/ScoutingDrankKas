@@ -4,10 +4,6 @@
         clear()
         navigateTo('/login')
     }
-
-    if (!loggedIn.value) {
-        navigateTo('/login')
-    }
 </script>
 
 <template>
