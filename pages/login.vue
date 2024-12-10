@@ -57,7 +57,6 @@ const handleLogin = async () => {
       body: { username: username.value, password: password.value }
     })
     if (data) {
-      console.log(data)
       await fetch()
       router.push('/')
     }

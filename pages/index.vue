@@ -5,12 +5,9 @@
         navigateTo('/login')
     }
 
-    onMounted(async () => {
-      await fetch()
-      if (!loggedIn.value) {
+    if (!loggedIn.value) {
         navigateTo('/login')
-      }
-    })
+    }
 </script>
 
 <template>

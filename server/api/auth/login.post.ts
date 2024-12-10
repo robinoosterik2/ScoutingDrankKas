@@ -66,6 +66,7 @@ export default defineEventHandler(async (event) => {
       statusCode: 200, 
       message: "Login successful",
       user: {
+        _id: user._id,
         email: user.email,
         username: user.username,
         firstName: user.firstName,
