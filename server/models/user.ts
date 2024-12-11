@@ -76,7 +76,7 @@ export const isAdministrator = async function (userId: string) {
 		return false;
 	}
 	for (const role of roles) {
-		if (role.roleName === 'administrator') {
+		if (role.roleName === 'Admin') {
 			return true;
 		}
 	}

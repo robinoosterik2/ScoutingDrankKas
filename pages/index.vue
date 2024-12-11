@@ -1,7 +1,7 @@
 <script setup>
     const { loggedIn, user, session, clear, fetch } = useUserSession()
     const logout = () => {
-        clear()
+        $fetch('/api/auth/logout', { method: 'POST' })
         navigateTo('/login')
     }
 </script>

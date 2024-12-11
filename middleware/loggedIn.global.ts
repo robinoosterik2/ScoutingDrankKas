@@ -1,6 +1,5 @@
 export default defineNuxtRouteMiddleware((to, from) => {
     // Do not run this middleware on /login or /register pages
-    console.log(to.path);
     if (to.path === '/login' || to.path === '/register') {
         return;
     } 
