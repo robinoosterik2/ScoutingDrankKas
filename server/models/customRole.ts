@@ -1,4 +1,5 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
+
 
 const CustomRoleSchema = new Schema({
     roleName: {
@@ -26,4 +27,4 @@ const CustomRoleSchema = new Schema({
     timestamps: true
 });
 
-export const CustomRole = model('CustomRole', CustomRoleSchema);
+export const CustomRole = mongoose.models.CustomRole || mongoose.model('CustomRole', CustomRoleSchema);

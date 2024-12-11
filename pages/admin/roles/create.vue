@@ -66,7 +66,7 @@
         </form>
   
         <div>
-          <NuxtLink to="/roles" class="text-sm text-blue-600 hover:text-blue-800">
+          <NuxtLink to="/admin/roles" class="text-sm text-blue-600 hover:text-blue-800">
             Back to Roles
           </NuxtLink>
         </div>
@@ -75,23 +75,18 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { 
-    CheckboxRoot, 
-    CheckboxIndicator 
-  } from 'radix-vue'
-  
-  // Define available permissions (adjust as needed)
-  const availablePermissions = [
-    'admin',
-    'stam',
-    'scouting-lid',
-    'extern',
-  ]
-  
-  const router = useRouter()
-  
+    import { ref } from 'vue'
+
+    // definePageMeta({
+    //   middleware: ["admin"]
+    // })
+    const availablePermissions = [
+      'admin',
+      'stam',
+      'scouting-lid',
+      'extern',
+    ]
+    
   const roleForm = ref({
     roleName: '',
     roleDescription: '',
@@ -141,7 +136,7 @@
         body: roleForm.value
       })
   
-      router.push('/roles')
+      navigateTo('/admin/roles')
     } catch (error) {
       if (error.statusMessage === 'Role name already exists') {
         document.getElementById('errorRoleName').textContent = 'Role name already exists'

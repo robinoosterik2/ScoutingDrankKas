@@ -41,3 +41,11 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 
 
 https://github.com/gearbox-solutions/nuxt-auth-example
+mongodb://drankkas:drankkas@localhost:27017
+
+
+Met deze rol kan je producten en users aanpassen.
+Horen alleen mensen te zijn die weten hoe het programma werken.
+
+Active stam leden.
+Met deze rol kan je afstrepen.

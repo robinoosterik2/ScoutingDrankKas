@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 import { CustomRole } from './customRole';
 
 const UserSchema = new Schema({
@@ -28,14 +28,15 @@ const UserSchema = new Schema({
 		type: Date,
 		default: Date.now,
 	},
-	roles: {
-		type: [CustomRole.schema],
-		ref: CustomRole,
-	},
+	role: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'CustomRole' // Reference to the Role model
+    }
 }, {
 	timestamps: true
 });
 
+export const User = mongoose.models.User || mongoose.model("User", UserSchema);
 // Pre-save hook to hash the password before saving the user
 UserSchema.pre('save', async function (next) {
 	if (this.isNew) {
@@ -64,21 +65,19 @@ UserSchema.pre('save', async function (next) {
 //     return await verifyPassword(hashedPassword, password);
 // };
 
-export const User = model("User", UserSchema);
 
 export const isAdministrator = async function (userId: string) {
-	const user = await User.findById(userId).populate('roles');
+	const user = await User.findById(userId);
 	if (!user) {
 		return false;
 	}
-	const roles = user.roles;
-	if (!roles) {
+	const role = user.role;
+	if (!role) {
 		return false;
 	}
-	for (const role of roles) {
-		if (role.roleName === 'Admin') {
-			return true;
-		}
+
+	if (role.roleName !== 'admin') {
+		return false;
 	}
-	return false;
+	return true;
 };

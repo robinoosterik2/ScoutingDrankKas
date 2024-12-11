@@ -1,0 +1,18 @@
+[ ] Fix loading animation for at example /admin/users, /admin/roles
+[ ] Fix frontend permissions, right now middleware is commented out
+[ ] Fix backend permissions, right now checking if user is admin is commented out
+[ ] Add translating
+[ ] Make checkboxes look prettier
+[ ] Make more components
+[ ] Make lightmode look prettier
+[ ] Make responsive
+[ ] Fix roles
+[ ] Fix users filter on /admin/users
+[ ] Make loading faster, (prob move it out of onMounted  see /admin/users)
+
+
+
+## License
+[ ] Fix license
+
+## Maybe Todos

@@ -14,7 +14,7 @@ interface UserState {
 	lastName: string;
 	password: string;
 	loggedInAt: Date;
-	roles: typeof CustomRole[];
+	role: typeof CustomRole;
 }
 
 function isCustomError(error: unknown): error is CustomError {
@@ -72,7 +72,7 @@ export default defineEventHandler(async (event) => {
         firstName: user.firstName,
         lastName: user.lastName,
         loggedInAt: user.loggedInAt,
-        roles: user.roles
+        role: user.role
       }
     };
 

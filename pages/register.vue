@@ -140,13 +140,14 @@ const handleRegister = async () => {
                lastName: lastName.value,
                username: username.value,
                email: email.value,
-               password: password.value 
+               password: password.value,
+			   confirmPassword: confirmPassword.value
            }
        })
 
        if (data) {
            fetch()
-           router.push('/')
+           navigateTo('/')
        }
    } catch (error) {       
        // Handle specific error cases
