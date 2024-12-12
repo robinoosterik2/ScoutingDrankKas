@@ -15,6 +15,10 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
   ],
 
+  plugins: [
+    { src: '~/plugins/faker.js', ssr: true }
+  ],
+
   runtimeConfig: {
     authSecret: process.env.AUTH_SECRET || 'your-secret-here',
   },
