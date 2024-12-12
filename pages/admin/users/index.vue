@@ -98,17 +98,24 @@
             </td>
             <td class="px-6 py-4">
               <span
+                v-if="user.role"
                 class="px-2 py-1 text-xs font-medium rounded-full"
                 :class="{
                   'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200':
-                    user.role === 'Admin',
+                    user.role.roleName === 'Admin',
                   'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200':
-                    user.role === 'Editor',
+                    user.role.roleName === 'Editor',
                   'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200':
-                    user.role === 'Viewer',
+                    user.role.roleName === 'Viewer',
                 }"
               >
                 {{ user.role.roleName }}
+              </span>
+              <span
+                v-else
+                class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+              >
+                No Role
               </span>
             </td>
             <td
@@ -241,6 +248,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  middleware: ["admin"],
+});
+
 const roles = ref([]);
 const users = ref([]);
 const searchQuery = ref("");

@@ -149,7 +149,7 @@ import BackLink from "~/components/BackLink.vue";
 
 // Middleware protection
 definePageMeta({
-  // middleware: ["admin"]
+  middleware: ["admin"],
 });
 
 // Get user ID from route

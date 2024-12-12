@@ -67,7 +67,7 @@ UserSchema.pre('save', async function (next) {
 
 
 export const isAdministrator = async function (userId: string) {
-	const user = await User.findById(userId);
+	const user = await User.findById(userId).populate("role");
 	if (!user) {
 		return false;
 	}
@@ -75,8 +75,7 @@ export const isAdministrator = async function (userId: string) {
 	if (!role) {
 		return false;
 	}
-
-	if (role.roleName !== 'admin') {
+	if (role.roleName !== 'Admin') {
 		return false;
 	}
 	return true;
