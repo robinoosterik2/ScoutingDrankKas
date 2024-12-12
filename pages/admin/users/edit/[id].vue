@@ -174,12 +174,6 @@ onMounted(async () => {
   try {
     // Fetch all available roles
     availableRoles.value = await $fetch("/api/roles/all", { method: "GET" });
-    //   add None role
-    availableRoles.value.push({
-      roleName: "None",
-      roleDescription: "No role assigned",
-    });
-    console.log(availableRoles.value);
 
     // Fetch user data if editing
     if (userId.value) {

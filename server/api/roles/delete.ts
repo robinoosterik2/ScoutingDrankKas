@@ -10,7 +10,6 @@ export default defineEventHandler(async (event) => {
 
     // Read the request body
     const body = await readBody(event);
-    console.log(body);
     const { roleId } = body;
 
     // Validate the request body

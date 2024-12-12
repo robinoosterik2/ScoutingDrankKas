@@ -77,9 +77,9 @@
   <script setup>
     import { ref } from 'vue'
 
-    // definePageMeta({
+    definePageMeta({
     //   middleware: ["admin"]
-    // })
+    })
     const availablePermissions = [
       'admin',
       'stam',

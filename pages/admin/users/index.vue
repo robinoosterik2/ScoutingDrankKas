@@ -268,7 +268,6 @@ try {
 }
 
 const filteredAndSortedUsers = computed(() => {
-  console.log(users.value);
   return users.value
     .filter((user) => {
       // Search filter

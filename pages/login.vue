@@ -61,7 +61,6 @@ const handleLogin = async () => {
       router.push('/')
     }
   } catch (error) {
-    console.log(error.statusMessage)
     if (error.statusMessage === 'User not found') {
       document.getElementById('errorUsername').textContent = 'User not found'
     } else if (error.statusMessage === 'Invalid credentials') {

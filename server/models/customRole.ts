@@ -15,14 +15,6 @@ const CustomRoleSchema = new Schema({
         type: [String],
         required: false,
     },
-    roleCreatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-    roleUpdatedAt: {
-        type: Date,
-        default: Date.now,
-    },
 }, {
     timestamps: true
 });

@@ -10,6 +10,7 @@
 [ ] Fix users filter on /admin/users
     - email works
 [ ] Make loading faster, (prob move it out of onMounted  see /admin/users)
+[ ] When creating a session, remove password from user
 
 
 

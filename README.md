@@ -49,3 +49,7 @@ Horen alleen mensen te zijn die weten hoe het programma werken.
 
 Active stam leden.
 Met deze rol kan je afstrepen.
+
+
+mongoexport --uri="mongodb://drankkas:drankkas@localhost:27017/test" --collection=users --out=./users.json
+mongoexport --uri="mongodb://drankkas:drankkas@localhost:27017" --collection=customRoles --out=./roles.json

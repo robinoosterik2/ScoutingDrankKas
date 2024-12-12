@@ -4,6 +4,7 @@ import { User } from '@/server/models/user';
 export default defineEventHandler(async (event) => {
     // Make sure the user is admin
     const user = await getUserSession(event);
+    console.log(user)
     if (!user || !await isAdministrator(user._id as string)) {
         throw createError({ statusCode: 401, statusMessage: "Unauthorized" });
     }

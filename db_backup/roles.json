@@ -1,0 +1,55 @@
+[
+    {
+        "_id": "675ab4332773d5e2cf09d65f",
+        "roleName": "Admin",
+        "roleDescription": "Admin.",
+        "rolePermissions": [
+            "admin"
+        ],
+        "createdAt": "2024-12-12T10:00:19.411Z",
+        "updatedAt": "2024-12-12T10:00:19.411Z",
+        "__v": 0
+    },
+    {
+        "_id": "675ab4682773d5e2cf09d66d",
+        "roleName": "None",
+        "roleDescription": "No Active Role.",
+        "rolePermissions": [],
+        "createdAt": "2024-12-12T10:01:12.091Z",
+        "updatedAt": "2024-12-12T10:01:12.091Z",
+        "__v": 0
+    },
+    {
+        "_id": "675ab4ee2773d5e2cf09d670",
+        "roleName": "Stam",
+        "roleDescription": "Stam.",
+        "rolePermissions": [
+            "stam"
+        ],
+        "createdAt": "2024-12-12T10:03:26.700Z",
+        "updatedAt": "2024-12-12T10:03:26.700Z",
+        "__v": 0
+    },
+    {
+        "_id": "675ab4fb2773d5e2cf09d673",
+        "roleName": "Scouting Lid.",
+        "roleDescription": "Actief HHG Lid.",
+        "rolePermissions": [
+            "scouting-lid"
+        ],
+        "createdAt": "2024-12-12T10:03:39.755Z",
+        "updatedAt": "2024-12-12T10:03:39.755Z",
+        "__v": 0
+    },
+    {
+        "_id": "675ab5022773d5e2cf09d676",
+        "roleName": "Extern",
+        "roleDescription": "Extern.",
+        "rolePermissions": [
+            "extern"
+        ],
+        "createdAt": "2024-12-12T10:03:46.936Z",
+        "updatedAt": "2024-12-12T10:03:46.936Z",
+        "__v": 0
+    }
+]

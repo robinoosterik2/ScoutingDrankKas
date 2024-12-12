@@ -1,6 +1,7 @@
 import mongoose, { Schema, model } from 'mongoose';
 import { CustomRole } from './customRole';
 
+
 const UserSchema = new Schema({
 	email: {
 		type: String,
@@ -27,6 +28,14 @@ const UserSchema = new Schema({
 	loggedInAt: {
 		type: Date,
 		default: Date.now,
+	},
+	active: {
+		type: Boolean,
+		default: true,
+	},
+	balance: {
+		type: Number,
+		default: 0,
 	},
 	role: {
         type: mongoose.Schema.Types.ObjectId,
@@ -74,11 +83,13 @@ export const isAdministrator = async function (userId: string) {
 	if (!role) {
 		return false;
 	}
-	if (role.roleName !== 'Admin') {
-		return false;
+
+	if (role.rolePermissions.includes("admin")) {
+		return true;
 	}
 	return true;
 };
 
 export const User = mongoose.models.User || mongoose.model("User", UserSchema);
+
 

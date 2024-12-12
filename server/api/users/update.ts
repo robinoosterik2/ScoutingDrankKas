@@ -9,7 +9,6 @@ export default defineEventHandler(async (event) => {
     //     throw createError({ statusCode: 401, statusMessage: "Unauthorized" });
     // }
     const { id, email, username, firstName, lastName, role } = body;
-    console.log("body", body);
 
     if (!id) {
       throw new Error("User ID is required");
