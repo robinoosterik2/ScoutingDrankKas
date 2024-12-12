@@ -16,7 +16,7 @@ export default defineNuxtConfig({
   ],
 
   plugins: [
-    { src: '~/plugins/faker.js', ssr: true }
+    // { src: '~/plugins/faker.js', ssr: true }
   ],
 
   runtimeConfig: {

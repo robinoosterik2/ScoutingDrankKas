@@ -8,6 +8,7 @@
 [ ] Make responsive
 [ ] Fix roles
 [ ] Fix users filter on /admin/users
+    - email works
 [ ] Make loading faster, (prob move it out of onMounted  see /admin/users)
 
 
