@@ -1,6 +1,4 @@
 import mongoose, { Schema, model } from 'mongoose';
-import { CustomRole } from './customRole';
-
 
 const UserSchema = new Schema({
 	email: {

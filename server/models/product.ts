@@ -1,6 +1,5 @@
 import mongoose, { Schema, model } from 'mongoose';
 
-
 const ProductSchema = new Schema({
     name: {
         type: String,
@@ -17,7 +16,7 @@ const ProductSchema = new Schema({
     },
     categories: {
         type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Category' // Reference to the Catagory model
+        ref: 'Category'
     },
     stock: {
         type: Number,
