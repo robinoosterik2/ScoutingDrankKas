@@ -115,7 +115,7 @@
                 v-else
                 class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
               >
-                No Role
+                NoRole
               </span>
             </td>
             <td
@@ -268,6 +268,7 @@ try {
 }
 
 const filteredAndSortedUsers = computed(() => {
+  console.log(users.value);
   return users.value
     .filter((user) => {
       // Search filter
@@ -282,10 +283,17 @@ const filteredAndSortedUsers = computed(() => {
       return matchesSearch && matchesRole;
     })
     .sort((a, b) => {
-      const sortKey = sortBy.value;
       const direction = sortDirection.value === "asc" ? 1 : -1;
-      if (a[sortKey] < b[sortKey]) return -1 * direction;
-      if (a[sortKey] > b[sortKey]) return 1 * direction;
+      if (sortBy.value === "name") {
+        if (a.username < b.username) return -1 * direction;
+        if (a.username > b.username) return 1 * direction;
+      } else if (sortBy.value === "email") {
+        if (a.email < b.email) return -1 * direction;
+        if (a.email > b.email) return 1 * direction;
+      } else if (sortBy.value === "role") {
+        if (a.role.roleName < b.role.roleName) return -1 * direction;
+        if (a.role.roleName > b.role.roleName) return 1 * direction;
+      }
       return 0;
     });
 });

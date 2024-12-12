@@ -13,7 +13,7 @@ const CustomRoleSchema = new Schema({
     },
     rolePermissions: {
         type: [String],
-        required: true,
+        required: false,
     },
     roleCreatedAt: {
         type: Date,

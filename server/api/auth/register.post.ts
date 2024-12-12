@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         const user = new User({ username: normalizedUsername, email: normalizedEmail, firstName: normalizedFirstName, lastName: normalizedLastName, password: password });
-        await user.save();
+        user.save();
         await setUserSession(event, { user, loggedInAt: Date.now() });
         return {
             message: "User created successfully",

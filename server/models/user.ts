@@ -36,7 +36,6 @@ const UserSchema = new Schema({
 	timestamps: true
 });
 
-export const User = mongoose.models.User || mongoose.model("User", UserSchema);
 // Pre-save hook to hash the password before saving the user
 UserSchema.pre('save', async function (next) {
 	if (this.isNew) {
@@ -80,3 +79,6 @@ export const isAdministrator = async function (userId: string) {
 	}
 	return true;
 };
+
+export const User = mongoose.models.User || mongoose.model("User", UserSchema);
+

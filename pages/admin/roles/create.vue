@@ -123,11 +123,6 @@
       hasError = true
     }
   
-    if (roleForm.value.rolePermissions.length === 0) {
-      document.getElementById('errorRolePermissions').textContent = 'Please select at least one permission'
-      hasError = true
-    }
-  
     if (hasError) return
   
     try {
