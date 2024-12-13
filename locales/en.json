@@ -1,0 +1,6 @@
+{
+	"welcome": "Welcome {username}!",
+	"loggedInSince": "Logged in since {time}",
+	"logout": "Logout",
+	"notLoggedIn": "Not logged in"
+}
