@@ -248,10 +248,6 @@
 </template>
 
 <script setup>
-definePageMeta({
-  middleware: ["admin"],
-});
-
 const roles = ref([]);
 const users = ref([]);
 const searchQuery = ref("");
@@ -261,7 +257,7 @@ const sortDirection = ref("asc");
 
 try {
   roles.value = await $fetch("/api/roles/all", { method: "GET" });
-  users.value = await $fetch("/api/admin/users/all", { method: "GET" });
+  users.value = await $fetch("/api/users/all", { method: "GET" });
 } catch (error) {
   console.error("Failed to fetch users:", error);
   alert("Failed to fetch users. Please try again.");

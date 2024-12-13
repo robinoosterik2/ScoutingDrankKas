@@ -1,6 +1,6 @@
 const noneLoginRequiredPaths = ['/login', '/register', '/api/_auth/session'];
 
-export default defineEventHandler(async (event) => {  
+export default defineEventHandler(async (event) => { 
   if (noneLoginRequiredPaths.includes(event._path ?? '') || event._path?.startsWith('/api/auth')) {
     console.log("No login required path");
     return;
@@ -63,6 +63,12 @@ export default defineEventHandler(async (event) => {
         // For web routes, redirect to login
         return sendRedirect(event, '/login', sanitizeStatusCode(302));
       }
+    }
+  }
+  const result = await getUserSession(event);
+  if (!result.user) {
+    if (!event._path?.startsWith('/api/')) {
+      return sendRedirect(event, '/login', sanitizeStatusCode(302));
     }
   }
 });

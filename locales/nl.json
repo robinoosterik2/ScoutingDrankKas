@@ -1,6 +1,21 @@
 {
-  "welcome": "Welkom {username}!",
-  "loggedInSince": "Ingelogd sinds {time}",
-  "logout": "Uitloggen",
-  "notLoggedIn": "Niet ingelogd"
+  "dashboard": {
+    "welcome": "Welkom {username}!",
+    "loggedInSince": "Ingelogd sinds {time}",
+    "logout": "Uitloggen",
+    "notLoggedIn": "Niet ingelogd"
+  },
+  "login": {
+    "title": "Login",
+    "username": "Gebruikersnaam:",
+    "usernamePlaceholder": "Gebruikersnaam",
+    "submit": "Login",
+    "register": "Register",
+    "errors": {
+      "invalidCredentials": "Ongeldige inloggegevens",
+      "userNotFound": "Gebruiker niet gevonden"
+    },
+    "noAccount": "Heeft u geen account?",
+    "password": "Wachtwoord:"
+  }
 }

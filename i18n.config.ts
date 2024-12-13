@@ -4,8 +4,8 @@ import nl from './locales/nl.json'
 export default defineI18nConfig(() => ({
     // en.json, nl.json
     legacy: false,
-    locale: 'nl',
-    defaultLocale: 'nl',
+    locale: 'en',
+    defaultLocale: 'en',
     messages: {
         en: en,
         nl: nl,

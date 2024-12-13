@@ -147,11 +147,6 @@
 import { ref, onMounted } from "vue";
 import BackLink from "~/components/BackLink.vue";
 
-// Middleware protection
-definePageMeta({
-  middleware: ["admin"],
-});
-
 // Get user ID from route
 const route = useRoute();
 const userId = ref(route.params.id || null);

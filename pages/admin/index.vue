@@ -217,9 +217,4 @@
 <script setup>
 // Import the new DashboardLink component
 import DashboardLink from "~/components/DashboardLink.vue";
-
-// Admin middleware protection
-definePageMeta({
-  // middleware: ["admin"]
-});
 </script>

@@ -11,12 +11,12 @@ const logout = () => {
 
 <template>
   <div v-if="loggedIn">
-    <h1>{{ t("welcome", { username: user.username }) }}</h1>
-    <p>{{ t("loggedInSince", { time: session.loggedInAt }) }}</p>
-    <button @click="logout">{{ t("logout") }}</button>
+    <h1>{{ t("dashboard.welcome", { username: user.username }) }}</h1>
+    <p>{{ t("dashboard.loggedInSince", { time: session.loggedInAt }) }}</p>
+    <button @click="logout">{{ t("dashboard.logout") }}</button>
   </div>
   <div v-else>
-    <h1>{{ t("notLoggedIn") }}</h1>
+    <h1>{{ t("dashboard.notLoggedIn") }}</h1>
   </div>
 
 </template>

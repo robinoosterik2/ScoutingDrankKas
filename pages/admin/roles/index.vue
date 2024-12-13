@@ -211,11 +211,6 @@
 import { ref, onMounted } from "vue";
 import BackLink from "~/components/BackLink.vue";
 
-// Middleware protection (uncomment when setting up)
-definePageMeta({
-  // middleware: ["admin"]
-});
-
 // Reactive roles array
 const roles = ref([]);
 
