@@ -3,7 +3,8 @@
     "welcome": "Welkom {username}!",
     "loggedInSince": "Ingelogd sinds {time}",
     "logout": "Uitloggen",
-    "notLoggedIn": "Niet ingelogd"
+    "notLoggedIn": "Niet ingelogd",
+    "title": "Dashboard"
   },
   "login": {
     "title": "Login",
@@ -17,5 +18,39 @@
     },
     "noAccount": "Heeft u geen account?",
     "password": "Wachtwoord:"
-  }
+  },
+  "register": {
+    "alreadyHaveAccount": "Heeft u al een account?",
+    "errors": {
+      "usernameTaken": "Gebruikersnaam al in gebruik"
+    },
+    "login": "Login",
+    "password": "Wachtwoord:",
+    "passwordPlaceholder": "Wachtwoord",
+    "submit": "Register",
+    "title": "Register",
+    "username": "Gebruikersnaam:",
+    "usernamePlaceholder": "Gebruikersnaam"
+  },
+  "admin": {
+    "systemSettings": "Systeem instellingen",
+    "SystemSettingsDescription": "Beheer globale systeemconfiguraties, site-instellingen en applicatieparameters.",
+    "SystemLogsDescription": "Bekijk systeemactiviteiten, volg gebruikersacties en bekijk fouten logboeken.",
+    "systemLogs": "Logboeken",
+    "viewSystemLogs": "Logboeken bekijken",
+    "createProduct": "Nieuw product aanmaken",
+    "viewAllProducts": "Bekijk alle producten",
+    "ProductManagementDescription": "Beheer producten, maak nieuwe producten en werk productdetails bij.",
+    "productManagement": "Productbeheer",
+    "viewAllUsers": "Bekijk alle gebruikers",
+    "UserManagementDescription": "Beheer gebruikersaccounts, reset wachtwoorden en beheer gebruikersrechten.",
+    "rolesManagement": "Rollenbeheer",
+    "RolesManagementDescription": "Beheer gebruikersrollen, maak nieuwe rollen en definieer machtigingen.",
+    "UserManagement": "Gebruikersbeheer",
+    "title": "Beheer Dashboard",
+    "viewAllRoles": "Bekijk alle rollen",
+    "createRole": "Nieuwe rol maken",
+    "createUser": "Nieuwe gebruiker maken"
+  },
+  "backTo": "Terug naar"
 }

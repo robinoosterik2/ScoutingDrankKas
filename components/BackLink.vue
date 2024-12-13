@@ -18,7 +18,7 @@
           d="M10 19l-7-7m0 0l7-7m-7 7h18"
         />
       </svg>
-      <slot>Back to {{ backPage }}</slot>
+      <slot>{{ $t('backTo') }} {{ backPage }}</slot>
     </NuxtLink>
   </div>
 </template>

@@ -31,5 +31,26 @@
     "errors": {
       "usernameTaken": "Username already taken"
     }
-  }
+  },
+  "admin": {
+    "systemSettings": "System Settings",
+    "SystemSettingsDescription": "Manage global system configurations, site settings, and application parameters.",
+    "SystemLogsDescription": "Monitor system activities, track user actions, and review error logs.",
+    "systemLogs": "System Logs",
+    "viewSystemLogs": "View System Logs",
+    "createProduct": "Create New Product",
+    "viewAllProducts": "View All Products",
+    "ProductManagementDescription": "Manage product, create new products, and update product details.",
+    "productManagement": "Product Management",
+    "viewAllUsers": "View All Users",
+    "UserManagementDescription": "Manage user accounts, reset passwords, and handle user permissions.",
+    "rolesManagement": "Roles Management",
+    "RolesManagementDescription": "Manage user roles, create new roles, and define permissions.",
+    "UserManagement": "User Management",
+    "title": "Admin Dashboard",
+    "viewAllRoles": "View All Roles",
+    "createRole": "Create New Role",
+    "createUser": "Create New User"
+  },
+  "backTo": "Back To"
 }

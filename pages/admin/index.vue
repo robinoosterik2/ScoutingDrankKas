@@ -1,9 +1,9 @@
 <template>
   <div class="container mx-auto px-8 py-4">
     <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-      Admin Dashboard
+      {{ $t("admin.title") }}
     </h1>
-    <BackLink to="/" backPage="Dashboard"></BackLink>
+    <BackLink to="/" :backPage="$t('dashboard.title')"></BackLink>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
       <!-- Roles Management -->
@@ -11,10 +11,10 @@
         class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow flex flex-col"
       >
         <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 text-indigo-600"
+              class="h-5 w-5 min-h-5 min-w-5 text-indigo-600"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -27,23 +27,23 @@
               />
             </svg>
             <h2 class="text-l font-semibold text-gray-800 dark:text-white">
-              Roles Management
+              {{ $t("admin.rolesManagement") }}
             </h2>
           </div>
         </div>
-        <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 flex-grow">
-          Manage user roles, create new roles, and define permissions
+        <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 flex-grow">
+          {{ $t("admin.RolesManagementDescription") }}
         </p>
         <div class="mt-auto space-y-2">
           <DashboardLink
             to="/admin/roles"
             type="secondary"
-            label="View All Roles"
+            :label="$t('admin.viewAllRoles')"
           />
           <DashboardLink
             to="/admin/roles/create"
             type="roles"
-            label="Create New Role"
+            :label="$t('admin.createRole')"
           />
         </div>
       </div>
@@ -53,10 +53,10 @@
         class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow flex flex-col"
       >
         <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 text-green-600"
+              class="h-5 w-5 min-h-5 min-w-5 text-green-600"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -69,20 +69,20 @@
               />
             </svg>
             <h2 class="text-l font-semibold text-gray-800 dark:text-white">
-              User Management
+              {{ $t("admin.UserManagement") }}
             </h2>
           </div>
         </div>
-        <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 flex-grow">
-          Manage user accounts, reset passwords, and handle user permissions
+        <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 flex-grow">
+          {{ $t("admin.UserManagementDescription") }}
         </p>
         <div class="mt-auto space-y-2">
           <DashboardLink
             to="/admin/users"
             type="secondary"
-            label="View All Users"
+            :label="$t('admin.viewAllUsers')"
           />
-          <DashboardLink to="/register" type="users" label="Create New User" />
+          <DashboardLink to="/register" type="users" :label="$t('admin.createUser')" />
         </div>
       </div>
 
@@ -91,10 +91,10 @@
         class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow flex flex-col"
       >
         <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-purple-600"
+              class="h-5 w-5 min-h-5 min-w-5 text-purple-600"
               viewBox="0 0 32 32"
               xml:space="preserve"
               stroke="currentColor"
@@ -107,25 +107,23 @@
               />
             </svg>
             <h2 class="text-l font-semibold text-gray-800 dark:text-white">
-              Product Management
+              {{ $t("admin.productManagement") }}
             </h2>
           </div>
         </div>
-        <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 flex-grow">
-          Manage product, create new products, and update product
-          details
+        <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 flex-grow">
+          {{ $t("admin.ProductManagementDescription") }}
         </p>
         <div class="mt-auto space-y-2">
-        <DashboardLink
+          <DashboardLink
             to="/admin/products"
             type="secondary"
-            label=
-            "View All Products"
+            :label="$t('admin.viewAllProducts')"
           />
           <DashboardLink
             to="/admin/products/create"
             type="products"
-            label="Create New Product"
+            :label="$t('admin.createProduct')"
           />
         </div>
       </div>
@@ -135,10 +133,10 @@
         class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow flex flex-col"
       >
         <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 text-yellow-600"
+              class="h-5 w-5 min-h-5 min-w-5 text-yellow-600"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -151,18 +149,18 @@
               />
             </svg>
             <h2 class="text-l font-semibold text-gray-800 dark:text-white">
-              System Logs
+              {{ $t("admin.systemLogs") }}
             </h2>
           </div>
         </div>
-        <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 flex-grow">
-          Monitor system activities, track user actions, and review error logs
+        <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 flex-grow">
+          {{ $t("admin.SystemLogsDescription") }}
         </p>
         <div class="mt-auto">
           <DashboardLink
             to="/admin/logs"
             type="logs"
-            label="View System Logs"
+            :label="$t('admin.viewSystemLogs')"
           />
         </div>
       </div>
@@ -172,10 +170,10 @@
         class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow flex flex-col"
       >
         <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 text-red-600"
+              class="h-5 w-5 min-h-5 min-w-5 min-h-5 min-w-5 text-red-600"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -194,19 +192,18 @@
               />
             </svg>
             <h2 class="text-l font-semibold text-gray-800 dark:text-white">
-              System Settings
+              {{ $t("admin.systemSettings") }}
             </h2>
           </div>
         </div>
-        <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 flex-grow">
-          Manage global system configurations, site settings, and application
-          parameters
+        <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 flex-grow">
+          {{ $t("admin.SystemSettingsDescription") }}
         </p>
         <div class="mt-auto">
           <DashboardLink
             to="/admin/settings"
             type="system"
-            label="System Settings"
+            :label="$t('admin.systemSettings')"
           />
         </div>
       </div>
@@ -217,4 +214,5 @@
 <script setup>
 // Import the new DashboardLink component
 import DashboardLink from "~/components/DashboardLink.vue";
+const { t } = useI18n();
 </script>

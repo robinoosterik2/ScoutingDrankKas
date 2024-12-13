@@ -40,7 +40,6 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const { fetch } = useUserSession()
