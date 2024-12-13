@@ -1,6 +1,6 @@
 {
-	"welcome": "Welkom {username}!",
-	"loggedInSince": "Ingelogd sinds {time}",
-	"logout": "Uitloggen",
-	"notLoggedIn": "Niet ingelogd"
+  "welcome": "Welkom {username}!",
+  "loggedInSince": "Ingelogd sinds {time}",
+  "logout": "Uitloggen",
+  "notLoggedIn": "Niet ingelogd"
 }

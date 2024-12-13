@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     'nuxt-mongoose',
     'nuxt-auth-utils',
     '@pinia/nuxt',
+    '@nuxtjs/i18n',
   ],
 
   runtimeConfig: {
@@ -45,4 +46,8 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+
+  i18n: {
+    vueI18n: './i18n.config.ts',
+  }
 })

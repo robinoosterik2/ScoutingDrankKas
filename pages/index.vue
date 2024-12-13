@@ -1,18 +1,22 @@
 <script setup>
-    const { loggedIn, user, session, clear, fetch } = useUserSession()
-    const logout = () => {
-        $fetch('/api/auth/logout', { method: 'POST' })
-        navigateTo('/login')
-    }
+const { loggedIn, user, session, clear, fetch } = useUserSession();
+const { t } = useI18n();
+
+const logout = () => {
+  $fetch("/api/auth/logout", { method: "POST" });
+  navigateTo("/login");
+};
+
 </script>
 
 <template>
   <div v-if="loggedIn">
-    <h1>Welcome {{ user.username }}!</h1>
-    <p>Logged in since {{ session.loggedInAt }}</p>
-    <button @click="logout">Logout</button>
+    <h1>{{ t("welcome", { username: user.username }) }}</h1>
+    <p>{{ t("loggedInSince", { time: session.loggedInAt }) }}</p>
+    <button @click="logout">{{ t("logout") }}</button>
   </div>
   <div v-else>
-    <h1>Not logged in</h1>
+    <h1>{{ t("notLoggedIn") }}</h1>
   </div>
+
 </template>
