@@ -73,7 +73,6 @@ UserSchema.pre('save', async function (next) {
 
 export const isAdministrator = async function (userId: string) {
 	const user = await User.findById(userId).populate("role");
-	console.log(user);
 	if (!user) {
 		return false;
 	}

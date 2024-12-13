@@ -12,7 +12,6 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     'nuxt-mongoose',
     'nuxt-auth-utils',
-    '@nuxtjs/i18n',
     '@pinia/nuxt',
   ],
 
