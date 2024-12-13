@@ -73,7 +73,7 @@ onUnmounted(() => {
 <template>
   <div 
     id="generic-dropdown" 
-    class="relative inline-block text-left w-48"
+    class="relative inline-block text-left"
     :class="class"
   >
     <!-- Dropdown Trigger -->
@@ -81,7 +81,7 @@ onUnmounted(() => {
       <button 
         type="button"
         @click="toggleDropdown"
-        class="inline-flex w-full justify-center items-center rounded-md 
+        class="inline-flex w-full items-center rounded-md 
                bg-white dark:bg-gray-800 px-2 py-1 text-xxs 
                text-gray-900 dark:text-white shadow-sm ring-1 ring-inset 
                ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 
@@ -89,7 +89,7 @@ onUnmounted(() => {
       >
         <!-- Display selected item label or placeholder -->
         {{ selectedItem?.label || placeholder }}
-        
+        <div class="flex-1" />
         <!-- Dropdown arrow icon -->
         <svg 
           class="-mr-1 h-3 w-3 text-gray-400" 
@@ -125,7 +125,7 @@ onUnmounted(() => {
             v-for="item in items"
             :key="item.value"
             @click="handleItemSelect(item)"
-            class="text-gray-700 dark:text-gray-200 block px-4 py-2 text-sm w-full text-left 
+            class="text-gray-700 dark:text-gray-200 block px-1 py-1 text-xxxs w-full text-left 
                    hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors
                    data-[active=true]:bg-gray-200 data-[active=true]:dark:bg-gray-600"
             :data-active="item.value === modelValue"

@@ -23,6 +23,7 @@ export default {
 			},
 			fontSize: {
 				'xxs': '0.625rem', // Custom size, e.g., 10px
+				'xxxs': '0.5rem', // Custom size, e.g., 8px
 			},
 		},
 	},
