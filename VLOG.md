@@ -24,6 +24,9 @@ This is not the first time something like this happened. But I couldn't fix it b
 
 A lot of times with nuxt I get stuck on none descriptive errors, this made it a lot difficult to debug. But slowly with a lot of errors I am figuring out how to use Nuxt and what to avoid.
 
+Okay I try to add nuxt-lucide-icons and got the same error.
+I deleted .nuxt and node_modules and reinstalled everything. Sadly It didn't work, I have no idea why it worked before with i18n and not with lucide-icons. But when trying to type it in vscode I do see lucide-icons in the auto import.
 
+I guess I am not using lucide-icons till I figure out why it is not working.
 
 Also sometimes it cannot find any nuxt variables that are auto imported.
