@@ -200,7 +200,7 @@ onMounted(async () => {
 // Save user method (create or update)
 const saveUser = async () => {
   try {
-    const result = await $fetch("/api/users/update", {
+    const result = await $fetch("/api/admin/users/update", {
       method: "POST",
       body: JSON.stringify({
         id: userId.value,

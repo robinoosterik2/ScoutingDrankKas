@@ -4,10 +4,7 @@ import { User } from "@/server/models/user";
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    // const user = await getUserSession(event);
-    // if (!user || !await isAdministrator(user._id as string)) {
-    //     throw createError({ statusCode: 401, statusMessage: "Unauthorized" });
-    // }
+
     const { id, email, username, firstName, lastName, role } = body;
 
     if (!id) {

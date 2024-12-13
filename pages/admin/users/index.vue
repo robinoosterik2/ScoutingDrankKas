@@ -261,7 +261,7 @@ const sortDirection = ref("asc");
 
 try {
   roles.value = await $fetch("/api/roles/all", { method: "GET" });
-  users.value = await $fetch("/api/users/all", { method: "GET" });
+  users.value = await $fetch("/api/admin/users/all", { method: "GET" });
 } catch (error) {
   console.error("Failed to fetch users:", error);
   alert("Failed to fetch users. Please try again.");
@@ -325,7 +325,7 @@ const toggleSortDirection = () => {
 
 const deleteUser = async (userId) => {
   try {
-    await $fetch(`/api/users/delete`, {
+    await $fetch(`/api/admin/users/delete`, {
       method: "POST",
       body: JSON.stringify({ userId }),
     });

@@ -253,7 +253,7 @@ const closeDeleteConfirmation = () => {
 // Confirm and execute role deletion
 const deleteRole = async (roleId) => {
   try {
-    await $fetch(`/api/roles/delete`, {
+    await $fetch(`/api/admin/roles/delete`, {
       method: "POST",
       body: JSON.stringify({ roleId }),
     });

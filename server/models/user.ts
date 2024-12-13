@@ -71,9 +71,9 @@ UserSchema.pre('save', async function (next) {
 //     return await verifyPassword(hashedPassword, password);
 // };
 
-
 export const isAdministrator = async function (userId: string) {
 	const user = await User.findById(userId).populate("role");
+	console.log(user);
 	if (!user) {
 		return false;
 	}
@@ -81,11 +81,10 @@ export const isAdministrator = async function (userId: string) {
 	if (!role) {
 		return false;
 	}
-
-	if (role.rolePermissions.includes("admin")) {
+	if (role.rolePermissions.includes('admin')) {
 		return true;
 	}
-	return true;
+	return false;
 };
 
 export const User = mongoose.models.User || mongoose.model("User", UserSchema);

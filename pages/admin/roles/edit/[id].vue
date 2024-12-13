@@ -157,7 +157,7 @@ const updateCustomRole = async () => {
   try {
     const route = useRoute();
     const roleId = ref(route.params.id);
-    await $fetch(`/api/roles/update`, {
+    await $fetch(`/api/admin/roles/update`, {
       method: "POST",
       body: { ...roleForm.value, id: roleId.value },
     });

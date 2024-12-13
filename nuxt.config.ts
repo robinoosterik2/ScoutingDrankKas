@@ -15,9 +15,6 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
   ],
 
-  plugins: [
-  ],
-
   runtimeConfig: {
     authSecret: process.env.AUTH_SECRET || 'your-secret-here',
   },

@@ -2,12 +2,6 @@ import { defineEventHandler, readBody, createError } from 'h3';
 import { CustomRole } from '@/server/models/customRole';
 
 export default defineEventHandler(async (event) => {
-    // Make sure the user is admin
-    const user = await getUserSession(event);
-    if (!user || !await isAdministrator(user._id as string)) {
-        throw createError({ statusCode: 401, statusMessage: "Unauthorized" });
-    }
-
     // Read the request body
     const body = await readBody(event);
     const { id, roleName, roleDescription, rolePermissions } = body;

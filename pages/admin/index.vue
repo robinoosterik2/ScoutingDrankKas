@@ -218,6 +218,6 @@ import DashboardLink from "~/components/DashboardLink.vue";
 
 // Admin middleware protection
 definePageMeta({
-  middleware: ["admin"]
+  // middleware: ["admin"]
 });
 </script>

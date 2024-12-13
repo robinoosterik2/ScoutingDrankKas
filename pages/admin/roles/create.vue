@@ -77,9 +77,6 @@
   <script setup>
     import { ref } from 'vue'
 
-    definePageMeta({
-    //   middleware: ["admin"]
-    })
     const availablePermissions = [
       'admin',
       'stam',
@@ -126,7 +123,7 @@
     if (hasError) return
   
     try {
-      const data = await $fetch('/api/roles/create', {
+      const data = await $fetch('/api/admin/roles/create', {
         method: 'POST',
         body: roleForm.value
       })
