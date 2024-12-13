@@ -270,10 +270,10 @@ const filteredAndSortedUsers = computed(() => {
       const matchesSearch =
         user.username.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         user.email.toLowerCase().includes(searchQuery.value.toLowerCase());
-
+ 
       // Role filter
       const matchesRole =
-        !selectedRole.value || user.role.includes(selectedRole.value);
+        !selectedRole.value || user.role.roleName == selectedRole.value.roleName;
 
       return matchesSearch && matchesRole;
     })

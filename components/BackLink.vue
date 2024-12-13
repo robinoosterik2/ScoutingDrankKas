@@ -1,4 +1,5 @@
 <template>
+  <div class="w-fit">
     <NuxtLink
       :to="to"
       class="flex items-center text-indigo-600 hover:text-indigo-800 font-medium"
@@ -19,17 +20,18 @@
       </svg>
       <slot>Back to {{ backPage }}</slot>
     </NuxtLink>
-  </template>
-  
-  <script setup>
-  defineProps({
-    to: {
-      type: String,
-      default: '/'
-    },
-    backPage: {
-      type: String,
-      default: 'Back to Previous Page'
-    }
-  })
-  </script>
+  </div>
+</template>
+
+<script setup>
+defineProps({
+  to: {
+    type: String,
+    default: "/",
+  },
+  backPage: {
+    type: String,
+    default: "Back to Previous Page",
+  },
+});
+</script>
