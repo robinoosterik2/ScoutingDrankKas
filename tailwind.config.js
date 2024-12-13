@@ -21,6 +21,9 @@ export default {
 				"accent-hover": "#C2410C", // Amber-700
 				"accent-dark-hover": "#FBBF24", // Amber-400
 			},
+			fontSize: {
+				'xxs': '0.625rem', // Custom size, e.g., 10px
+			},
 		},
 	},
   darkMode: 'class',

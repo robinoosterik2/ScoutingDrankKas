@@ -20,7 +20,7 @@ watch(switchState, (newValue) => {
   <div class="flex items-center space-x-3 group">
     <label
       for="dark-mode-toggle"
-      class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-black group-hover:dark:text-white cursor-pointer select-none"
+      class="text-xxs text-gray-900 dark:text-white group-hover:text-black group-hover:dark:text-white cursor-pointer select-none"
     >
       Dark Mode
     </label>
@@ -28,10 +28,10 @@ watch(switchState, (newValue) => {
     <SwitchRoot
       id="dark-mode-toggle"
       v-model:checked="switchState"
-      class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-opacity-75 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 hover:dark:bg-gray-600"
+      class="relative inline-flex h-4 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-opacity-75 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 hover:dark:bg-gray-600"
     >
       <SwitchThumb
-        class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-gray-300 shadow-lg ring-0 transition duration-200 ease-in-out translate-x-0 data-[state=checked]:translate-x-5 group-hover:scale-105"
+        class="pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white dark:bg-gray-300 shadow-lg ring-0 transition duration-200 ease-in-out translate-x-0 data-[state=checked]:translate-x-5 group-hover:scale-105"
       />
     </SwitchRoot>
   </div>

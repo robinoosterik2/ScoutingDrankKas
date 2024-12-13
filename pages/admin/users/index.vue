@@ -28,7 +28,7 @@
 
       <select
         v-model="selectedRole"
-        class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+        class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
       >
         <option value="">All Roles</option>
         <option v-for="role in roles" :key="role" :value="role">
