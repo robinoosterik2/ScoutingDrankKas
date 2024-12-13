@@ -37,6 +37,8 @@ const typeClasses = computed(() => {
       return "text-xs bg-indigo-600 text-white hover:bg-indigo-700";
     case "users":
       return "text-xs bg-green-600 text-white hover:bg-green-700";
+    case "products":
+      return "text-xs bg-purple-600 text-white hover:bg-purple-700";
     case "logs":
       return "text-xs bg-yellow-600 text-white hover:bg-yellow-700";
     case "system":

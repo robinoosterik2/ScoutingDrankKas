@@ -82,10 +82,50 @@
             type="secondary"
             label="View All Users"
           />
+          <DashboardLink to="/register" type="users" label="Create New User" />
+        </div>
+      </div>
+
+      <!-- Product Management -->
+      <div
+        class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow flex flex-col"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center space-x-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-purple-600"
+              viewBox="0 0 32 32"
+              xml:space="preserve"
+              stroke="currentColor"
+            >
+              <path
+                d="M13.643 10.312c-.084 0-.16-.012-.237-.024a2.72 2.72 0 0 1-.044.662h8.892v14.68a3.6 3.6 0 0 1-3.601 3.601H9.361A3.6 3.6 0 0 1 5.76 25.63V10.95h.411a1.255 1.255 0 0 1-.225-.441 1.252 1.252 0 0 1-.46-.22c-.071.01-.14.022-.218.022-.121 0-.233-.014-.337-.037a.44.44 0 0 0-.07.226v15.13a4.5 4.5 0 0 0 4.5 4.5h9.292a4.5 4.5 0 0 0 4.5-4.5V10.103c-3.119.25-6.339.214-9.51.209z"
+              />
+              <path
+                d="M22.763 26.319h-.059a.45.45 0 0 1-.45-.45V13.956a.45.45 0 0 1 .45-.45h2.085a4.207 4.207 0 0 1 4.202 4.202v2.382a6.236 6.236 0 0 1-6.228 6.229zm.391-11.913v11a5.337 5.337 0 0 0 4.938-5.315v-2.382a3.306 3.306 0 0 0-3.303-3.303h-1.635zM10.622 2.768c1.063 0 2.051.515 2.642 1.379a1.456 1.456 0 0 0 2.01.389 2.47 2.47 0 0 1 1.373-.414c.902 0 1.736.491 2.175 1.281a1.486 1.486 0 0 0 1.71.708 2.075 2.075 0 0 1 .726-.078 2.094 2.094 0 0 1 1.922 1.932 2.055 2.055 0 0 1-.557 1.55 2.05 2.05 0 0 1-1.508.652l-.683-.003-7.822-.03h-.003a.9.9 0 0 0-.899.899v1.76c0 .347-.283.63-.63.63H10.8a.631.631 0 0 1-.63-.63v-1.769a.9.9 0 0 0-.896-.899l-4.06-.014a1.517 1.517 0 0 1-1.051-.659 1.536 1.536 0 0 1-.189-1.298c.167-.588.685-.999 1.319-1.049a1.43 1.43 0 0 1 .534.057c.12.036.245.054.373.054.446 0 .861-.219 1.084-.572.155-.245.205-.536.147-.816.055-1.696 1.465-3.06 3.191-3.06m0-.899c-2.243 0-4.092 1.819-4.092 4.062v.019c.101.211-.116.367-.33.367a.416.416 0 0 1-.116-.016 2.316 2.316 0 0 0-.862-.092c-.994.078-1.84.74-2.113 1.699a2.42 2.42 0 0 0 2.048 3.102l4.114.014v1.769a1.53 1.53 0 0 0 1.529 1.529h.278c.844 0 1.529-.684 1.529-1.529v-1.76l9.956.033c.451 0-.569-.101-.186-.281a2.969 2.969 0 0 0 1.7-2.876 2.981 2.981 0 0 0-2.963-2.78c-.29 0-.571.042-.836.119a.587.587 0 0 1-.671-.282 3.383 3.383 0 0 0-4.832-1.179.559.559 0 0 1-.77-.148 4.109 4.109 0 0 0-3.383-1.77zM9.5 26.181a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 1 0v10a.5.5 0 0 1-.5.5zM12.5 26.181a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 1 0v10a.5.5 0 0 1-.5.5zM15.5 26.181a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 1 0v10a.5.5 0 0 1-.5.5zM18.5 26.181a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 1 0v10a.5.5 0 0 1-.5.5z"
+              />
+            </svg>
+            <h2 class="text-l font-semibold text-gray-800 dark:text-white">
+              Product Management
+            </h2>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 flex-grow">
+          Manage product, create new products, and update product
+          details
+        </p>
+        <div class="mt-auto space-y-2">
+        <DashboardLink
+            to="/admin/products"
+            type="secondary"
+            label=
+            "View All Products"
+          />
           <DashboardLink
-            to="/register"
-            type="users"
-            label="Create New User"
+            to="/admin/products/create"
+            type="products"
+            label="Create New Product"
           />
         </div>
       </div>
@@ -167,44 +207,6 @@
             to="/admin/settings"
             type="system"
             label="System Settings"
-          />
-        </div>
-      </div>
-
-      <!-- API Management -->
-      <div
-        class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow flex flex-col"
-      >
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center space-x-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 text-purple-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8 9l3 3-3 3m5 0h3M5 20a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2H5zM15 6l3 3-3 3"
-              />
-            </svg>
-            <h2 class="text-l font-semibold text-gray-800 dark:text-white">
-              API Management
-            </h2>
-          </div>
-        </div>
-        <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 flex-grow">
-          Manage API keys, view integrations, and configure external service
-          connections
-        </p>
-        <div class="mt-auto">
-          <DashboardLink
-            to="/admin/api"
-            type="primary"
-            label="View API Settings"
           />
         </div>
       </div>
