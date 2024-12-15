@@ -2,7 +2,7 @@
   <NuxtLink
     :to="to"
     :class="[
-      'w-full block text-center py-2 rounded-md transition-colors',
+      'w-full block text-center p-2 rounded-md transition-colors',
       typeClasses,
       hoverClasses,
     ]"

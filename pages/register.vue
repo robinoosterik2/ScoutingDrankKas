@@ -4,7 +4,7 @@
 			<h2 class="text-xl font-extrabold text-center text-gray-900 dark:text-white">
 				{{ $t('register.title') }}
 			</h2>
-			<form @submit.prevent="handleRegister" class="space-y-2">
+			<form @submit.prevent="handleRegister" class="space-y-1">
 				<div class="flex space-x-2">
 					<div class="w-1/2">
 						<label class="text-xs" for="firstName">{{ $t('register.firstName') }}</label>
@@ -15,7 +15,7 @@
 							type="text"
 							required
 							class="appearance-none text-2xs rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-							:placeholder="$t('register.firstNamePlaceholder')"
+							:placeholder="$t('register.firstName')"
 						>
 						<div id="errorFirstName" class="text-red-500 text-sm mt-1"></div>
 					</div>
@@ -28,7 +28,7 @@
 							type="text"
 							required
 							class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-							:placeholder="$t('register.lastNamePlaceholder')"
+							:placeholder="$t('register.lastName')"
 						>
 						<div id="errorLastName" class="text-red-500 text-sm mt-1"></div>
 					</div>
@@ -55,7 +55,7 @@
 						type="email"
 						required
 						class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-						:placeholder="$t('register.emailPlaceholder')"
+						:placeholder="$t('register.email')"
 					>
 					<div id="errorEmail" class="text-red-500 text-sm mt-1"></div>
 				</div>
@@ -68,7 +68,7 @@
 						type="password"
 						required
 						class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-						:placeholder="$t('register.passwordPlaceholder')"
+						placeholder="••••••••••"
 					>
 					<div id="errorPassword" class="text-red-500 text-sm mt-1"></div>
 				</div>
@@ -81,7 +81,7 @@
 						type="password"
 						required
 						class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-						:placeholder="$t('register.confirmPasswordPlaceholder')"
+						placeholder="••••••••••"
 					>
 					<div id="errorConfirmPassword" class="text-red-500 text-sm mt-1"></div>
 				</div>

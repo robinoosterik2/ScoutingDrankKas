@@ -11,6 +11,9 @@
     - email works
 [ ] Make loading faster, (prob move it out of onMounted  see /admin/users)
 [ ] When creating a session, remove password from user
+[ ] Fix capital letters in translation
+[ ] Fix pluralization https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
+
 
 
 

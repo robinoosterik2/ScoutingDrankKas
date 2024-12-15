@@ -1,15 +1,10 @@
 <template>
   <div class="container mx-auto px-4 py-2">
     <!-- Back to Users Button -->
+    
+    <CTitle :text="userId ? $t('users.editUser') : $t('users.createUser')"></CTitle>
+    
     <BackLink to="/admin/users" backPage="Users"></BackLink>
-
-    <!-- Page Title -->
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-xl font-bold text-gray-900 dark:text-white">
-        {{ userId ? "Edit User" : "Create User" }}
-      </h1>
-    </div>
-
     <!-- Edit User Form -->
     <form
       @submit.prevent="saveUser"

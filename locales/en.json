@@ -17,7 +17,8 @@
     "errors": {
       "userNotFound": "User not found",
       "invalidCredentials": "Invalid credentials"
-    }
+    },
+    "firstName": "First name"
   },
   "register": {
     "title": "Register",
@@ -30,7 +31,11 @@
     "login": "Login",
     "errors": {
       "usernameTaken": "Username already taken"
-    }
+    },
+    "confirmPassword": "Confirm Password",
+    "email": "Email",
+    "firstName": "First Name",
+    "lastName": "Last Name"
   },
   "admin": {
     "systemSettings": "System Settings",
@@ -50,7 +55,88 @@
     "title": "Admin Dashboard",
     "viewAllRoles": "View All Roles",
     "createRole": "Create New Role",
-    "createUser": "Create New User"
+    "createUser": "Create New User",
+    "CategoryManagementDescription": "Manage categories, create new categories, and update categories details.",
+    "categoryManagement": "Manage categories",
+    "createCategories": "Create Category",
+    "viewAllCategories": "View Categories"
   },
-  "backTo": "Back To"
+  "backTo": "Back To",
+  "Description": "Description",
+  "Name": "Name",
+  "Product": "Product",
+  "Products": "Products",
+  "Search": "Search",
+  "Stock": "Stock",
+  "User": "User",
+  "actions": "actions",
+  "cancel": "Cancel",
+  "cannotBeUndone": "This action cannot be undone.",
+  "categories": {
+    "allCategories": "All Categories",
+    "categories": "Categories"
+  },
+  "category": "Category",
+  "confirmDelete": "Are you sure that",
+  "delete": "Delete",
+  "edit": "Edit",
+  "email": "Email",
+  "name": "name",
+  "names": "names",
+  "permissions": {
+    "admin": "admin",
+    "extern": "extern",
+    "scouting-lid": "scouting-lid",
+    "stam": "stam"
+  },
+  "price": "price",
+  "productName": "Product Name",
+  "products": {
+    "confirmDelete": "Are you sure that you want to delete this product?",
+    "createProduct": "Create Product",
+    "getStarted": "Get started by creating a new product.",
+    "noProducts": "No products found",
+    "productDescription": "Product description",
+    "productName": "Product Name",
+    "productPrice": "Product Price",
+    "title": "Product Management"
+  },
+  "role": "role",
+  "roles": {
+    "actions": "Actions",
+    "cannotBeUndone": "This action cannot be undone.",
+    "confirmDelete": "Are you sure you want to delete this role?",
+    "createRole": "Create New Role",
+    "createRoleError": "Cannot Create Role",
+    "createTitle": "Create Role",
+    "deleteRole": "Delete Role",
+    "description": "Description",
+    "editTitle": "Edit Role",
+    "emptyState": "No roles made",
+    "emptyStateDescription": "Get started by making a new role.",
+    "enterRoleDescription": "Descripe the goals of the role.",
+    "enterRoleName": "Fill in a role name",
+    "permissions": "Permissions",
+    "roleDescription": "Role Description",
+    "roleDescriptionRequired": "Role description is required",
+    "roleName": "Role Name",
+    "roleNameExists": "Role name already exists",
+    "roleNameRequired": "Role name is required",
+    "roles": "Roles",
+    "rolesAll": "Add Role",
+    "title": "Manage Roles"
+  },
+  "sortBy": "Sort By",
+  "stock": "Stock",
+  "username": "Username",
+  "users": {
+    "cannotBeUndone": "This action cannot be undone.",
+    "confirmDelete": "Are you sure you want to delete this user",
+    "createNewUser": "Create New User",
+    "createUser": "Create User",
+    "editUser": "Edit User",
+    "getStarted": "Get started by creating a new user.",
+    "noUsers": "No Users Found",
+    "title": "Manage Users"
+  }
 }

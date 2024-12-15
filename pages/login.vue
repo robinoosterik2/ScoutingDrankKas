@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-center">
-    <div class="max-w-sm w-full space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div class="max-w-sm w-full space-y-2 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <h2 class="text-xl font-extrabold text-center text-gray-900 dark:text-white">
         {{ $t('login.title') }}
       </h2>
@@ -16,7 +16,7 @@
           <label class="text-xs" for="password">{{ $t('login.password') }}</label>
           <input id="password" v-model="password" name="password" type="password" required
                  class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                 placeholder="***********">
+                 placeholder="••••••••••">
           <div id="errorPassword" class="text-red-500 text-sm mt-1"></div>
         </div>
         <div class="pt-4">

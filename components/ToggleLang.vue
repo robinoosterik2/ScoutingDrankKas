@@ -1,4 +1,5 @@
 <script setup>
+import { ref, onBeforeMount } from 'vue';
 const { setLocale, locale } = useI18n()
 
 // Define language items in the required format for the generic dropdown
@@ -10,7 +11,11 @@ const languageItems = [
 // Handle language change
 const handleLanguageChange = (selectedLang) => {
   setLocale(selectedLang)
+  localStorage.setItem('selectedLanguage', selectedLang)
 }
+
+// Retrieve the saved language from localStorage before component mount
+
 </script>
 
 <template>

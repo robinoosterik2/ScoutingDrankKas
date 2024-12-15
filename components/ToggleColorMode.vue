@@ -25,7 +25,7 @@ const toggleDarkMode = () => {
 	>
 		<div
 			class="relative inline-flex items-center justify-center w-12 h-6 rounded-full transition-all duration-300 ease-in-out"
-			:class="isDarkMode ? 'bg-gray-700' : 'bg-gray-200'"
+			:class="isDarkMode ? 'bg-gray-800' : 'bg-gray-200'"
 		>
 			<div
 				class="absolute flex items-center justify-between w-full px-1 transition-all duration-300"

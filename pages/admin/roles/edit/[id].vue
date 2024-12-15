@@ -1,17 +1,19 @@
 <template>
-  <div class="flex items-center justify-center">
+  <div class="flex flex-col items-center justify-center">
+    <div class="w-full flex flex-col items-center justify-center">
+      <div class="max-w-sm w-full mb-2">
+        <CTitle :text="$t('roles.editRole')"/>
+        <BackLink to="/admin/roles" :backPage="$t('roles.roles')"></BackLink>
+      </div>
+    </div>
     <div
       class="max-w-sm w-full space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md"
     >
-      <h2
-        class="text-xl font-extrabold text-center text-gray-900 dark:text-white"
-      >
-        Edit Custom Role
-      </h2>
-
       <form @submit.prevent="updateCustomRole" class="space-y-2">
         <div>
-          <label class="text-xs" for="roleName">Role Name:</label>
+          <label class="text-xs" for="roleName"
+            >{{ $t("roles.roleName") }}:</label
+          >
           <input
             id="roleName"
             v-model="roleForm.roleName"
@@ -19,20 +21,22 @@
             type="text"
             required
             class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-            placeholder="Enter role name"
+            :placeholder="$t('roles.enterRoleName')"
           />
           <div id="errorRoleName" class="text-red-500 text-sm mt-1"></div>
         </div>
 
         <div>
-          <label class="text-xs" for="roleDescription">Role Description:</label>
+          <label class="text-xs" for="roleDescription"
+            >{{ $t("roles.roleDescription") }}:</label
+          >
           <textarea
             id="roleDescription"
             v-model="roleForm.roleDescription"
             name="roleDescription"
             required
             class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-            placeholder="Describe the role's purpose"
+            :placeholder="$t('roles.enterRoleDescription')"
             rows="3"
           ></textarea>
           <div
@@ -41,7 +45,7 @@
           ></div>
         </div>
 
-        <label class="text-xs block mb-2">Role Permissions:</label>
+        <label class="text-xs block mb-2">{{ $t("roles.permissions") }}:</label>
         <div class="grid grid-cols-2 gap-2 mt-1">
           <div
             v-for="permission in availablePermissions"
@@ -59,13 +63,9 @@
               :for="permission"
               class="text-sm text-gray-700 dark:text-gray-300"
             >
-              {{ permission }}
+              {{ $t(`permissions.${permission}`) }}
             </label>
           </div>
-          <div
-            id="errorRolePermissions"
-            class="text-red-500 text-sm mt-1"
-          ></div>
         </div>
 
         <div class="pt-4">
@@ -73,19 +73,10 @@
             type="submit"
             class="group relative w-full flex justify-center py-1 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            Update Role
+            {{ $t("roles.createRole") }}
           </button>
         </div>
       </form>
-
-      <div>
-        <NuxtLink
-          to="/admin/roles"
-          class="text-sm text-blue-600 hover:text-blue-800"
-        >
-          Back to Roles
-        </NuxtLink>
-      </div>
     </div>
   </div>
 </template>
@@ -101,22 +92,20 @@ const roleForm = ref({
   rolePermissions: [],
 });
 
-onMounted(async () => {
-  try {
-    const route = useRoute();
-    const roleId = ref(route.params.id);
-    const roleData = await $fetch(`/api/roles/${roleId.value}`, {
-      method: "GET",
-    });
-    roleForm.value = {
-      roleName: roleData.roleName,
-      roleDescription: roleData.roleDescription,
-      rolePermissions: roleData.rolePermissions,
-    };
-  } catch (error) {
-    console.error("Failed to load role data", error);
-  }
-});
+try {
+  const route = useRoute();
+  const roleId = ref(route.params.id);
+  const roleData = await $fetch(`/api/roles/${roleId.value}`, {
+    method: "GET",
+  });
+  roleForm.value = {
+    roleName: roleData.roleName,
+    roleDescription: roleData.roleDescription,
+    rolePermissions: roleData.rolePermissions,
+  };
+} catch (error) {
+  console.error("Failed to load role data", error);
+}
 
 const togglePermission = (permission) => {
   const index = roleForm.value.rolePermissions.indexOf(permission);
@@ -135,20 +124,16 @@ const updateCustomRole = async () => {
   let hasError = false;
 
   if (!roleForm.value.roleName) {
-    document.getElementById("errorRoleName").textContent =
-      "Role name is required";
+    document.getElementById("errorRoleName").textContent = $t(
+      "roles.roleNameRequired"
+    );
     hasError = true;
   }
 
   if (!roleForm.value.roleDescription) {
-    document.getElementById("errorRoleDescription").textContent =
-      "Role description is required";
-    hasError = true;
-  }
-
-  if (roleForm.value.rolePermissions.length === 0) {
-    document.getElementById("errorRolePermissions").textContent =
-      "Please select at least one permission";
+    document.getElementById("errorRoleDescription").textContent = $t(
+      "roles.roleDescriptionRequired"
+    );
     hasError = true;
   }
 
@@ -165,8 +150,9 @@ const updateCustomRole = async () => {
     navigateTo("/admin/roles");
   } catch (error) {
     console.error("Failed to update role", error);
-    document.getElementById("errorRoleName").textContent =
-      "Failed to update role";
+    document.getElementById("errorRoleName").textContent = $t(
+      "roles.createRoleError"
+    );
   }
 };
 </script>

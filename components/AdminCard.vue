@@ -1,0 +1,52 @@
+<template>
+  <div
+    class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow flex flex-col"
+  >
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center space-x-2">
+        <slot name="icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 min-h-5 min-w-5 text-blue-600"
+            viewBox="0 0 32 32"
+            xml:space="preserve"
+            stroke="currentColor"
+          >
+            <path
+              d="M16 3a13 13 0 1 0 13 13A13 13 0 0 0 16 3zm0 24a11 11 0 1 1 11-11 11 11 0 0 1-11 11z"
+            />
+            <path
+              d="M16 8a1 1 0 0 0-1 1v6a1 1 0 0 0 .293.707l4 4a1 1 0 0 0 1.414-1.414L17 14.586V9a1 1 0 0 0-1-1z"
+            />
+          </svg>
+        </slot>
+        <h2 class="text-l font-semibold text-gray-800 dark:text-white">
+          <slot name="title">{{ $t("admin.defaultTitle") }}</slot>
+        </h2>
+      </div>
+    </div>
+    <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 flex-grow">
+      <slot name="description">{{ $t("admin.defaultDescription") }}</slot>
+    </p>
+    <div class="mt-auto space-y-2">
+      <slot name="links">
+        <DashboardLink
+          to="/admin/default"
+          type="secondary"
+          :label="$t('admin.viewDefault')"
+        />
+        <DashboardLink
+          to="/admin/default/create"
+          type="default"
+          :label="$t('admin.createDefault')"
+        />
+      </slot>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "AdminCard",
+};
+</script>

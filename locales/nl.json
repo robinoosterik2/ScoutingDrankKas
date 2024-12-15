@@ -17,7 +17,8 @@
       "userNotFound": "Gebruiker niet gevonden"
     },
     "noAccount": "Heeft u geen account?",
-    "password": "Wachtwoord:"
+    "password": "Wachtwoord:",
+    "firstName": "Voornaam"
   },
   "register": {
     "alreadyHaveAccount": "Heeft u al een account?",
@@ -30,7 +31,11 @@
     "submit": "Register",
     "title": "Register",
     "username": "Gebruikersnaam:",
-    "usernamePlaceholder": "Gebruikersnaam"
+    "usernamePlaceholder": "Gebruikersnaam",
+    "firstName": "Voornaam",
+    "lastName": "Achternaam",
+    "email": "Email",
+    "confirmPassword": "Bevestig wachtwoord"
   },
   "admin": {
     "systemSettings": "Systeem instellingen",
@@ -41,16 +46,97 @@
     "createProduct": "Nieuw product aanmaken",
     "viewAllProducts": "Bekijk alle producten",
     "ProductManagementDescription": "Beheer producten, maak nieuwe producten en werk productdetails bij.",
-    "productManagement": "Productbeheer",
+    "productManagement": "Beheer producten",
     "viewAllUsers": "Bekijk alle gebruikers",
     "UserManagementDescription": "Beheer gebruikersaccounts, reset wachtwoorden en beheer gebruikersrechten.",
-    "rolesManagement": "Rollenbeheer",
+    "rolesManagement": "Beheer rollen",
     "RolesManagementDescription": "Beheer gebruikersrollen, maak nieuwe rollen en definieer machtigingen.",
-    "UserManagement": "Gebruikersbeheer",
+    "UserManagement": "Beheer gebruikers",
     "title": "Beheer Dashboard",
     "viewAllRoles": "Bekijk alle rollen",
     "createRole": "Nieuwe rol maken",
-    "createUser": "Nieuwe gebruiker maken"
+    "createUser": "Nieuwe gebruiker maken",
+    "categoryManagement": "Beheer categorieën",
+    "CategoryManagementDescription": "Beheer categorieën, maak nieuwe categorieën en update categoriedetails.",
+    "viewAllCategories": "Bekijk alle categorieën",
+    "createCategories": "Nieuwe categorie aanmaken"
   },
-  "backTo": "Terug naar"
+  "backTo": "Terug naar",
+  "roles": {
+    "roleName": "Rolnaam",
+    "description": "Beschrijving",
+    "permissions": "Machtigingen",
+    "actions": "Acties",
+    "emptyState": "Geen rollen gemaakt",
+    "emptyStateDescription": "Ga aan de slag door een nieuwe rol te maken.",
+    "deleteRole": "Rol verwijderen",
+    "confirmDelete": "Weet u zeker dat u de rol wilt verwijderen?",
+    "cannotBeUndone": "Deze actie kan niet ongedaan worden gemaakt.",
+    "createRole": "Nieuwe rol maken",
+    "title": "Rollenbeheer",
+    "createTitle": "Rol Aanmaken",
+    "roles": "Rollen",
+    "roleNameRequired": "Rolnaam is vereist",
+    "roleDescriptionRequired": "Rolbeschrijving is vereist",
+    "roleDescription": "Rolbeschrijving",
+    "roleNameExists": "Rolnaam bestaat al",
+    "createRoleError": "Kan rol niet maken",
+    "enterRoleName": "Voer de rolnaam in",
+    "enterRoleDescription": "Beschrijf het doel van de rol",
+    "editTitle": "Rol bewerken",
+    "rolesAll": "Rollen toevoegen"
+  },
+  "edit": "Bewerking",
+  "delete": "Verwijderen",
+  "cancel": "Annuleren",
+  "permissions": {
+    "admin": "admin",
+    "stam": "stam",
+    "scouting-lid": "scouting-lid",
+    "extern": "extern"
+  },
+  "sortBy": "Sorteer op",
+  "names": "namen",
+  "username": "Gebruikersnaam",
+  "email": "email",
+  "role": "rol",
+  "actions": "acties",
+  "users": {
+    "createNewUser": "Nieuwe gebruiker aanmaken",
+    "title": "Gebruikersbeheer",
+    "createUser": "Gebruiker aanmaken",
+    "noUsers": "Geen gebruikers gevonden",
+    "getStarted": "Ga aan de slag door een nieuwe gebruiker aan te maken.",
+    "confirmDelete": "Weet u zeker dat u de gebruiker wilt verwijderen",
+    "cannotBeUndone": "Deze actie kan niet ongedaan worden gemaakt.",
+    "editUser": "Gebruiker bewerken"
+  },
+  "User": "Gebruiker",
+  "confirmDelete": "Weet u zeker dat u",
+  "cannotBeUndone": "Deze actie kan niet ongedaan worden gemaakt.",
+  "Search": "Zoeken",
+  "products": {
+    "createProduct": "Product maken",
+    "title": "Productenbeheer",
+    "productName": "Product naam",
+    "productDescription": "Product beschrijving",
+    "productPrice": "Product prijs",
+    "getStarted": "Ga aan de slag door een nieuw product te maken.",
+    "noProducts": "Geen producten gevonden",
+    "confirmDelete": "Weet u zeker dat u het product wilt verwijderen?"
+  },
+  "categories": {
+    "allCategories": "Alle categorieën",
+    "categories": "Categorieën"
+  },
+  "name": "naam",
+  "price": "prijs",
+  "stock": "voorraad",
+  "productName": "Productnaam",
+  "Name": "Naam",
+  "Description": "Beschrijving",
+  "Products": "Producten",
+  "Stock": "Voorraad",
+  "category": "Categorie",
+  "Product": "Product"
 }

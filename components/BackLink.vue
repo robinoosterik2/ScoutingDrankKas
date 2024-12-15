@@ -1,5 +1,5 @@
 <template>
-  <div class="w-fit">
+  <div class="w-fit py-1">
     <NuxtLink
       :to="to"
       class="flex items-center text-indigo-600 hover:text-indigo-800 font-medium"
