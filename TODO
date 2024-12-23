@@ -1,21 +1,24 @@
 [ ] Fix loading animation for at example /admin/users, /admin/roles
-[ ] Fix frontend permissions, right now middleware is commented out
-[ ] Fix backend permissions, right now checking if user is admin is commented out
-[ ] Add translating
+[x] Fix frontend permissions, right now middleware is commented out
+[x] Fix backend permissions, right now checking if user is admin is commented out
+[x] Add translating
 [ ] Make checkboxes look prettier
-[ ] Make more components
+[x] Make more components
 [ ] Make lightmode look prettier
 [ ] Make responsive
-[ ] Fix roles
-[ ] Fix users filter on /admin/users
+[x] Fix roles
+[x] Fix users filter on /admin/users
     - email works
-[ ] Make loading faster, (prob move it out of onMounted  see /admin/users)
-[ ] When creating a session, remove password from user
+[x] Make loading faster, (prob move it out of onMounted  see /admin/users)
+[x] When creating a session, remove password from user
 [ ] Fix capital letters in translation
 [ ] Fix pluralization https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
 [ ] Fix images on products etc
-[ ] Middleware auth is broken as in there is no request to the server when going from page to page
-
+[x] Middleware auth is broken as in there is no request to the server when going from page to page
+[/] Test balance rounding
+[ ] Create logging
+[ ] Profile page
+[ ] Admins can raise users
 
 
 ## License

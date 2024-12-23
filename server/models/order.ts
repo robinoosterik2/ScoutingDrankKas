@@ -39,6 +39,13 @@ OrderSchema.statics.createFromRequestBody = async function(bodyData) {
     count: item.count
   }));
 
+  const user = await mongoose.models.User.findById(bodyData.userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  user.balance -= bodyData.total;
+  await user.save();
+
   return new this({
     user: bodyData.userId,
     products: products,

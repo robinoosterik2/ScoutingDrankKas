@@ -161,5 +161,7 @@
     "noProductsSelected": "No products selected"
   },
   "confirm": "Confirm",
-  "total": "Total"
+  "total": "Total",
+  "Actions": "Actions",
+  "Balance": "Balance"
 }

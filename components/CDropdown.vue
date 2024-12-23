@@ -27,6 +27,11 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  // Custom ID for the dropdown
+  id: {
+    type: String,
+    default: "generic-dropdown",
+  },
 });
 
 // Define emits for v-model support
@@ -42,6 +47,7 @@ const selectedItem = computed(() =>
 
 // Handle item selection
 const handleItemSelect = (item) => {
+  console.log(item.value);
   emit("update:modelValue", item.value);
   isDropdownOpen.value = false;
 };
@@ -53,7 +59,7 @@ const toggleDropdown = () => {
 
 // Close dropdown when clicking outside
 const handleClickOutside = (event) => {
-  const dropdownElement = document.getElementById("generic-dropdown");
+  const dropdownElement = document.getElementById(props.id);
   if (dropdownElement && !dropdownElement.contains(event.target)) {
     isDropdownOpen.value = false;
   }
@@ -70,11 +76,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div
-    id="generic-dropdown"
-    class="relative inline-block text-left"
-    :class="class"
-  >
+  <div :id="id" class="relative inline-block" :class="class">
     <!-- Dropdown Trigger -->
     <div>
       <button
@@ -111,7 +113,7 @@ onUnmounted(() => {
     >
       <div
         v-if="isDropdownOpen"
-        class="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60 overflow-y-auto"
+        class="absolute right-0 z-10 w-full origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60 overflow-y-auto"
       >
         <div class="py-1" role="menu" aria-orientation="vertical">
           <button

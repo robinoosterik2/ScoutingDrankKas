@@ -1,10 +1,8 @@
 <template>
-  <!-- Page Title and Create Button -->
   <CTitle :text="$t('users.title')" />
   <div class="flex justify-between items-center mb-2">
     <BackLink to="/admin" :backPage="$t('admin.title')"></BackLink>
-
-    <div class="">
+    <div>
       <DashboardLink
         to="/register"
         class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out"
@@ -16,13 +14,11 @@
 
   <!-- Filters and Sorting -->
   <div class="mb-4 flex space-x-4">
-    <!-- Search Input -->
     <input
       v-model="searchQuery"
       :placeholder="$t('Search') + '...'"
       class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
     />
-
     <select
       v-model="selectedRole"
       class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
@@ -39,8 +35,8 @@
       <option value="name">{{ $t("sortBy") }} {{ $t("names") }}</option>
       <option value="email">{{ $t("sortBy") }} {{ $t("email") }}</option>
       <option value="role">{{ $t("sortBy") }} {{ $t("roles.roles") }}</option>
+      <option value="balance">{{ $t("sortBy") }} {{ $t("Balance") }}</option>
     </select>
-
     <button
       @click="toggleSortDirection"
       class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
@@ -48,11 +44,12 @@
       {{ sortDirection === "asc" ? "▲" : "▼" }}
     </button>
   </div>
+
   <!-- Users Table -->
-  <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-visible">
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
       <thead class="bg-gray-50 dark:bg-gray-700">
-        <tr>
+        <tr class="overflow-visible">
           <th
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
           >
@@ -69,6 +66,11 @@
             {{ $t("role") }}
           </th>
           <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+          >
+            {{ $t("Balance") }}
+          </th>
+          <th
             class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
           >
             {{ $t("actions") }}
@@ -81,19 +83,19 @@
         <tr
           v-for="user in filteredAndSortedUsers"
           :key="user.id"
-          class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200"
+          class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200 overflow-visible relative"
         >
-          <td class="px-6 py-4 whitespace-nowrap">
+          <td class="px-6 py-2 whitespace-nowrap">
             <div class="text-sm font-medium text-gray-900 dark:text-white">
               {{ user.username }}
             </div>
           </td>
-          <td class="px-6 py-4">
+          <td class="px-6 py-2">
             <div class="text-sm text-gray-500 dark:text-gray-300">
               {{ user.email }}
             </div>
           </td>
-          <td class="px-6 py-4">
+          <td class="px-6 py-2">
             <span
               v-if="user.role"
               class="px-2 py-1 text-xs font-medium rounded-full"
@@ -115,23 +117,29 @@
               NoRole
             </span>
           </td>
-          <td
-            class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-          >
-            <div class="flex justify-end space-x-2">
-              <button
-                @click="editUser(user)"
-                class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
-              >
-                {{ $t("edit") }}
-              </button>
-              <button
-                @click="openDeleteConfirmation(user)"
-                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200"
-              >
-                {{ $t("delete") }}
-              </button>
+          <td>
+            <div
+              class="text-sm px-6"
+              :class="{
+                'text-red-500 dark:text-red-300': user.balance < 0,
+                'text-green-500 dark:text-green-300': user.balance >= 0,
+              }"
+            >
+              €{{ user.balance }}
             </div>
+          </td>
+          <td
+            class="px-6 py-2 whitespace-nowrap text-right text-sm font-medium overflow-visible"
+          >
+            <!-- custom id for each user -->
+            <CDropdown
+              v-model="selectedValue"
+              :items="dropdownItems"
+              @update:model-value="handleAction(user)"
+              value="action"
+              :placeholder="$t('Actions')"
+              :id="`user-${user._id}`"
+            />
           </td>
         </tr>
       </tbody>
@@ -185,6 +193,17 @@ const searchQuery = ref("");
 const selectedRole = ref("");
 const sortBy = ref("name");
 const sortDirection = ref("asc");
+const { t } = useI18n()
+
+
+// Define the items for the dropdown
+const dropdownItems = ref([
+  { label: t("edit"), value: "edit" },
+  { label: t("delete"), value: "delete" },
+]);
+
+// Define the variable to hold the selected value
+const selectedValue = ref(null);
 
 try {
   roles.value = await $fetch("/api/roles/all", { method: "GET" });
@@ -197,33 +216,40 @@ try {
 const filteredAndSortedUsers = computed(() => {
   return users.value
     .filter((user) => {
-      // Search filter
       const matchesSearch =
         user.username.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         user.email.toLowerCase().includes(searchQuery.value.toLowerCase());
-
-      // Role filter
       const matchesRole =
         !selectedRole.value ||
-        user.role.roleName == selectedRole.value.roleName;
-
+        user.role.roleName === selectedRole.value.roleName;
       return matchesSearch && matchesRole;
     })
     .sort((a, b) => {
       const direction = sortDirection.value === "asc" ? 1 : -1;
       if (sortBy.value === "name") {
-        if (a.username < b.username) return -1 * direction;
-        if (a.username > b.username) return 1 * direction;
+        return a.username.localeCompare(b.username) * direction;
       } else if (sortBy.value === "email") {
-        if (a.email < b.email) return -1 * direction;
-        if (a.email > b.email) return 1 * direction;
+        return a.email.localeCompare(b.email) * direction;
       } else if (sortBy.value === "role") {
-        if (a.role.roleName < b.role.roleName) return -1 * direction;
-        if (a.role.roleName > b.role.roleName) return 1 * direction;
+        return a.role.roleName.localeCompare(b.role.roleName) * direction;
+      } else if (sortBy.value === "balance") {
+        return (a.balance - b.balance) * direction;
       }
       return 0;
     });
 });
+
+const handleAction = (user) => {
+  let component = document.getElementById("user-" + user._id);
+  console.log(selectedValue);
+  let action = selectedValue.value;
+  console.log(action, user);
+  if (action === "edit") {
+    editUser(user);
+  } else if (action === "delete") {
+    openDeleteConfirmation(user);
+  }
+};
 
 // Edit user method (navigate to edit page)
 const editUser = (user) => {
@@ -236,6 +262,7 @@ const userToDelete = ref(null);
 
 // Open delete confirmation modal
 const openDeleteConfirmation = (user) => {
+  console.log("openDeleteConfirmation", user);
   userToDelete.value = user;
   isDeleteModalOpen.value = true;
 };

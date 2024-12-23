@@ -32,15 +32,24 @@ const UserSchema = new Schema({
 		default: true,
 	},
 	balance: {
-		type: Number,
+		type: mongoose.Types.Decimal128,
 		default: 0,
+		set: value => {
+			if (typeof value === 'string' || value.toString().includes('.') || value.toString().includes(',')) {
+				return Math.round(parseFloat(value.toString()) * 100);
+			}
+			return value;
+		},
+		get: value => (value / 100).toFixed(2),
 	},
 	role: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'CustomRole' // Reference to the Role model
     }
 }, {
-	timestamps: true
+	timestamps: true,
+	toJSON: { getters: true },
+	toObject: { getters: true }
 });
 
 // Pre-save hook to hash the password before saving the user

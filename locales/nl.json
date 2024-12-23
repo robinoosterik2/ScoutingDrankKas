@@ -161,5 +161,7 @@
     "noProductsSelected": "Geen producten geselecteerd"
   },
   "confirm": "Bevestigen",
-  "total": "Totaal"
+  "total": "Totaal",
+  "Actions": "Acties",
+  "Balance": "Balance"
 }
