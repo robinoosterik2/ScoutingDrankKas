@@ -31,7 +31,7 @@ services:
       - /app/.nuxt
       - ./utils/db.js:/docker-entrypoint-initdb.d/db.js
     ports:
-      - '${NUXT_PORT}:3000'
+      - '80:3000'
     command: npm run dev
     networks:
       - drankkas

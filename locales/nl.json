@@ -4,7 +4,8 @@
     "loggedInSince": "Ingelogd sinds {time}",
     "logout": "Uitloggen",
     "notLoggedIn": "Niet ingelogd",
-    "title": "Dashboard"
+    "title": "Dashboard",
+    "adminPanel": "Beheerder"
   },
   "login": {
     "title": "Login",
@@ -56,10 +57,12 @@
     "viewAllRoles": "Bekijk alle rollen",
     "createRole": "Nieuwe rol maken",
     "createUser": "Nieuwe gebruiker maken",
-    "categoryManagement": "Beheer categorieën",
+    "categoryManagement": "Categoriebeheer",
     "CategoryManagementDescription": "Beheer categorieën, maak nieuwe categorieën en update categoriedetails.",
     "viewAllCategories": "Bekijk alle categorieën",
-    "createCategories": "Nieuwe categorie aanmaken"
+    "createCategories": "Nieuwe categorie aanmaken",
+    "createCategory": "Maak een nieuwe categorie",
+    "admin": "Admin"
   },
   "backTo": "Terug naar",
   "roles": {
@@ -127,7 +130,14 @@
   },
   "categories": {
     "allCategories": "Alle categorieën",
-    "categories": "Categorieën"
+    "categories": "Categorieën",
+    "title": "Beheer categorieën",
+    "createCategory": "Categorie maken",
+    "ageRestriction": "Leeftijdsbeperking",
+    "noCategories": "Geen categorieën gevonden",
+    "getStarted": "Ga aan de slag door een nieuwe categorie te maken",
+    "name": "Categorienaam",
+    "updateCategory": "Categorie bijwerken"
   },
   "name": "naam",
   "price": "prijs",
@@ -138,5 +148,11 @@
   "Products": "Producten",
   "Stock": "Voorraad",
   "category": "Categorie",
-  "Product": "Product"
+  "Product": "Product",
+  "yes": "Ja",
+  "no": "Nee",
+  "priceTooltip": "Prijs moet geschreven worden met . en niet ,",
+  "orders": {
+    "selectUser": "Selecteer Gebruiker"
+  }
 }

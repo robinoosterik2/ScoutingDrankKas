@@ -1,7 +1,7 @@
-const noneLoginRequiredPaths = ['/login', '/register', '/api/_auth/session'];
+const noneLoginRequiredPaths = ['/login', '/register', '/api/_auth/session', '/logout', ''];
 
 export default defineEventHandler(async (event) => { 
-  if (noneLoginRequiredPaths.includes(event._path ?? '') || event._path?.startsWith('/api/auth')) {
+  if (noneLoginRequiredPaths.includes(event._path) || event._path?.startsWith('/api/auth')) {
     console.log("No login required path");
     return;
   }

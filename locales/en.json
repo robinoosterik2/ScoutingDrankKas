@@ -4,7 +4,8 @@
     "welcome": "Welcome {username}!",
     "loggedInSince": "Logged in since {time}",
     "logout": "Logout",
-    "notLoggedIn": "Not logged in"
+    "notLoggedIn": "Not logged in",
+    "adminPanel": "Admin"
   },
   "login": {
     "title": "Login",
@@ -57,9 +58,11 @@
     "createRole": "Create New Role",
     "createUser": "Create New User",
     "CategoryManagementDescription": "Manage categories, create new categories, and update categories details.",
-    "categoryManagement": "Manage categories",
+    "categoryManagement": "Category Management",
     "createCategories": "Create Category",
-    "viewAllCategories": "View Categories"
+    "viewAllCategories": "View Categories",
+    "createCategory": "Create New Category",
+    "admin": "Admin"
   },
   "backTo": "Back To",
   "Description": "Description",
@@ -74,7 +77,14 @@
   "cannotBeUndone": "This action cannot be undone.",
   "categories": {
     "allCategories": "All Categories",
-    "categories": "Categories"
+    "categories": "Categories",
+    "title": "Manage Categories",
+    "createCategory": "Create Category",
+    "ageRestriction": "Age Resctriction",
+    "noCategories": "No categories found",
+    "getStarted": "Get started by creating a new category",
+    "name": "Category Name",
+    "updateCategory": "Update Category"
   },
   "category": "Category",
   "confirmDelete": "Are you sure that",
@@ -138,5 +148,11 @@
     "getStarted": "Get started by creating a new user.",
     "noUsers": "No Users Found",
     "title": "Manage Users"
+  },
+  "yes": "Yes",
+  "no": "No",
+  "priceTooltip": "Price must be written with . and not ,",
+  "orders": {
+    "selectUser": "Select User"
   }
 }

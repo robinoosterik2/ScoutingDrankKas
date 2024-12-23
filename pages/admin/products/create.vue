@@ -37,9 +37,8 @@
             </label>
             <input
               v-model="formData.price"
-              type="number"
+              type="text"
               id="productPrice"
-              min="0"
               required
               class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
             />
@@ -69,7 +68,7 @@
             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             for="productStock"
           >
-            {{ $t("products.productStock") }}
+            {{ $t("stock") }}
           </label>
           <input
             v-model="formData.stock"
@@ -86,7 +85,7 @@
           <label
             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
-            {{ $t("products.categories") }}
+            {{ $t("categories.categories") }}
           </label>
           <select
             v-model="formData.categories"

@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3';
-import { User } from '@/server/models/user';
+import { User, isAdministrator } from '@/server/models/user';
 import { createError } from 'h3';
 
 interface CustomError {
@@ -59,9 +59,13 @@ export default defineEventHandler(async (event) => {
       throw { statusCode: 401, statusMessage: "Invalid credentials" };
     }
 
+    const isAdmin = await isAdministrator(user._id);
+    // remove password from user object
+    delete user.password;
     // Create user session
-    await setUserSession(event, { user, loggedInAt: Date.now() });
+    await setUserSession(event, { user, loggedInAt: Date.now(), isAdmin });
 
+    // Check if user is an admin
     return { 
       statusCode: 200, 
       message: "Login successful",
@@ -72,7 +76,7 @@ export default defineEventHandler(async (event) => {
         firstName: user.firstName,
         lastName: user.lastName,
         loggedInAt: user.loggedInAt,
-        role: user.role
+        role: user.role,
       }
     };
 

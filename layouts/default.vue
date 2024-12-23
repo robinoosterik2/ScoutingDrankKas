@@ -4,12 +4,19 @@
   >
     <div>
       <div class="container mx-auto">
-        
         <!-- <CHeader /> -->
         <CContainer>
-           <ToggleLang />
-           <slot />
-         </CContainer>
+          <div class="flex w-fit items-center">
+            <ToggleLang />
+            <NuxtLink to="/admin" class="text-blue-500 ms-2">
+              To admin
+            </NuxtLink>
+            <NuxtLink to="/logout" class="text-red-500 ms-2">
+              Logout
+            </NuxtLink>
+          </div>
+          <slot />
+        </CContainer>
       </div>
     </div>
   </div>

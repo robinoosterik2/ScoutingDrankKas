@@ -131,12 +131,12 @@
       }}</template>
       <template #links>
         <DashboardLink
-          to="/admin/products"
+          to="/admin/categories"
           type="secondary"
           :label="$t('admin.viewAllCategories')"
         />
         <DashboardLink
-          to="/admin/products/create"
+          to="/admin/categories/create"
           type="products"
           :label="$t('admin.createCategory')"
         />

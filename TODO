@@ -13,7 +13,8 @@
 [ ] When creating a session, remove password from user
 [ ] Fix capital letters in translation
 [ ] Fix pluralization https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
-
+[ ] Fix images on products etc
+[ ] Middleware auth is broken as in there is no request to the server when going from page to page
 
 
 

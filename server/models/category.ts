@@ -6,6 +6,10 @@ const CategorySchema = new Schema({
         required: true,
         unique: true,
     },
+    ageRestriction: {
+        type: Boolean,
+        required: true,
+    }
 }, {
     timestamps: true
 });
