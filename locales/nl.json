@@ -153,6 +153,13 @@
   "no": "Nee",
   "priceTooltip": "Prijs moet geschreven worden met . en niet ,",
   "orders": {
-    "selectUser": "Selecteer Gebruiker"
-  }
+    "selectUser": "Selecteer Gebruiker",
+    "placeOrder": "Bestelling plaatsen",
+    "searchProducts": "Producten zoeken",
+    "allCategories": "Alle categorieën",
+    "selectProducts": "Selecteer Producten",
+    "noProductsSelected": "Geen producten geselecteerd"
+  },
+  "confirm": "Bevestigen",
+  "total": "Totaal"
 }

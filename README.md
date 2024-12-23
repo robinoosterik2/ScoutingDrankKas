@@ -44,6 +44,11 @@ https://github.com/gearbox-solutions/nuxt-auth-example
 mongodb://drankkas:drankkas@localhost:27017
 
 
+mongodump --uri mongodb://drankkas:drankkas@localhost:27017 ~/home/robin/Robin/ScoutingDrankKas/dump
+
+mongorestore --uri mongodb://drankkas:drankkas@localhost:27017 ~/home/robin/Robin/ScoutingDrankKas/dump
+
+
 Met deze rol kan je producten en users aanpassen.
 Horen alleen mensen te zijn die weten hoe het programma werken.
 

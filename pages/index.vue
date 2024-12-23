@@ -23,29 +23,53 @@
       </div>
     </div>
 
+    <!-- Filters -->
+    <div class="mb-4 flex items-center space-x-4">
+      <!-- Search Bar -->
+      <input
+        v-model="searchQuery"
+        type="text"
+        :placeholder="$t('orders.searchProducts')"
+        class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+      />
+      <!-- Category Filter -->
+      <select
+        v-model="selectedCategory"
+        class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+      >
+        <option value="">{{ $t("orders.allCategories") }}</option>
+        <option
+          v-for="category in categories"
+          :key="category._id"
+          :value="category._id"
+        >
+          {{ category.name }}
+        </option>
+      </select>
+    </div>
+
     <!-- Select Products -->
     <div class="">
-      <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">
-        {{ $t("orders.selectProducts") }}
-      </h2>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 xl:grid-cols-5">
         <div
-          v-for="product in products"
+          v-for="product in filteredProducts"
           :key="product.id"
-          class="cursor-pointer border rounded-lg p-4 bg-white dark:bg-gray-800 hover:shadow-md transition-shadow relative"
+          class="cursor-pointer border rounded-lg p-4 bg-white dark:bg-gray-800 hover:shadow-md transition-shadow relative flex flex-col justify-between"
         >
           <!-- <img
             :src="product.imageUrl"
             :alt="product.name"
-            class="h-24 w-full object-cover rounded mb-2"
+            class="h-24 w-full object-cover rounded"
           /> -->
-          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {{ product.name }}
-          </h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
-            €{{ product.price }}
-          </p>
-          <div class="mt-2 flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {{ product.name }}
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              €{{ product.price }}
+            </p>
+          </div>
+          <div class="flex items-center justify-between">
             <button
               @click="decrementProduct(product)"
               class="bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
@@ -80,24 +104,28 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 
 const users = ref([]);
 const products = ref([]);
+const categories = ref([]);
 const selectedUser = ref(null);
 const productCounts = ref({});
 const showConfirmation = ref(false);
+const searchQuery = ref("");
+const selectedCategory = ref("");
 
 onMounted(async () => {
   try {
     users.value = await $fetch("/api/users/all", { method: "GET" });
     products.value = await $fetch("/api/products/ordered", { method: "GET" });
+    categories.value = await $fetch("/api/categories/all", { method: "GET" });
 
     products.value.forEach((product) => {
       productCounts.value[product.id] = 0;
     });
   } catch (error) {
-    console.error("Failed to fetch users or products:", error);
+    console.error("Failed to fetch users, products, or categories:", error);
     alert("Failed to fetch data. Please try again.");
   }
 });
@@ -108,15 +136,24 @@ const incrementProduct = (product) => {
   productCounts.value[product.id] += 1;
 };
 
-watch(selectedUser, (newValue) => {
-  console.log("Selected user:", newValue);
-});
-
 const decrementProduct = (product) => {
   if (productCounts.value[product.id] > 0) {
     productCounts.value[product.id] -= 1;
   }
 };
+
+const filteredProducts = computed(() => {
+  return products.value.filter((product) => {
+    const matchesSearch = product.name
+      .toLowerCase()
+      .includes(searchQuery.value.toLowerCase());
+    const matchesCategory =
+      !selectedCategory.value ||
+      product.categories.includes(selectedCategory.value);
+    console.log("selectedCategory.value", selectedCategory.value);
+    return matchesSearch && matchesCategory;
+  });
+});
 
 const totalSelectedProducts = computed(() => {
   return Object.values(productCounts.value).reduce(

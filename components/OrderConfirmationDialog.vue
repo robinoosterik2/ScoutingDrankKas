@@ -4,7 +4,7 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
         <div class="p-4 border-b dark:border-gray-700">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
-            {{ $t("orders.confirmOrder") }}
+            {{ $t("confirm") }}
           </h2>
         </div>
         
@@ -45,7 +45,7 @@
             
             <div class="border-t dark:border-gray-700 pt-4 mt-4">
               <div class="flex justify-between text-lg font-semibold">
-                <span class="text-gray-800 dark:text-white">{{ $t("orders.total") }}:</span>
+                <span class="text-gray-800 dark:text-white">{{ $t("total") }}:</span>
                 <span class="text-gray-800 dark:text-white">€{{ totalAmount.toFixed(2) }}</span>
               </div>
             </div>
@@ -55,12 +55,12 @@
         <div class="p-4 border-t dark:border-gray-700 flex justify-end space-x-3">
           <button @click="$emit('close')"
                   class="px-4 py-2 border dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
-            {{ $t("common.cancel") }}
+            {{ $t("cancel") }}
           </button>
           <button @click="confirmOrder"
                   :disabled="selectedProducts.length === 0"
                   class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed">
-            {{ $t("orders.confirm") }}
+            {{ $t("confirm") }}
           </button>
         </div>
       </div>

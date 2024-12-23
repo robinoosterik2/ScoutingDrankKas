@@ -153,6 +153,13 @@
   "no": "No",
   "priceTooltip": "Price must be written with . and not ,",
   "orders": {
-    "selectUser": "Select User"
-  }
+    "selectUser": "Select User",
+    "placeOrder": "Place Order",
+    "searchProducts": "Search Products",
+    "allCategories": "All Categories",
+    "selectProducts": "Select Products",
+    "noProductsSelected": "No products selected"
+  },
+  "confirm": "Confirm",
+  "total": "Total"
 }
