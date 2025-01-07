@@ -7,8 +7,8 @@
         <slot name="icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 min-h-5 min-w-5 text-blue-600"
-            viewBox="0 0 32 32"
+            class="h-8 w-8 min-h-8 min-w-8 text-blue-600"
+            viewBox="0 0 48 48"
             xml:space="preserve"
             stroke="currentColor"
           >
@@ -20,15 +20,15 @@
             />
           </svg>
         </slot>
-        <h2 class="text-l font-semibold text-gray-800 dark:text-white">
+        <h2 class="text-2xl font-semibold text-gray-800 dark:text-white">
           <slot name="title">{{ $t("admin.defaultTitle") }}</slot>
         </h2>
       </div>
     </div>
-    <p class="text-xs text-gray-600 dark:text-gray-400 mb-3 flex-grow">
+    <p class="text-xl text-gray-600 dark:text-gray-400 mb-4 flex-grow">
       <slot name="description">{{ $t("admin.defaultDescription") }}</slot>
     </p>
-    <div class="mt-auto space-y-2">
+    <div class="mt-auto space-y-4">
       <slot name="links">
         <DashboardLink
           to="/admin/default"

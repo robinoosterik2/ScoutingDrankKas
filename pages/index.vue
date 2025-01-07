@@ -14,8 +14,8 @@
         <div class="flex justify-end ms-2">
           <button
             :disabled="!selectedUser || totalSelectedProducts === 0"
-            @click="showConfirmation = true"
             class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            @click="showConfirmation = true"
           >
             {{ $t("orders.placeOrder") }}
           </button>
@@ -31,7 +31,7 @@
         type="text"
         :placeholder="$t('orders.searchProducts')"
         class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-      />
+      >
       <!-- Category Filter -->
       <select
         v-model="selectedCategory"
@@ -60,31 +60,31 @@
             :src="product.imageUrl"
             :alt="product.name"
             class="h-24 w-full object-cover rounded"
-          />
-          <div>
-            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+          >
+          <div class="flex align-middle items-center mt-4 justify-between">
+            <h3 class="text-2xl text-gray-700 dark:text-gray-300 ">
               {{ product.name }}
             </h3>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+            <p class="text-xl text-gray-500 dark:text-gray-400">
               €{{ product.price }}
             </p>
           </div>
-          <div class="flex items-center justify-between">
+          <div class="flex mt-2 items-center justify-between">
             <button
-              @click="decrementProduct(product)"
-              class="bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
+              class="bg-red-500 text-white rounded-full h-10 w-24 flex items-center justify-center"
               :disabled="getProductCount(product) === 0"
+              @click="decrementProduct(product)"
             >
-              -
+              <div class="text-2xl">-</div>
             </button>
-            <span class="text-sm text-gray-700 dark:text-gray-300">
+            <span class="text-2xl text-gray-700 dark:text-gray-300">
               {{ getProductCount(product) }}
             </span>
             <button
+              class="bg-green-500 text-white rounded-full h-10 w-24 flex items-center justify-center"
               @click="incrementProduct(product)"
-              class="bg-green-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
             >
-              +
+            <div class="text-2xl">+</div>              
             </button>
           </div>
         </div>
@@ -104,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 const users = ref([]);
 const products = ref([]);

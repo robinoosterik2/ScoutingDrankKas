@@ -34,21 +34,23 @@ const props = defineProps({
 const typeClasses = computed(() => {
   switch (props.type) {
     case "roles":
-      return "text-xs bg-indigo-600 text-white hover:bg-indigo-700";
+      return "text-xl bg-indigo-600 text-white hover:bg-indigo-700";
     case "users":
-      return "text-xs bg-green-600 text-white hover:bg-green-700";
+      return "text-xl bg-green-600 text-white hover:bg-green-700";
     case "products":
-      return "text-xs bg-purple-600 text-white hover:bg-purple-700";
+      return "text-xl bg-purple-600 text-white hover:bg-purple-700";
+    case "categories":
+      return "text-xl bg-pink-600 text-white hover:bg-pink-700";
     case "logs":
-      return "text-xs bg-yellow-600 text-white hover:bg-yellow-700";
+      return "text-xl bg-yellow-600 text-white hover:bg-yellow-700";
     case "system":
-      return "text-xs bg-red-600 text-white hover:bg-red-700";
+      return "text-xl bg-red-600 text-white hover:bg-red-700";
     case "primary":
-      return "text-xs bg-blue-600 text-white hover:bg-blue-700";
+      return "text-xl bg-blue-600 text-white hover:bg-blue-700";
     case "secondary":
-      return "text-xs border border-current text-current hover:bg-gray-600";
+      return "text-xl border border-current text-current hover:bg-gray-600";
     default:
-      return "text-xs bg-blue-600 text-white hover:bg-blue-700";
+      return "text-xl bg-blue-600 text-white hover:bg-blue-700";
   }
 });
 

@@ -1,8 +1,8 @@
 <template>
-  <div class="w-fit py-1">
+  <div class="w-fit py-2">
     <NuxtLink
       :to="to"
-      class="flex items-center text-indigo-600 hover:text-indigo-800 font-medium"
+      class="flex items-center text-indigo-600 hover:text-indigo-800 text-2xl"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

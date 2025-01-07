@@ -1,7 +1,7 @@
 <template>
   <CTitle :text="$t('admin.title')" />
   <div class="mb-2">
-    <BackLink to="/" :backPage="$t('dashboard.title')"></BackLink>
+    <BackLink to="/" :back-page="$t('dashboard.title')"/>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -10,7 +10,7 @@
       <template #icon>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 min-h-5 min-w-5 text-indigo-600"
+          class="h-8 w-8 min-h-8 min-w-8 text-indigo-600"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -46,7 +46,7 @@
       <template #icon>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 min-h-5 min-w-5 text-green-600"
+          class="h-8 w-8 min-h-8 min-w-8 text-green-600"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -82,7 +82,7 @@
       <template #icon>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 min-h-5 min-w-5 text-purple-600"
+          class="h-8 w-8 min-h-8 min-w-8 text-purple-600"
           viewBox="0 0 32 32"
           xml:space="preserve"
           stroke="currentColor"
@@ -115,7 +115,7 @@
       <template #icon>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 min-h-5 min-w-5 text-purple-600"
+          class="h-8 w-8 min-h-8 min-w-8 text-pink-600"
           viewBox="0 0 24 24"
           xml:space="preserve"
         >
@@ -137,7 +137,7 @@
         />
         <DashboardLink
           to="/admin/categories/create"
-          type="products"
+          type="categories"
           :label="$t('admin.createCategory')"
         />
       </template>
