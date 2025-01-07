@@ -163,5 +163,13 @@
   "confirm": "Bevestigen",
   "total": "Totaal",
   "Actions": "Acties",
-  "Balance": "Balance"
+  "Balance": "Balance",
+  "Raise": "Ophogen",
+  "raise": {
+    "lastRases": "Laatste 5 verhogingen",
+    "raiseBalance": "Verhoog balance"
+  },
+  "Amount": "Hoeveelheid",
+  "By": "Bij",
+  "On": "Op"
 }

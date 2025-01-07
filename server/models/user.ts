@@ -75,6 +75,17 @@ UserSchema.pre('save', async function (next) {
 	}
 });
 
+UserSchema.methods.raise = function(amount){
+	const balanceNumber = parseFloat(this.balance.replace('.', ''));
+	console.log(balanceNumber)
+	const amountNumber = parseFloat(amount.toString().replace('.', ''));
+	console.log(amountNumber)
+	this.balance = (balanceNumber + amountNumber).toString();
+	console.log(this.balance)
+	console.log("^^^")
+	return this.save();
+}
+
 // // Example usage
 // export const comparePassword = async function (hashedPassword: string, password: string) {
 //     return await verifyPassword(hashedPassword, password);

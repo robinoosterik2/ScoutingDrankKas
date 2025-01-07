@@ -163,5 +163,13 @@
   "confirm": "Confirm",
   "total": "Total",
   "Actions": "Actions",
-  "Balance": "Balance"
+  "Balance": "Balance",
+  "Raise": "Raise",
+  "raise": {
+    "lastRases": "Last 5 Raises",
+    "raiseBalance": "Raise Balance"
+  },
+  "Amount": "Amount",
+  "By": "By",
+  "On": "On"
 }

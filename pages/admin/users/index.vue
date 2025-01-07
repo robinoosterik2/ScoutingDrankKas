@@ -182,10 +182,17 @@
     @close="closeDeleteConfirmation"
     @confirm="confirmDelete"
   />
+
+  <RaisePopUpModal
+    :isOpen="isPopupOpen"
+    :userId="selectedUserId"
+    @close="closePopup"
+  />
 </template>
 
 <script setup>
 import DeleteConfirmationModal from "@/components/ConfirmDelete.vue";
+import RaisePopUpModal from '@/components/RaisePopUp'
 
 const roles = ref([]);
 const users = ref([]);
@@ -193,13 +200,15 @@ const searchQuery = ref("");
 const selectedRole = ref("");
 const sortBy = ref("name");
 const sortDirection = ref("asc");
-const { t } = useI18n()
-
+const isPopupOpen = ref(false);
+const selectedUserId = ref(null);
+const { t } = useI18n();
 
 // Define the items for the dropdown
 const dropdownItems = ref([
   { label: t("edit"), value: "edit" },
   { label: t("delete"), value: "delete" },
+  { label: t("Raise"), value: "raise" },
 ]);
 
 // Define the variable to hold the selected value
@@ -241,13 +250,13 @@ const filteredAndSortedUsers = computed(() => {
 
 const handleAction = (user) => {
   let component = document.getElementById("user-" + user._id);
-  console.log(selectedValue);
   let action = selectedValue.value;
-  console.log(action, user);
   if (action === "edit") {
     editUser(user);
   } else if (action === "delete") {
     openDeleteConfirmation(user);
+  } else if (action === "raise") {
+    openRaisePopUp(user);
   }
 };
 
@@ -262,9 +271,18 @@ const userToDelete = ref(null);
 
 // Open delete confirmation modal
 const openDeleteConfirmation = (user) => {
-  console.log("openDeleteConfirmation", user);
   userToDelete.value = user;
   isDeleteModalOpen.value = true;
+};
+
+const openRaisePopUp = (user) => {
+  selectedUserId.value = user._id; // Pass the selected user's ID
+  isPopupOpen.value = true;
+};
+
+const closePopup = () => {
+  isPopupOpen.value = false;
+  selectedUserId.value = null;
 };
 
 // Close delete confirmation modal

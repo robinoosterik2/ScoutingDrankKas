@@ -82,7 +82,7 @@ onUnmounted(() => {
       <button
         type="button"
         @click="toggleDropdown"
-        class="inline-flex w-full items-center rounded-md bg-white dark:bg-gray-800 px-2 py-1 text-xxs text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 transition-colors"
+        class="inline-flex w-full items-center rounded-md bg-white dark:bg-gray-800 px-2 py-1 text-xs text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 transition-colors"
       >
         <!-- Display selected item label or placeholder -->
         {{ selectedItem?.label || placeholder }}
@@ -120,7 +120,7 @@ onUnmounted(() => {
             v-for="item in items"
             :key="item.value"
             @click="handleItemSelect(item)"
-            class="text-gray-700 dark:text-gray-200 block px-1 py-1 text-xxxs w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors data-[active=true]:bg-gray-200 data-[active=true]:dark:bg-gray-600"
+            class="text-gray-700 dark:text-gray-200 block px-1 py-1 text-xs w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors data-[active=true]:bg-gray-200 data-[active=true]:dark:bg-gray-600"
             :data-active="item.value === modelValue"
             role="menuitem"
           >

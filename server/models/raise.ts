@@ -1,4 +1,5 @@
 import mongoose, { Schema, model } from 'mongoose';
+import { User } from '@/server/models/user'
 
 const RaiseSchema = new Schema({
     user: {
@@ -9,8 +10,32 @@ const RaiseSchema = new Schema({
         type: Number,
         required: true,
     },
+    raiser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }
 }, {
     timestamps: true
+});
+
+RaiseSchema.pre('save', async function (next) {
+    if (this.isNew) {
+        try {
+            const user = await User.findById(this.user);
+            if (!user) {
+                throw new Error("User cannot be found");
+            }
+            console.log(this.amount, "this amount")
+            console.log(user.balance)
+            user.raise(this.amount)
+            next();
+        } catch (error) {
+            console.log(error);
+            next(error);
+        }
+    } else {
+        next();
+    }
 });
 
 export const Raise = mongoose.models.Raise || mongoose.model('Raise', RaiseSchema);

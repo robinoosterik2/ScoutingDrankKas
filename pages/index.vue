@@ -56,11 +56,11 @@
           :key="product.id"
           class="cursor-pointer border rounded-lg p-4 bg-white dark:bg-gray-800 hover:shadow-md transition-shadow relative flex flex-col justify-between"
         >
-          <!-- <img
+          <img
             :src="product.imageUrl"
             :alt="product.name"
             class="h-24 w-full object-cover rounded"
-          /> -->
+          />
           <div>
             <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
               {{ product.name }}
