@@ -142,6 +142,41 @@
         />
       </template>
     </AdminCard>
+    <!-- Log Management -->
+    <AdminCard>
+      <template #icon>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-8 w-8 min-h-8 min-w-8 text-red-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+          />
+        </svg>
+      </template>
+      <template #title>{{ $t("admin.logsManagement") }}</template>
+      <template #description>{{
+        $t("admin.LogsManagementDescription")
+      }}</template>
+      <template #links>
+        <DashboardLink
+          to="/admin/logs"
+          type="secondary"
+          :label="$t('admin.viewAllLogs')"
+        />
+        <DashboardLink
+          to="/admin/logs/export"
+          type="logs"
+          :label="$t('admin.exportLogs')"
+        />
+      </template>
+    </AdminCard>
   </div>
 </template>
 

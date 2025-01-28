@@ -62,7 +62,11 @@
     "viewAllCategories": "Bekijk alle categorieën",
     "createCategories": "Nieuwe categorie aanmaken",
     "createCategory": "Maak een nieuwe categorie",
-    "admin": "Admin"
+    "admin": "Admin",
+    "logsManagement": "Bekijk logboeken",
+    "LogsManagementDescription": "Controleer de logboeken van wat gebruikers in de app deden.",
+    "viewAllLogs": "Bekijk logboeken",
+    "exportLogs": "Exporteren naar csv"
   },
   "backTo": "Terug naar",
   "roles": {

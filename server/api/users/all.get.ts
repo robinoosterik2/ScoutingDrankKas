@@ -2,7 +2,7 @@ import { defineEventHandler } from "h3";
 import { User } from "@/server/models/user";
 
 export default defineEventHandler(async () => {
-  const users = await User.find()
+  const users = await User.find({ active: true })
     .populate("role");
   return users.map((user) => ({
     _id: user._id,

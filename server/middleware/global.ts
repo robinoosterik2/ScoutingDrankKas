@@ -2,23 +2,23 @@ const noneLoginRequiredPaths = ['/login', '/register', '/api/_auth/session', '/l
 
 export default defineEventHandler(async (event) => { 
   if (noneLoginRequiredPaths.includes(event._path) || event._path?.startsWith('/api/auth')) {
-    console.log("No login required path");
     return;
   }
 
   // Handle admin routes for both web and API
   if (event._path?.startsWith('/admin') || event._path?.startsWith('/api/admin')) {
-    console.log("Admin required path");
     
     try {
       const result = await getUserSession(event);
       
       // If no user session, handle differently for web vs API
       if (!result.user) {
+        console.log(result)
         console.error("User is undefined");
         
         if (event._path?.startsWith('/api/')) {
           // For API routes, throw an unauthorized error
+          console.log("Throwing auth error");
           throw createError({ 
             statusCode: 401, 
             statusMessage: "Unauthorized",
