@@ -25,7 +25,7 @@ RaiseSchema.pre('save', async function (next) {
             if (!user) {
                 throw new Error("User cannot be found");
             }
-            console.log(this.amount, "this amount")
+            user.raise(this.amount);
             next();
         } catch (error) {
             console.log(error);

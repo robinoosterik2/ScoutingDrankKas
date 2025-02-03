@@ -1,4 +1,5 @@
 import mongoose, { Schema, model } from 'mongoose';
+import { Log } from './log';
 
 const UserSchema = new Schema({
 	email: {
@@ -65,6 +66,14 @@ UserSchema.pre('save', async function (next) {
 			this.firstName = this.firstName.toLowerCase();
 			this.lastName = this.lastName.toLowerCase();
 			this.password = await hashPassword(this.password);
+
+			const log = new Log({
+				executor: this._id,
+				action: "Create",
+				object: this._id,
+				newValue: JSON.stringify(this),
+				description: "User created"
+			});
 			next();
 		} catch (error) {
             console.error('Error hashing password:', error);
@@ -76,9 +85,10 @@ UserSchema.pre('save', async function (next) {
 });
 
 UserSchema.methods.raise = function(amount){
+	amount = amount * 100;3
 	const balanceNumber = parseFloat(this.balance.replace('.', ''));
-	console.log(balanceNumber)
 	const amountNumber = parseFloat(amount.toString().replace('.', ''));
+	console.log(balanceNumber)
 	console.log(amountNumber)
 	this.balance = (balanceNumber + amountNumber).toString();
 	console.log(this.balance)

@@ -105,7 +105,7 @@ export default {
       default: "Enter the amount to raise the balance for the user.",
     },
     userId: {
-      type: String,
+      type: [String, null],
       required: true,
     },
   },

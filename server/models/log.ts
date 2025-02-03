@@ -20,6 +20,9 @@ const LogSchema = new Schema({
     newValue: {
         type: String,
     },
+    description: {
+        type: String,
+    },
 }, {
     timestamps: true
 }); 
