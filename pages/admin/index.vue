@@ -142,6 +142,36 @@
         />
       </template>
     </AdminCard>
+    <!-- Orders Management -->
+    <AdminCard>
+      <template #icon>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-8 w-8 min-h-8 min-w-8 text-blue-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 7h18M3 12h18M3 17h18"
+          />
+        </svg>
+      </template>
+      <template #title>{{ $t("admin.ordersManagement") }}</template>
+      <template #description>{{
+        $t("admin.OrdersManagementDescription")
+      }}</template>
+      <template #links>
+        <DashboardLink
+          to="/admin/orders"
+          type="secondary"
+          :label="$t('admin.viewAllOrders')"
+        />
+      </template>
+    </AdminCard>
     <!-- Log Management -->
     <AdminCard>
       <template #icon>

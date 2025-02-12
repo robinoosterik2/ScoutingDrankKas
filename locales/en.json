@@ -66,7 +66,10 @@
     "logsManagement": "View logs",
     "LogsManagementDescription": "Check the logs of what users did in the app.",
     "viewAllLogs": "View logs",
-    "exportLogs": "Export to csv"
+    "exportLogs": "Export to csv",
+    "ordersManagement": "Order management",
+    "OrdersManagementDescription": "Look at recent orders. You cannot modify or delete them yet.",
+    "viewAllOrders": "View Orders"
   },
   "backTo": "Back To",
   "Description": "Description",

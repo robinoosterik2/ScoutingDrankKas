@@ -66,7 +66,10 @@
     "logsManagement": "Bekijk logboeken",
     "LogsManagementDescription": "Controleer de logboeken van wat gebruikers in de app deden.",
     "viewAllLogs": "Bekijk logboeken",
-    "exportLogs": "Exporteren naar csv"
+    "exportLogs": "Exporteren naar csv",
+    "ordersManagement": "Orderbeheer",
+    "OrdersManagementDescription": "Kijk naar recente bestellingen. \nU kunt ze nog niet wijzigen of verwijderen.",
+    "viewAllOrders": "Bekijk bestellingen"
   },
   "backTo": "Terug naar",
   "roles": {

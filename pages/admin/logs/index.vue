@@ -133,7 +133,7 @@ const logs = ref([]);
 const searchQuery = ref("");
 const selectedAction = ref("");
 const sortBy = ref("timestamp");
-const sortDirection = ref("asc");
+const sortDirection = ref("desc");
 const { t } = useI18n();
 
 try {
@@ -160,7 +160,7 @@ const filteredAndSortedLogs = computed(() => {
       } else if (sortBy.value === "action") {
         return a.action.localeCompare(b.action) * direction;
       } else if (sortBy.value === "timestamp") {
-        return (new Date(a.timestamp) - new Date(b.timestamp)) * direction;
+        return (new Date(a.createdAt) - new Date(b.createdAt)) * direction;
       }
       return 0;
     });
