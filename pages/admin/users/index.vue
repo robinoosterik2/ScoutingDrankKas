@@ -219,7 +219,6 @@ try {
   users.value = await $fetch("/api/users/all", { method: "GET" });
 } catch (error) {
   console.error("Failed to fetch users:", error);
-  alert("Failed to fetch users. Please try again.");
 }
 
 const filteredAndSortedUsers = computed(() => {

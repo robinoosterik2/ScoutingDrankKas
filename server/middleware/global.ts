@@ -13,7 +13,6 @@ export default defineEventHandler(async (event) => {
       
       // If no user session, handle differently for web vs API
       if (!result.user) {
-        console.log(result)
         console.error("User is undefined");
         
         if (event._path?.startsWith('/api/')) {

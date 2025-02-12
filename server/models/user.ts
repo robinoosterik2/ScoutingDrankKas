@@ -53,6 +53,18 @@ const UserSchema = new Schema({
 	toObject: { getters: true }
 });
 
+// Method to log user actions
+UserSchema.methods.logAction = async function(action, description) {
+	const log = new Log({
+		executor: this._id,
+		action: action,
+		object: this._id,
+		newValue: JSON.stringify(this),
+		description: description
+	});
+	await log.save();
+};
+
 // Pre-save hook to hash the password before saving the user
 UserSchema.pre('save', async function (next) {
 	if (this.isNew) {
@@ -74,6 +86,7 @@ UserSchema.pre('save', async function (next) {
 				newValue: JSON.stringify(this),
 				description: "User created"
 			});
+			await log.save();
 			next();
 		} catch (error) {
             console.error('Error hashing password:', error);
@@ -83,6 +96,11 @@ UserSchema.pre('save', async function (next) {
 		next();
 	}
 });
+
+// Method to log login action
+UserSchema.methods.logLogin = async function() {
+	await this.logAction('Login', 'User logged in');
+};
 
 UserSchema.methods.raise = function(amount){
 	const balanceNumber = parseFloat(this.balance);

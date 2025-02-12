@@ -1,4 +1,5 @@
 import mongoose, { Schema, model } from 'mongoose';
+import { Log } from './log';
 
 const OrderProductSchema = new Schema({
   product: {
@@ -46,12 +47,23 @@ OrderSchema.statics.createFromRequestBody = async function(bodyData) {
   user.balance -= bodyData.total;
   await user.save();
 
-  return new this({
+  const order = new this({
     user: bodyData.userId,
     products: products,
     total: bodyData.total,
     bartender: bodyData.bartenderId
   });
+
+  const log = new Log({
+    executor: bodyData.userId,
+    action: "Buy",
+    object: order._id,
+    newValue: JSON.stringify(order),
+    description: `User bought products worth ${bodyData.total}`
+  });
+  await log.save();
+
+  return order;
 };
 
 // Populate helper method

@@ -1,5 +1,6 @@
 import mongoose, { Schema, model } from 'mongoose';
 import { User } from '@/server/models/user'
+import { Log } from './log';
 
 const RaiseSchema = new Schema({
     user: {
@@ -25,7 +26,17 @@ RaiseSchema.pre('save', async function (next) {
             if (!user) {
                 throw new Error("User cannot be found");
             }
-            user.raise(this.amount);
+            await user.raise(this.amount);
+
+            const log = new Log({
+                executor: this.raiser,
+                action: "Raise",
+                object: this.user,
+                newValue: JSON.stringify({ amount: this.amount }),
+                description: `User raised by ${this.amount}`
+            });
+            await log.save();
+
             next();
         } catch (error) {
             console.log(error);

@@ -68,7 +68,7 @@ const ProductSchema = new Schema({
 ProductSchema.index({ popularityScore: -1 });
 
 // Method to update order metrics
-ProductSchema.methods.updateOrderMetrics = async function(quantity) {
+ProductSchema.methods.updateOrderMetrics = async function(quantity: any) {
     console.log('updateOrderMetrics: ', quantity)
   this.totalOrders += 1;
   this.totalQuantitySold += quantity;
