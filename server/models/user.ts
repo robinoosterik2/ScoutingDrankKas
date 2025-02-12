@@ -85,21 +85,11 @@ UserSchema.pre('save', async function (next) {
 });
 
 UserSchema.methods.raise = function(amount){
-	amount = amount * 100;3
-	const balanceNumber = parseFloat(this.balance.replace('.', ''));
-	const amountNumber = parseFloat(amount.toString().replace('.', ''));
-	console.log(balanceNumber)
-	console.log(amountNumber)
+	const balanceNumber = parseFloat(this.balance);
+	const amountNumber = parseFloat(amount.toString().replace(',', '.'));
 	this.balance = (balanceNumber + amountNumber).toString();
-	console.log(this.balance)
-	console.log("^^^")
 	return this.save();
 }
-
-// // Example usage
-// export const comparePassword = async function (hashedPassword: string, password: string) {
-//     return await verifyPassword(hashedPassword, password);
-// };
 
 export const isAdministrator = async function (userId: string) {
 	const user = await User.findById(userId).populate("role");

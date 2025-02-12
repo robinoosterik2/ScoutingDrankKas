@@ -171,7 +171,12 @@
   "Raise": "Raise",
   "raise": {
     "lastRases": "Last 5 Raises",
-    "raiseBalance": "Raise Balance"
+    "raiseBalance": "Raise Balance",
+    "enterAmount": "Enter the amount to raise the balance for the user.",
+    "noRaisesFound": "No raises found",
+    "last5Raises": "Last 5 Raises",
+    "title": "Raise balance",
+    "message": "Enter the amount to raise the balance for the user."
   },
   "Amount": "Amount",
   "By": "By",

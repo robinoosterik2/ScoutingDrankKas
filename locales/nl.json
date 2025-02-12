@@ -171,7 +171,12 @@
   "Raise": "Ophogen",
   "raise": {
     "lastRases": "Laatste 5 verhogingen",
-    "raiseBalance": "Verhoog balance"
+    "raiseBalance": "Verhoog balance",
+    "enterAmount": "Voer het bedrag in om het saldo voor de gebruiker te verhogen.",
+    "noRaisesFound": "Geen verhogingen gevonden",
+    "last5Raises": "Laatste 5 verhogingen",
+    "title": "Balans verhogen",
+    "message": "Voer het bedrag in om het saldo voor de gebruiker te verhogen."
   },
   "Amount": "Hoeveelheid",
   "By": "Bij",
