@@ -46,7 +46,9 @@ const UserSchema = new Schema({
 	role: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'CustomRole' // Reference to the Role model
-    }
+    },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date
 }, {
 	timestamps: true,
 	toJSON: { getters: true },
