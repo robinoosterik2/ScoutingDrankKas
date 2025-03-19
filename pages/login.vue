@@ -31,6 +31,11 @@
               {{ $t('login.register') }}
             </NuxtLink>
           </div>
+          <div>{{ $t('login.forgotPassword') }}
+            <NuxtLink to="/user/forgot-password" class=" text-blue-600 hover:text-blue-800">
+              {{ $t('login.resetHere') }}
+            </NuxtLink>
+          </div>
         </div>
       </form>
     </div>

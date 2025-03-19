@@ -11,16 +11,17 @@
     - email works
 [x] Make loading faster, (prob move it out of onMounted  see /admin/users)
 [x] When creating a session, remove password from user
-[ ] Fix capital letters in translation
+[x] Fix capital letters in translation
 [ ] Fix pluralization https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
 [ ] Fix images on products etc
 [x] Middleware auth is broken as in there is no request to the server when going from page to page
 [/] Test balance rounding
-[ ] Create logging
+[x] Create logging
 [ ] Profile page
-[ ] Admins can raise users
+[x] Admins can raise users
 [ ] Fix api routes to remove create if not needed for example
 [ ] Fix sizes
+[/] Password reset
 
 
 ## License

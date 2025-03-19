@@ -1,5 +1,4 @@
 export default defineNuxtRouteMiddleware(async (event) => { 
-    console.log(event.fullPath);
     if (event.fullPath.startsWith('/admin') || event.fullPath.startsWith('/api/admin')) {
         try {
             const { loggedIn, user, session, fetch, clear } = useUserSession()

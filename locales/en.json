@@ -19,7 +19,9 @@
       "userNotFound": "User not found",
       "invalidCredentials": "Invalid credentials"
     },
-    "firstName": "First name"
+    "firstName": "First name",
+    "forgotPassword": "Did you forgot your password?",
+    "resetHere": "Reset here"
   },
   "register": {
     "title": "Register",
@@ -183,5 +185,10 @@
   },
   "Amount": "Amount",
   "By": "By",
-  "On": "On"
+  "On": "On",
+  "forgotPassword": {
+    "title": "Password forgotten?",
+    "email": "Email"
+  },
+  "Loading": "Loading"
 }

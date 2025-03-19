@@ -66,7 +66,9 @@ export default defineEventHandler(async (event) => {
   }
   const result = await getUserSession(event);
   if (!result.user) {
-    if (!event._path?.startsWith('/api/')) {
+    if (!event._path?.startsWith('/api/') && !event._path?.startsWith('/reset-password')) {
+      console.log(event._path)
+      console.log("REDIRECTING")
       return sendRedirect(event, '/login', sanitizeStatusCode(302));
     }
   }

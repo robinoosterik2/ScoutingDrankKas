@@ -1,4 +1,6 @@
+import crypto from 'crypto'
 import nodemailer from 'nodemailer'
+import { User } from '~/server/models/user'
 
 export default defineEventHandler(async (event) => {
 	// Parse the request body to extract the email
@@ -7,11 +9,27 @@ export default defineEventHandler(async (event) => {
 		throw createError({ statusCode: 400, message: 'Email is required' })
 	}
 
-	// Generate a reset token and URL (you should implement token generation and persistence)
-	const resetToken = 'someGeneratedToken' // Replace with your token generation logic
-	const resetUrl = `https://yourdomain.com/reset-password?token=${resetToken}`
+	// Find the user by email
+	const user = await User.findOne({ email })
+	if (!user) {
+		throw createError({ statusCode: 404, message: 'User not found' })
+	}
 
-	// Create a transporter using Gmail
+	// Generate a secure reset token
+	const resetToken = crypto.randomBytes(32).toString('hex')
+	const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex')
+	const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000) // Token valid for 1 hour
+
+	// Store token in the user document
+	user.resetPasswordToken = resetTokenHash
+	user.resetPasswordExpires = resetTokenExpiry
+	await user.save()
+
+	// Construct the reset URL
+	const baseUrl = process.env.BASE_URL || 'http://localhost'
+	const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`
+
+	// Configure email transporter
 	const transporter = nodemailer.createTransport({
 		service: 'gmail',
 		auth: {
@@ -20,19 +38,19 @@ export default defineEventHandler(async (event) => {
 		}
 	})
 
-	// Configure the email options
+	// Email content
 	const mailOptions = {
 		from: process.env.GMAIL_USER,
 		to: email,
 		subject: 'Password Reset Request',
-		text: `You requested a password reset. Click the link to reset your password: ${resetUrl}`
+		text: `You requested a password reset. If you haven't requested a reset password link you can ignore this email. Click the link to reset your password: ${resetUrl}\n\nThis link expires in 1 hour.`
 	}
 
 	try {
-		const info = await transporter.sendMail(mailOptions)
-        console.log(info)
-		return { success: true, info }
+		await transporter.sendMail(mailOptions)
+		return { success: true, message: 'Reset email sent' }
 	} catch (error: any) {
-		return { success: false, error: error.message }
+		console.log(error.message)
+		throw createError({ statusCode: 500, message: 'Error sending email' })
 	}
 })

@@ -19,7 +19,9 @@
     },
     "noAccount": "Heeft u geen account?",
     "password": "Wachtwoord:",
-    "firstName": "Voornaam"
+    "firstName": "Voornaam",
+    "forgotPassword": "Ben je je wachtwoord vergeten?",
+    "resetHere": "Reset hier"
   },
   "register": {
     "alreadyHaveAccount": "Heeft u al een account?",
@@ -183,5 +185,10 @@
   },
   "Amount": "Hoeveelheid",
   "By": "Bij",
-  "On": "Op"
+  "On": "Op",
+  "forgotPassword": {
+    "title": "Wachtwoord vergeten?",
+    "email": "Email"
+  },
+  "Loading": "Laden"
 }
