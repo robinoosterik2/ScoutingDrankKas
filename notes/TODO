@@ -15,16 +15,20 @@
 [ ] Fix pluralization https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
 [ ] Fix images on products etc
 [x] Middleware auth is broken as in there is no request to the server when going from page to page
-[/] Test balance rounding
 [x] Create logging
 [ ] Profile page
 [x] Admins can raise users
 [ ] Fix api routes to remove create if not needed for example
-[ ] Fix sizes
 [/] Password reset
-
+[ ] Create tests
+[x] Create a readme
+[ ] Create changelog
+[ ] Create a roadmap
+[ ] Add proper version control
+[ ] Add dev, staging and production branches
+[ ] Add create superuser cli command
 
 ## License
-[ ] Fix license
+[x] Fix license
 
 ## Maybe Todos

@@ -21,3 +21,4 @@ dev.env
 !.env.example
 
 .vscode
+./.vscode/*
