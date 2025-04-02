@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto px-4 py-2">
+    <div class="container px-4 py-2 mx-auto">
       <!-- Back to Products Button -->
       <CTitle :text="productId ? $t('products.editProduct') : $t('products.createProduct')" />
       <BackLink to="/admin/products" backPage="Products"></BackLink>
@@ -7,13 +7,13 @@
       <!-- Edit Product Form -->
       <form
         @submit.prevent="saveProduct"
-        class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 max-w-xl mx-auto"
+        class="max-w-xl p-6 mx-auto bg-white rounded-lg shadow-md dark:bg-gray-800"
       >
         <div class="grid grid-cols-2 gap-4">
           <!-- Product Name -->
           <div>
             <label
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
               for="productName"
             >
               {{ $t("products.productName") }}
@@ -23,14 +23,14 @@
               type="text"
               id="productName"
               required
-              class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+              class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
             />
           </div>
   
           <!-- Product Price -->
           <div>
             <label
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
               for="productPrice"
             >
               {{ $t("products.productPrice") }}
@@ -40,7 +40,7 @@
               type="text"
               id="productPrice"
               required
-              class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+              class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
             />
           </div>
         </div>
@@ -48,7 +48,7 @@
         <!-- Product Description -->
         <div class="mt-4">
           <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
             for="productDescription"
           >
             {{ $t("products.productDescription") }}
@@ -57,7 +57,7 @@
             v-model="formData.description"
             id="productDescription"
             required
-            class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
             rows="3"
           ></textarea>
         </div>
@@ -65,7 +65,7 @@
         <!-- Product Stock -->
         <div class="mt-4">
           <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
             for="productStock"
           >
             {{ $t("stock") }}
@@ -76,21 +76,21 @@
             id="productStock"
             min="0"
             required
-            class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
           />
         </div>
   
         <!-- Product Categories -->
         <div class="mt-4">
           <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             {{ $t("categories.categories") }}
           </label>
           <select
             v-model="formData.categories"
             multiple
-            class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
           >
             <option
               v-for="category in availableCategories"
@@ -102,18 +102,35 @@
           </select>
         </div>
   
+        <!-- Product Image -->
+        <div class="mt-4">
+          <label
+            class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+            for="productImage"
+          >
+            {{ $t("products.productImage") }}
+          </label>
+          <input
+            type="file"
+            id="productImage"
+            accept="image/*"
+            @change="handleImageUpload"
+            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          />
+        </div>
+  
         <!-- Action Buttons -->
-        <div class="mt-6 flex justify-end space-x-4">
+        <div class="flex justify-end mt-6 space-x-4">
           <button
             type="button"
             @click="navigateTo('/admin/products')"
-            class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+            class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
           >
             Cancel
           </button>
           <button
             type="submit"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+            class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
           >
             {{ productId ? "Update Product" : "Create Product" }}
           </button>
@@ -185,4 +202,3 @@
     }
   };
   </script>
-  

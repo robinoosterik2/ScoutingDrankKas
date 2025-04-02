@@ -35,13 +35,13 @@ const UserSchema = new Schema({
 	balance: {
 		type: mongoose.Types.Decimal128,
 		default: 0,
-		set: value => {
+		set: (value: any) => {
 			if (typeof value === 'string' || value.toString().includes('.') || value.toString().includes(',')) {
 				return Math.round(parseFloat(value.toString()) * 100);
 			}
 			return value;
 		},
-		get: value => (value / 100).toFixed(2),
+		get: (value: any) => (value / 100).toFixed(2),
 	},
 	role: {
         type: mongoose.Schema.Types.ObjectId,
@@ -56,7 +56,7 @@ const UserSchema = new Schema({
 });
 
 // Method to log user actions
-UserSchema.methods.logAction = async function(action, description) {
+UserSchema.methods.logAction = async function(action: any, description: any) {
 	const log = new Log({
 		executor: this._id,
 		action: action,
@@ -104,7 +104,7 @@ UserSchema.methods.logLogin = async function() {
 	await this.logAction('Login', 'User logged in');
 };
 
-UserSchema.methods.raise = function(amount){
+UserSchema.methods.raise = function(amount: number){
 	const balanceNumber = parseFloat(this.balance);
 	const amountNumber = parseFloat(amount.toString().replace(',', '.'));
 	this.balance = (balanceNumber + amountNumber).toString();

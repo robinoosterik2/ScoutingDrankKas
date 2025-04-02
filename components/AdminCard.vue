@@ -1,13 +1,13 @@
 <template>
   <div
-    class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow flex flex-col"
+    class="flex flex-col p-6 transition-shadow bg-white rounded-lg shadow-md dark:bg-gray-800 hover:shadow-lg"
   >
     <div class="flex items-center justify-between mb-2">
       <div class="flex items-center space-x-2">
         <slot name="icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-8 w-8 min-h-8 min-w-8 text-blue-600"
+            class="w-8 h-8 text-blue-600 min-h-8 min-w-8"
             viewBox="0 0 48 48"
             xml:space="preserve"
             stroke="currentColor"
@@ -25,7 +25,7 @@
         </h2>
       </div>
     </div>
-    <p class="text-xl text-gray-600 dark:text-gray-400 mb-4 flex-grow">
+    <p class="flex-grow mb-4 text-xl text-gray-600 dark:text-gray-400">
       <slot name="description">{{ $t("admin.defaultDescription") }}</slot>
     </p>
     <div class="mt-auto space-y-4">
