@@ -3,6 +3,8 @@ I created the ScoutingDrankKas as a system to sell and manage drinks effectively
 
 I am planning on adding a lot of features to the system, but for now I am focusing on the basics. The system is built with Nuxt 3 and uses a MongoDB database.
 
+It is maintained but not my main focus as I am rounding up my studies. I am open to contributions and suggestions for improvements.
+
 ---
 
 ## 🚀 Features
