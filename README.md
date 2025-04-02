@@ -77,6 +77,45 @@ docker compose up --build
 
 ---
 
+## 🤝 Contributing
+
+Contributions are welcome and greatly appreciated! To contribute to this project, please follow these steps:
+
+1. **Fork the Repository**:  
+
+Click the "Fork" button at the top of this repository to create your own copy.
+
+2. **Clone Your Fork**:  
+
+Clone your forked repository to your local machine:
+```bash
+git clone https://github.com/your-username/ScoutingDrankKas.git
+cd ScoutingDrankKas
+```
+
+3. **Create a Branch**:
+```bash
+git checkout -b feature-name
+```
+
+4. **Make Changes**:
+Implement your feature or fix a bug. Ensure that your code follows the project's coding standards and conventions.
+
+5. **Test Your Changes**:
+(TODO add tests) Ensure that your changes work as expected and do not introduce any new issues.
+6. **Commit Your Changes**:
+```bash
+git commit -m "feature-name: Brief description of changes"
+```
+7. **Push to Your Fork**:
+```bash
+git push origin feature-name
+```
+8. **Create a Pull Request**:
+Go to the original repository and click on the "Pull Requests" tab. Click the "New Pull Request" button and select your branch. Provide a clear description of your changes and submit the pull request.
+
+---
+
 ## 👤 Author
 
 Robin Oosterik
