@@ -76,3 +76,13 @@ docker compose up --build
 - `/utils`: Utility functions and helpers.
 
 ---
+
+## 👤 Author
+
+Robin Oosterik
+- linkedin: [Robin Oosterik](https://www.linkedin.com/in/robin-oosterik/)
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).
