@@ -39,8 +39,10 @@ export default defineNuxtConfig({
   },
 
   mongoose: {
-    uri: process.env.MONGODB_URI || "mongodb://drankkas:drankkas@localhost:27017/drankkas_db",
-    options: {},
+    uri: process.env.MONGODB_URI,
+    options: {
+      family: "4",
+    },
     modelsDir: "models",
     devtools: true,
   },

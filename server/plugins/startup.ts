@@ -1,6 +1,19 @@
 import mongoose from 'mongoose'
 
 export default defineNitroPlugin(async () => {
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
+	console.log('Starting startup plugin')
 	// Import required models and utilities
 	const { CustomRole } = await import('../models/customRole')
 	const { User } = await import('../models/user')

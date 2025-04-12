@@ -2,11 +2,28 @@ import mongoose from 'mongoose';
 import { User } from './server/models/user'; // adjust the path
 import { CustomRole } from './server/models/customRole'; // adjust the path
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://drankkas:drankkas@localhost:27017';
+const MONGO_URI = process.env.MONGODB_URI;
 
 async function init() {
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
+	console.log(MONGO_URI)
 	try {
 		await mongoose.connect(MONGO_URI);
+		await new Promise(resolve => setTimeout(resolve, 300000))
+
 		console.log('Connected to MongoDB');
 
 		let adminRole = await CustomRole.findOne({ roleName: 'admin' });
