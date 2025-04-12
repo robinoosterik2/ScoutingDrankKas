@@ -24,9 +24,22 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     authSecret: process.env.AUTH_SECRET || "your-secret-here",
+    public: {
+      // Public environment variables accessible from client and server
+      apiUrl: process.env.API_URL || "http://localhost:3000",
+    },
+    // Server-only environment variables
+    mongodb: {
+      uri: process.env.MONGODB_URI || "mongodb://drankkas:drankkas@localhost:27017/drankkas_db",
+      user: process.env.MONGODB_USER || "drankkas",
+      password: process.env.MONGODB_PASSWORD || "drankkas",
+      database: process.env.MONGO_INITDB_DATABASE || "drankkas_db",
+    },
+    sessionPassword: process.env.NUXT_SESSION_PASSWORD || "default-session-password",
   },
 
   mongoose: {
+    uri: process.env.MONGODB_URI || "mongodb://drankkas:drankkas@localhost:27017/drankkas_db",
     options: {},
     modelsDir: "models",
     devtools: true,
