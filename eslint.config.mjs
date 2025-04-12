@@ -6,7 +6,7 @@ export default withNuxt(
   // do not check 'no-multiple-template-root'
   {
     rules: {
-      'vue/no-multiple-template-root': 'off
+      'vue/no-multiple-template-root': 'off'
     }
   }
 )
