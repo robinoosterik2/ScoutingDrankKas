@@ -4,6 +4,9 @@
       <h2 class="text-xl font-extrabold text-center text-gray-900 dark:text-white">
         {{ $t('login.title') }}
       </h2>
+      <div v-if="resetSuccess" class="text-center text-green-500">
+        {{ $t('login.resetSuccess') }}
+      </div>
       <form @submit.prevent="handleLogin" class="space-y-2">
         <div>
           <label for="username">{{ $t('login.username') }}</label>
@@ -43,15 +46,23 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 const { fetch } = useUserSession()
 const { t } = useI18n()
 
 const username = ref('')
 const password = ref('')
+const resetSuccess = ref(false)
+
+onMounted(() => {
+  if (route.query.resetSuccess === 'true') {
+    resetSuccess.value = true
+  }
+})
 
 const handleLogin = async () => {
   document.getElementById('errorUsername').textContent = ''

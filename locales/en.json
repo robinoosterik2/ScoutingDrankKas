@@ -8,20 +8,21 @@
     "adminPanel": "Admin"
   },
   "login": {
-    "title": "Login",
-    "username": "Username:",
-    "usernamePlaceholder": "Username",
-    "password": "Password:",
+    "title": "Login to your account",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "password": "Password",
     "submit": "Login",
     "noAccount": "Don't have an account?",
     "register": "Register",
+    "forgotPassword": "Forgot your password?",
+    "resetHere": "Reset here",
+    "resetSuccess": "Your password has been reset successfully. Please login with your new password.",
     "errors": {
       "userNotFound": "User not found",
       "invalidCredentials": "Invalid credentials"
     },
-    "firstName": "First name",
-    "forgotPassword": "Did you forgot your password?",
-    "resetHere": "Reset here"
+    "firstName": "First name"
   },
   "register": {
     "title": "Register",
@@ -187,8 +188,26 @@
   "By": "By",
   "On": "On",
   "forgotPassword": {
-    "title": "Password forgotten?",
-    "email": "Email"
+    "title": "Forgot Password",
+    "email": "Email Address",
+    "emailPlaceholder": "Enter your email address",
+    "submit": "Send Reset Link",
+    "backToLogin": "Back to Login",
+    "emailSent": "Password reset link has been sent to your email. Please check your inbox.",
+    "errors": {
+      "userNotFound": "No account found with that email address",
+      "failed": "Failed to send reset email. Please try again later."
+    }
   },
-  "Loading": "Loading"
+  "Loading": "Loading",
+  "resetPassword": {
+    "title": "Reset Your Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Reset Password",
+    "errors": {
+      "mismatch": "Passwords do not match",
+      "failed": "Failed to reset password. The token may be invalid or expired."
+    }
+  }
 }

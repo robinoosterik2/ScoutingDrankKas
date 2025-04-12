@@ -19,7 +19,7 @@
 [ ] Profile page
 [x] Admins can raise users
 [ ] Fix api routes to remove create if not needed for example
-[/] Password reset
+[x] Password reset
 [ ] Create tests
 [x] Create a readme
 [ ] Create changelog
@@ -30,5 +30,8 @@
 
 ## License
 [x] Fix license
+
+## Bugs
+[ ] Middleware doesn't work correctly with logout
 
 ## Maybe Todos

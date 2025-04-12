@@ -8,20 +8,20 @@
     "adminPanel": "Beheerder"
   },
   "login": {
-    "title": "Login",
-    "username": "Gebruikersnaam:",
-    "usernamePlaceholder": "Gebruikersnaam",
-    "submit": "Login",
-    "register": "Register",
+    "title": "Inloggen op je account",
+    "username": "Gebruikersnaam",
+    "usernamePlaceholder": "Voer je gebruikersnaam in",
+    "password": "Wachtwoord",
+    "submit": "Inloggen",
+    "noAccount": "Nog geen account?",
+    "register": "Registreren",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "resetHere": "Reset hier",
+    "resetSuccess": "Je wachtwoord is succesvol gereset. Log in met je nieuwe wachtwoord.",
     "errors": {
-      "invalidCredentials": "Ongeldige inloggegevens",
-      "userNotFound": "Gebruiker niet gevonden"
-    },
-    "noAccount": "Heeft u geen account?",
-    "password": "Wachtwoord:",
-    "firstName": "Voornaam",
-    "forgotPassword": "Ben je je wachtwoord vergeten?",
-    "resetHere": "Reset hier"
+      "userNotFound": "Gebruiker niet gevonden",
+      "invalidCredentials": "Ongeldige inloggegevens"
+    }
   },
   "register": {
     "alreadyHaveAccount": "Heeft u al een account?",
@@ -187,8 +187,26 @@
   "By": "Bij",
   "On": "Op",
   "forgotPassword": {
-    "title": "Wachtwoord vergeten?",
-    "email": "Email"
+    "title": "Wachtwoord vergeten",
+    "email": "E-mailadres",
+    "emailPlaceholder": "Voer je e-mailadres in",
+    "submit": "Verstuur reset link",
+    "backToLogin": "Terug naar inloggen",
+    "emailSent": "Een wachtwoord reset link is verzonden naar je e-mail. Controleer je inbox.",
+    "errors": {
+      "userNotFound": "Geen account gevonden met dit e-mailadres",
+      "failed": "Kon geen reset e-mail versturen. Probeer het later opnieuw."
+    }
   },
-  "Loading": "Laden"
+  "Loading": "Laden",
+  "resetPassword": {
+    "title": "Wachtwoord herstellen",
+    "newPassword": "Nieuw wachtwoord",
+    "confirmPassword": "Bevestig wachtwoord",
+    "submit": "Wachtwoord herstellen",
+    "errors": {
+      "mismatch": "Wachtwoorden komen niet overeen",
+      "failed": "Kon wachtwoord niet herstellen. De token kan ongeldig of verlopen zijn."
+    }
+  }
 }

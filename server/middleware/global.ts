@@ -1,4 +1,4 @@
-const noneLoginRequiredPaths = ['/login', '/register', '/api/_auth/session', '/logout', ''];
+const noneLoginRequiredPaths = ['/login', '/register', '/api/_auth/session', '/logout', '', '/reset-password'];
 
 export default defineEventHandler(async (event) => { 
   if (noneLoginRequiredPaths.includes(event._path) || event._path?.startsWith('/api/auth')) {
