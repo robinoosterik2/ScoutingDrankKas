@@ -2,6 +2,17 @@ export default defineNitroPlugin(async () => {
 	// Import required models and utilities
 	const { CustomRole } = await import('../models/customRole')
 	const { User } = await import('../models/user')
+	const mongoose = await import('mongoose')
+	const { hashPassword } = await import('../utils/password')
+
+	// Check database connection
+	if (mongoose.connection.readyState !== 1) {
+		console.error('Database connection is not established. Current state:', mongoose.connection.readyState)
+		console.error('0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting')
+		return
+	}
+	
+	console.log('Database connection established successfully')
 
 	// Create admin role if it doesn't exist
 	try {
