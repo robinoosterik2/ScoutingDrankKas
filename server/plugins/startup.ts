@@ -8,6 +8,8 @@ export default defineNitroPlugin(async () => {
 	// Check database connection
 	console.log(mongoose.connection)
 	console.log(mongoose.connection.readyState)
+	// add sleep 5 minutes
+	await new Promise(resolve => setTimeout(resolve, 300000))
 	
 	console.log('Database connection established successfully')
 
