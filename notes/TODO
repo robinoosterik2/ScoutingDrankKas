@@ -27,6 +27,8 @@
 [ ] Add proper version control
 [ ] Add dev, staging and production branches
 [ ] Add create superuser cli command
+[\] Validate what cursor did with password reset
+[ ] validate what cursor did with session
 
 ## License
 [x] Fix license
