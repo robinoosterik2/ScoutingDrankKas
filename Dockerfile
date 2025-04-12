@@ -1,18 +1,34 @@
-# Use the official Node.js 18 image
-FROM node:18
+# Stage 1: Build
+FROM node:18 as builder
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm install
+ENV NODE_ENV=production
 
-# Copy all app files into the container (except those in .dockerignore)
+COPY package*.json ./
+
+# Only install production dependencies during build
+RUN npm ci
+
 COPY . .
 
-# Expose port 3000
+RUN npm run build
+
+# Stage 2: Production
+FROM node:18-slim
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Copy only built app and necessary files from builder
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./
+
 EXPOSE 3000
 
-# Default command to run when starting the container
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+	CMD wget --quiet --tries=1 --spider http://localhost:3000/ || exit 1
