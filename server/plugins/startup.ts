@@ -3,7 +3,6 @@ export default defineNitroPlugin(async () => {
 	const { CustomRole } = await import('../models/customRole')
 	const { User } = await import('../models/user')
 	const mongoose = await import('mongoose')
-	const { hashPassword } = await import('../utils/password')
 
 	// Check database connection
 	if (mongoose.connection.readyState !== 1) {
