@@ -1,5 +1,5 @@
 # Stage 1: Base for both dev and prod
-FROM node:20 AS base
+FROM node:18 AS base
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ FROM base AS builder
 RUN npm run build
 
 # Stage 3: Production image
-FROM node:20-slim AS production
+FROM node:18-slim AS production
 
 WORKDIR /app
 

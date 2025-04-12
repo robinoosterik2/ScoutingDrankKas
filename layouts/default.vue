@@ -7,10 +7,10 @@
         <CContainer>
           <div class="flex w-fit items-center">
             <ToggleLang />
-            <NuxtLink to="/admin" class="text-blue-500 ms-2">
+            <NuxtLink v-if="session?.isAdmin" to="/admin" class="text-blue-500 ms-2">
               To admin
             </NuxtLink>
-            <NuxtLink to="/logout" class="text-red-500 ms-2">
+            <NuxtLink v-if="user" to="/logout" class="text-red-500 ms-2">
               Logout
             </NuxtLink>
           </div>
@@ -19,3 +19,7 @@
       </div>
     </div>
 </template>
+
+<script setup>
+const { user, session } = useUserSession();
+</script>

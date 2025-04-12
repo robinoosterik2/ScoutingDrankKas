@@ -2,7 +2,6 @@
 
 <script setup>
 import { useRouter } from "vue-router";
-import { useUserSession } from "../composables/useUserSession";
 
 const router = useRouter();
 // Get the user session clear function to reset client-side auth state

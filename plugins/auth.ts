@@ -1,5 +1,4 @@
 import { defineNuxtPlugin } from '#app'
-import { useUserSession } from '../composables/useUserSession'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   // Make useUserSession available for injection
