@@ -22,7 +22,6 @@ ENV NODE_ENV=production
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
-COPY ./utils/db.js /docker-entrypoint-initdb.d/db.js
 
 
 EXPOSE 3000
