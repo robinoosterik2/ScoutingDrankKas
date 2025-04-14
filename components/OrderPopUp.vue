@@ -37,7 +37,7 @@
           <!-- Loading State -->
           <div v-if="!order" class="text-center py-8">
             <p class="text-gray-500 dark:text-gray-400 animate-pulse">
-              {{ $t("Loading order details...") }}
+              {{ $t("loadingOrderDetails") }}
             </p>
           </div>
 
@@ -47,7 +47,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {{ $t("Order ID") }}
+                  {{ $t("common.orderId") }}
                 </p>
                 <p class="text-gray-900 dark:text-white font-mono">
                   {{ order._id }}
@@ -55,7 +55,7 @@
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {{ $t("Order Date") }}
+                  {{ $t("common.orderDate") }}
                 </p>
                 <p class="text-gray-900 dark:text-white">
                   {{ new Date(order.createdAt).toLocaleString() }}
@@ -63,7 +63,7 @@
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {{ $t("Ordered by") }}
+                  {{ $t("common.orderedBy") }}
                 </p>
                 <p class="text-gray-900 dark:text-white">
                   {{ order.user.firstName }} {{ order.user.lastName }}
