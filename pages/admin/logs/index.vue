@@ -15,7 +15,7 @@
       v-model="selectedAction"
       class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
     >
-      <option value="">{{ $t("actions.all") }}</option>
+      <option value="">{{ $t("all") }}</option>
       <option v-for="action in actions" :key="action" :value="action">
         {{ action }}
       </option>

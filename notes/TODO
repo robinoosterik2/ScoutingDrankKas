@@ -34,6 +34,7 @@
 [x] Fix license
 
 ## Bugs
-[ ] Middleware doesn't work correctly with logout
+[x] Middleware doesn't work correctly with logout
+[ ] Bug with that for example 5 beer that is 6 euro only 6 cents is taken
 
 ## Maybe Todos
