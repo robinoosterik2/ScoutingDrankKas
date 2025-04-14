@@ -11,6 +11,7 @@
     "title": "Inloggen op je account",
     "username": "Gebruikersnaam",
     "usernamePlaceholder": "Voer je gebruikersnaam in",
+    "firstName": "Voornaam",
     "password": "Wachtwoord",
     "submit": "Inloggen",
     "noAccount": "Nog geen account?",
