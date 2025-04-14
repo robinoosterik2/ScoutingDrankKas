@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "vitest run"
+    "test": "vitest run",
+    "i18n:sort": "node scripts/sort-locales.js"
   },
   "dependencies": {
     "@faker-js/faker": "^9.3.0",
