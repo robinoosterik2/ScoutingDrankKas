@@ -5,10 +5,10 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     
     const { username, email, firstName, lastName, password, confirmPassword } = body;
-    let normalizedUsername = username.toLowerCase();
-    let normalizedEmail = email.toLowerCase();
-    let normalizedFirstName = firstName.toLowerCase();
-    let normalizedLastName = lastName.toLowerCase();
+    const normalizedUsername = username.toLowerCase();
+    const normalizedEmail = email.toLowerCase();
+    const normalizedFirstName = firstName.toLowerCase();
+    const normalizedLastName = lastName.toLowerCase();
 
     if (!username || !password) {
         throw createError({ statusCode: 400, statusMessage: "Username and password are required" });
@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         const user = new User({ username: normalizedUsername, email: normalizedEmail, firstName: normalizedFirstName, lastName: normalizedLastName, password: password });
-        user.save();
+        await user.save();
         await setUserSession(event, { user, loggedInAt: Date.now() });
         return {
             message: "User created successfully",

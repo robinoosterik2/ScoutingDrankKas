@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     "nuxt-mongoose",
     "nuxt-auth-utils",
     "@nuxtjs/i18n",
+    '@nuxt/test-utils/module'
   ],
 
   runtimeConfig: {

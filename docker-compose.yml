@@ -3,11 +3,14 @@ services:
     image: mongo:latest
     container_name: mongodb
     restart: always
+    env_file:
+      - .env.dev
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongo_data:/data/db
+      - ./mongo_init.js:/docker-entrypoint-initdb.d/mongo_init.js
     ports:
       - "27017:27017"
     networks:
@@ -21,7 +24,7 @@ services:
     container_name: nuxtjs
     restart: always
     env_file:
-      - dev.env
+      - .env.dev
     environment:
       MONGODB_URI: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017
       NODE_ENV: "development"

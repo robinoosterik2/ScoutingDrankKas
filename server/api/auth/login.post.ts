@@ -7,16 +7,6 @@ interface CustomError {
 	statusMessage?: string;
 }
 
-interface UserState {
-	email: string;
-	username: string;
-	firstName: string;
-	lastName: string;
-	password: string;
-	loggedInAt: Date;
-	role: typeof CustomRole;
-}
-
 function isCustomError(error: unknown): error is CustomError {
 	return (
 		typeof error === "object" &&
@@ -29,7 +19,7 @@ export default defineEventHandler(async (event) => {
   // Validate input
   const body = await readBody(event);
   const { username, password } = body;
-  let normalizedUsername = username.toLowerCase();
+  const normalizedUsername = username.toLowerCase();
 
   // Strict input validation
   if (!normalizedUsername || typeof normalizedUsername !== 'string' || !password || typeof password !== 'string') {
@@ -42,6 +32,9 @@ export default defineEventHandler(async (event) => {
   try {
     // Trim username to prevent whitespace-related issues
     const trimmedUsername = normalizedUsername.trim();
+
+    const users = await User.find();
+    console.log(users)
 
     // Find user with a case-insensitive search
     const user = await User.findOne({ 
