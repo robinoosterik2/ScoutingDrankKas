@@ -1,7 +1,7 @@
 <template>
   <div class="w-fit py-2">
     <NuxtLink
-      :to="to"
+      :to=$localePath(to)
       class="flex items-center text-indigo-600 hover:text-indigo-800 text-2xl"
     >
       <svg

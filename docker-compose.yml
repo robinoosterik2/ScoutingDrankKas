@@ -20,8 +20,11 @@ services:
       dockerfile: Dockerfile.dev
     container_name: nuxtjs
     restart: always
+    env_file:
+      - dev.env
     environment:
       MONGODB_URI: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017
+      NODE_ENV: "development"
     depends_on:
       - mongodb
     volumes:

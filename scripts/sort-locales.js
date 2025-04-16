@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const localesDir = path.join(__dirname, '../locales');
+const localesDir = path.join(__dirname, '../i18n/locales');
 
 // Function to recursively sort object keys alphabetically
 const sortObjectKeys = (obj) => {

@@ -95,7 +95,7 @@
 				</div>
 				<div>
 					<div>{{ $t('register.alreadyHaveAccount') }}
-						<NuxtLink to="/login" class="text-sm text-blue-600 hover:text-blue-800">
+						<NuxtLink to="$localePath('/login')" class="text-sm text-blue-600 hover:text-blue-800">
 							{{ $t('register.login') }}
 						</NuxtLink>
 					</div>

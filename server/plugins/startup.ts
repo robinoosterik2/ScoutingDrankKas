@@ -1,19 +1,8 @@
 import mongoose from 'mongoose'
 
 export default defineNitroPlugin(async () => {
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
-	console.log('Starting startup plugin')
+	if (process.env.NODE_ENV !== 'production') return
+	console.log("CONNECTING TO ATLAS")
 	// Import required models and utilities
 	const { CustomRole } = await import('../models/customRole')
 	const { User } = await import('../models/user')

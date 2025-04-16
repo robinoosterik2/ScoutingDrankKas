@@ -5,20 +5,18 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   vite: {
-		ssr: {
-			noExternal: ['nodemailer']
-		}
-	},
+        ssr: {
+            noExternal: ['nodemailer']
+        }
+    },
 
   modules: [
     "@nuxt/image",
     "@nuxt/eslint",
-    "@pinia/nuxt",
     "@nuxt/fonts",
     "@nuxtjs/color-mode",
     "nuxt-mongoose",
     "nuxt-auth-utils",
-    "@pinia/nuxt",
     "@nuxtjs/i18n",
   ],
 
@@ -30,7 +28,7 @@ export default defineNuxtConfig({
     },
     // Server-only environment variables
     mongodb: {
-      uri: "mongodb+srv://robinoosterik02:0SW7M6u73hsJJNAD@cluster0.hovok.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+      uri: process.env.MONGODB_URI,
       user: process.env.MONGODB_USER || "drankkas",
       password: process.env.MONGODB_PASSWORD || "drankkas",
       database: process.env.MONGO_INITDB_DATABASE || "drankkas_db",
@@ -38,9 +36,9 @@ export default defineNuxtConfig({
     sessionPassword: process.env.NUXT_SESSION_PASSWORD || "default-session-password",
   },
   mongoose: {
-    uri: "mongodb+srv://robinoosterik02:0SW7M6u73hsJJNAD@cluster0.hovok.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    uri: process.env.MONGODB_URI,
     options: {
-      family: "4",
+      family: 4,
     },
     modelsDir: "models",
     devtools: true,
@@ -48,10 +46,6 @@ export default defineNuxtConfig({
 
   eslint: {
     //
-  },
-
-  pinia: {
-    storesDirs: ["./stores/**"],
   },
 
   css: ["~/assets/css/main.css"],
@@ -68,7 +62,16 @@ export default defineNuxtConfig({
     },
   },
 
-  i18n: {
-    vueI18n: "./i18n.config.ts",
-  },
+    i18n: {
+        locales: [
+            { code: 'en', iso: 'en-US', name: 'English', file: 'en.json' },
+            { code: 'nl', iso: 'nl-NL', name: 'Dutch', file: 'nl.json' },
+        ],
+        lazy: true,
+        langDir: 'locales/',
+        defaultLocale: 'en',
+    bundle: {
+      optimizeTranslationDirective: false,
+    },
+    }
 });

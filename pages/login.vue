@@ -30,12 +30,12 @@
         </div>
         <div>
           <div>{{ $t('login.noAccount') }}
-            <NuxtLink to="/register" class=" text-blue-600 hover:text-blue-800">
+            <NuxtLink :to="$localePath('/register')" class=" text-blue-600 hover:text-blue-800">
               {{ $t('login.register') }}
             </NuxtLink>
           </div>
           <div>{{ $t('login.forgotPassword') }}
-            <NuxtLink to="/user/forgot-password" class=" text-blue-600 hover:text-blue-800">
+            <NuxtLink :to="$localePath('/user/forgot-password')" class=" text-blue-600 hover:text-blue-800">
               {{ $t('login.resetHere') }}
             </NuxtLink>
           </div>

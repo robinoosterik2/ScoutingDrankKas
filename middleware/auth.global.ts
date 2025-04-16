@@ -1,5 +1,6 @@
 export default defineNuxtRouteMiddleware(async (event) => {
     const nonAuthRequiredPaths = ['/login', '/register', '/logout', '/reset-password', '/user/forgot-password'];
+    const localeRoute = useLocaleRoute()
     
     // Skip auth check for non-auth required paths
     if (nonAuthRequiredPaths.some(path => event.fullPath.startsWith(path))) {

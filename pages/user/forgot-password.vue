@@ -30,7 +30,7 @@
 					</button>
 				</div>
 				<div class="text-center">
-					<NuxtLink to="/login" class="text-blue-600 hover:text-blue-800">
+					<NuxtLink to="$localePath('/login')" class="text-blue-600 hover:text-blue-800">
 						{{ $t('forgotPassword.backToLogin') }}
 					</NuxtLink>
 				</div>

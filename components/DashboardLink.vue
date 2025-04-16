@@ -1,6 +1,6 @@
 <template>
   <NuxtLink
-    :to="to"
+    :to=$localePath(to)
     :class="[
       'w-full block text-center p-2 rounded-md transition-colors',
       typeClasses,

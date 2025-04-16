@@ -1,3 +1,5 @@
+
+[ ] update to i18n V9 https://i18n.nuxtjs.org/docs/getting-started/usage
 [ ] Fix loading animation for at example /admin/users, /admin/roles
 [x] Fix frontend permissions, right now middleware is commented out
 [x] Fix backend permissions, right now checking if user is admin is commented out
