@@ -1,9 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { faker } from '@faker-js/faker';
 import { $fetch } from '@nuxt/test-utils';
-import { setupNuxtForTest } from './utils/setup-nuxt'
 
-await setupNuxtForTest()
 
 describe('API endpoint: /api/auth/register and /api/auth/login', async () => {
   // Helper function to generate user data
@@ -52,7 +50,7 @@ describe('API endpoint: /api/auth/register and /api/auth/login', async () => {
         password: userData.password
       }
     });
-    console.log(loginResponse)
+
     // Adjust expectations based on your login response structure
     expect(loginResponse).toBeDefined();
     expect(loginResponse.user).toBeDefined();
@@ -154,5 +152,4 @@ describe('API endpoint: /api/auth/register and /api/auth/login', async () => {
       // expect(error.data.message).toContain('Password must be at least');
     }
   });
-
 })

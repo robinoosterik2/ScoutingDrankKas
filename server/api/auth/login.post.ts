@@ -33,9 +33,6 @@ export default defineEventHandler(async (event) => {
     // Trim username to prevent whitespace-related issues
     const trimmedUsername = normalizedUsername.trim();
 
-    const users = await User.find();
-    console.log(users)
-
     // Find user with a case-insensitive search
     const user = await User.findOne({ 
       username: { $regex: new RegExp(`^${trimmedUsername}$`, 'i') } 
