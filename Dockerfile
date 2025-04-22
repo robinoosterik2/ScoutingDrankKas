@@ -3,10 +3,13 @@ FROM node:18 AS base
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy package files and install dependencies
+COPY app/package*.json ./
+COPY .env .env
 RUN npm install
 
-COPY . .
+# Copy the rest of the app
+COPY app .
 
 # Stage 2: Build for production
 FROM base AS builder
@@ -22,7 +25,7 @@ ENV NODE_ENV=production
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
-
+COPY --from=builder /app/.env .env 
 
 EXPOSE 3000
 

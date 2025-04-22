@@ -10,7 +10,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - mongo_data:/data/db
-      - ./mongo_init.js:/docker-entrypoint-initdb.d/mongo_init.js
+      - ./app/mongo_init.js:/docker-entrypoint-initdb.d/mongo_init.js
     ports:
       - "27017:27017"
     networks:
@@ -19,8 +19,8 @@ services:
   
   nuxtjs:
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ./app
+      dockerfile: ../Dockerfile.dev
     container_name: nuxtjs
     restart: always
     env_file:
@@ -31,7 +31,7 @@ services:
     depends_on:
       - mongodb
     volumes:
-      - ./:/app  # Map your local app folder to the container
+      - ./app:/app  # Map your local app folder to the container
       - /app/node_modules
       - /app/.nuxt
     ports:

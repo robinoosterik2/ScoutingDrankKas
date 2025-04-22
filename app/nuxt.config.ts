@@ -28,12 +28,6 @@ export default defineNuxtConfig({
       apiUrl: process.env.API_URL || "http://localhost:3000",
     },
     // Server-only environment variables
-    mongodb: {
-      uri: process.env.MONGODB_URI,
-      user: process.env.MONGODB_USER || "drankkas",
-      password: process.env.MONGODB_PASSWORD || "drankkas",
-      database: process.env.MONGO_INITDB_DATABASE || "drankkas_db",
-    },
     sessionPassword: process.env.NUXT_SESSION_PASSWORD || "default-session-password",
   },
   mongoose: {
