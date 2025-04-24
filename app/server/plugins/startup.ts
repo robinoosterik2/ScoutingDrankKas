@@ -8,6 +8,10 @@ export default defineNitroPlugin(async () => {
 	console.log(process.env.MONGODB_URI)
 	console.log(process.env.MONGODB_URI)
 	console.log(process.env.MONGODB_URI)
+	if (!process.env.MONGODB_URI) {
+		console.log("MONGODB_URI is not defined")
+		return
+	}
 	console.log("")
 	// Import required models and utilities
 	const { CustomRole } = await import('../models/customRole')
@@ -17,6 +21,7 @@ export default defineNitroPlugin(async () => {
 	await new Promise(resolve => setTimeout(resolve, 300000))
 	console.log(mongoose.connection)
 	console.log(mongoose.connection.readyState)
+	console.log(mongoose.connect(process.env.MONGODB_URI))
 	// add sleep 5 minutes
 	
 	console.log('Database connection established successfully')
