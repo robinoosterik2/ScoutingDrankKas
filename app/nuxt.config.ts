@@ -23,6 +23,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     authSecret: process.env.AUTH_SECRET || "your-secret-here",
+    MONGODB_URI: process.env.MONGODB_URI,
     public: {
       // Public environment variables accessible from client and server
       apiUrl: process.env.API_URL || "http://localhost:3000",
