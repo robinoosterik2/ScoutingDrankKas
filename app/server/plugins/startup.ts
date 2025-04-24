@@ -18,10 +18,9 @@ export default defineNitroPlugin(async () => {
 	const { User } = await import('../models/user')
 
 	// Check database connection
-	await new Promise(resolve => setTimeout(resolve, 300000))
 	console.log(mongoose.connection)
 	console.log(mongoose.connection.readyState)
-	console.log(mongoose.connect(process.env.MONGODB_URI))
+	mongoose.connect(process.env.MONGODB_URI)
 	// add sleep 5 minutes
 	
 	console.log('Database connection established successfully')
