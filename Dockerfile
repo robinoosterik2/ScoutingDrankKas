@@ -5,10 +5,11 @@ WORKDIR /app
 
 # Copy package files and install dependencies
 COPY app/package*.json ./
-COPY .env .env
+# COPY .env .env
 RUN npm install
 
 # Copy the rest of the app
+
 COPY app .
 
 # Stage 2: Build for production
@@ -25,7 +26,7 @@ ENV NODE_ENV=production
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.env .env 
+# COPY --from=builder /app/.env .env 
 
 EXPOSE 3000
 
