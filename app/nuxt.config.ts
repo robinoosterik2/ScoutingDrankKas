@@ -31,6 +31,7 @@ export default defineNuxtConfig({
     sessionPassword: process.env.NUXT_SESSION_PASSWORD || "default-session-password",
   },
   mongoose: {
+    uri: "mongodb+srv://robinoosterik02:0SW7M6u73hsJJNAD@cluster0.hovok.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
     options: {
       family: 4,
     },

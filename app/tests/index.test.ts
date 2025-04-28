@@ -15,5 +15,5 @@ await setup({
 
 // Import all test files (these will be included in the suite)
 // import './createUser.test.ts'
-// import './i18n.test.ts'
-import './cookie.test.js'
+import './i18n.test.ts'
+// import './cookie.test.js'
