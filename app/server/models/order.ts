@@ -40,7 +40,7 @@ OrderSchema.statics.createFromRequestBody = async function(bodyData) {
     count: item.count
   }));
 
-  const user = await mongoose.models.User.findById(bodyData.userId);
+  const user = await User.findById(bodyData.userId);
   if (!user) {
     throw new Error('User not found');
   }

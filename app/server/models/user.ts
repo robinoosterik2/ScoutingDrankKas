@@ -34,21 +34,27 @@ const UserSchema = new Schema({
 	},
 	balance: {
 		type: mongoose.Types.Decimal128,
-		default: 0,
+		default: 0.00,
+		required: true,
 		set: (value: any) => {
-			if (typeof value === 'string' || value.toString().includes('.') || value.toString().includes(',')) {
-				return Math.round(parseFloat(value.toString()) * 100);
+			if (typeof value !== 'string') {
+				value = value.toString();
 			}
-			return value;
+			// Replace commas if needed (European notation)
+			value = value.replace(',', '.');
+
+			return mongoose.Types.Decimal128.fromString(value);
 		},
-		get: (value: any) => (value / 100).toFixed(2),
+		get: (value: any) => {
+			return value.toString(); // value is already stored accurately
+		},
 	},
 	role: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'CustomRole' // Reference to the Role model
-    },
-    resetPasswordToken: String,
-    resetPasswordExpires: Date
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'CustomRole' // Reference to the Role model
+	},
+	resetPasswordToken: String,
+	resetPasswordExpires: Date
 }, {
 	timestamps: true,
 	toJSON: { getters: true },
@@ -56,7 +62,7 @@ const UserSchema = new Schema({
 });
 
 // Method to log user actions
-UserSchema.methods.logAction = async function(action: any, description: any) {
+UserSchema.methods.logAction = async function (action: any, description: any) {
 	const log = new Log({
 		executor: this._id,
 		action: action,
@@ -91,8 +97,8 @@ UserSchema.pre('save', async function (next) {
 			await log.save();
 			next();
 		} catch (error) {
-            console.error('Error hashing password:', error);
-            next();
+			console.error('Error hashing password:', error);
+			next();
 		}
 	} else {
 		next();
@@ -100,11 +106,11 @@ UserSchema.pre('save', async function (next) {
 });
 
 // Method to log login action
-UserSchema.methods.logLogin = async function() {
+UserSchema.methods.logLogin = async function () {
 	await this.logAction('Login', 'User logged in');
 };
 
-UserSchema.methods.raise = function(amount: number){
+UserSchema.methods.raise = function (amount: number) {
 	const balanceNumber = parseFloat(this.balance);
 	const amountNumber = parseFloat(amount.toString().replace(',', '.'));
 	this.balance = (balanceNumber + amountNumber).toString();
