@@ -23,7 +23,9 @@ export default defineEventHandler(async (event) => {
       console.log(productData)
       await productData.updateOrderMetrics(product.count);
     }
-    body.total = parseFloat(total.toFixed(2));;
+    console.log(total);
+    body.total = parseFloat(total.toFixed(2));
+    console.log(body.total);
     const order = await Order.createFromRequestBody(body);
     await order.save();
     return { message: "Order created successfully" };
