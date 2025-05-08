@@ -111,10 +111,20 @@ UserSchema.methods.logLogin = async function () {
 };
 
 UserSchema.methods.raise = function (amount: number) {
-	const balanceNumber = parseFloat(this.balance);
-	const amountNumber = parseFloat(amount.toString().replace(',', '.'));
-	this.balance = (balanceNumber + amountNumber).toString();
-	return this.save();
+    // Convert current balance string (e.g., "10.50") to cents
+    // Replace comma with dot for locale consistency before parsing
+    const currentBalanceInCents = Math.round(parseFloat(this.balance.replace(',', '.')) * 100);
+    
+    // Convert raise amount (e.g., 0.20 or "0,20") to cents
+    // Ensure amount is treated as a string for consistent comma replacement
+    const amountStr = String(amount);
+    const raiseAmountInCents = Math.round(parseFloat(amountStr.replace(',', '.')) * 100);
+    
+    const newBalanceInCents = currentBalanceInCents + raiseAmountInCents;
+    
+    // Convert back to string representation in the currency format (e.g., "10.70")
+    this.balance = (newBalanceInCents / 100).toFixed(2);
+    return this.save();
 }
 
 export const isAdministrator = async function (userId: string) {

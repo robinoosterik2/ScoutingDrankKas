@@ -5,21 +5,6 @@ import { CustomRole } from './server/models/customRole'; // adjust the path
 const MONGO_URI = process.env.MONGODB_URI;
 
 async function init() {
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
-	console.log(MONGO_URI)
 	try {
 		await mongoose.connect(MONGO_URI);
 		await new Promise(resolve => setTimeout(resolve, 300000))
