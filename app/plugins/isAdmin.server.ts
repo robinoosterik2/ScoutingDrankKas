@@ -12,7 +12,6 @@ export default defineNuxtPlugin(() => {
                 }
 
                 const role = user.role;
-                console.log(role);
 
                 if (!role) {
                     return false;

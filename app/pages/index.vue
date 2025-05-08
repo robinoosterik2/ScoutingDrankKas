@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 py-2">
+  <div class="container px-4 py-2 mx-auto">
     <!-- Select User -->
     <div class="mb-2">
       <div class="flex items-center">
@@ -14,7 +14,7 @@
         <div class="flex justify-end ms-2">
           <button
             :disabled="!selectedUser || totalSelectedProducts === 0"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
             @click="showConfirmation = true"
           >
             {{ $t("orders.placeOrder") }}
@@ -24,18 +24,18 @@
     </div>
 
     <!-- Filters -->
-    <div class="mb-4 flex items-center space-x-4">
+    <div class="flex items-center mb-4 space-x-4">
       <!-- Search Bar -->
       <input
         v-model="searchQuery"
         type="text"
         :placeholder="$t('orders.searchProducts')"
-        class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+        class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
       >
       <!-- Category Filter -->
       <select
         v-model="selectedCategory"
-        class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+        class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
       >
         <option value="">{{ $t("orders.allCategories") }}</option>
         <option
@@ -50,18 +50,18 @@
 
     <!-- Select Products -->
     <div class="">
-      <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 xl:grid-cols-5">
+      <div class="grid grid-cols-2 gap-2 md:grid-cols-2 lg:grid-cols-4 md:gap-4 xl:grid-cols-5">
         <div
           v-for="product in filteredProducts"
           :key="product.id"
-          class="cursor-pointer border rounded-lg p-4 bg-white dark:bg-gray-800 hover:shadow-md transition-shadow relative flex flex-col justify-between"
+          class="relative flex flex-col justify-between p-4 transition-shadow bg-white border rounded-lg cursor-pointer dark:bg-gray-800 hover:shadow-md"
         >
           <img
-            :src="product.imageUrl"
+            :src="getDisplayableProductImageUrl(product.imageUrl)"
             :alt="product.name"
-            class="h-24 w-full object-cover rounded"
+            class="object-cover w-full rounded aspect-video"
           >
-          <div class="flex align-middle items-center mt-4 justify-between">
+          <div class="flex items-center justify-between mt-4 align-middle">
             <h3 class="text-2xl text-gray-700 dark:text-gray-300 ">
               {{ product.name }}
             </h3>
@@ -69,9 +69,9 @@
               €{{ product.price }}
             </p>
           </div>
-          <div class="flex mt-2 items-center justify-between">
+          <div class="flex items-center justify-between mt-2">
             <button
-              class="bg-red-500 text-white rounded-full h-10 w-24 flex items-center justify-center"
+              class="flex items-center justify-center w-24 h-10 text-white bg-red-500 rounded-full"
               :disabled="getProductCount(product) === 0"
               @click="decrementProduct(product)"
             >
@@ -81,7 +81,7 @@
               {{ getProductCount(product) }}
             </span>
             <button
-              class="bg-green-500 text-white rounded-full h-10 w-24 flex items-center justify-center"
+              class="flex items-center justify-center w-24 h-10 text-white bg-green-500 rounded-full"
               @click="incrementProduct(product)"
             >
             <div class="text-2xl">+</div>              
@@ -105,6 +105,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
+import { getDisplayableProductImageUrl } from "@/utils/imageUtils"; // Import the utility function
 
 const users = ref([]);
 const products = ref([]);
@@ -150,7 +151,6 @@ const filteredProducts = computed(() => {
     const matchesCategory =
       !selectedCategory.value ||
       product.categories.includes(selectedCategory.value);
-    console.log("selectedCategory.value", selectedCategory.value);
     return matchesSearch && matchesCategory;
   });
 });

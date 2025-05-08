@@ -4,7 +4,6 @@ import { User } from "@/server/models/user";
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    console.log(body)
     const session = await getUserSession(event);
     const admin = session.user
     const userId = body.userId

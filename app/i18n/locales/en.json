@@ -42,7 +42,7 @@
   "cancel": "Cancel",
   "cannotBeUndone": "This action cannot be undone.",
   "categories": {
-    "ageRestriction": "Age Resctriction",
+    "ageRestriction": "Age restriction",
     "allCategories": "All Categories",
     "categories": "Categories",
     "createCategory": "Create Category",
@@ -132,6 +132,7 @@
     "createProduct": "Create Product",
     "editProduct": "Edit Product",
     "getStarted": "Get started by creating a new product.",
+    "imageAspectRatioTip": "For best results, upload an image with a 16:9 aspect ratio.",
     "noProducts": "No products found",
     "productDescription": "Product description",
     "productImage": "Product Image",
@@ -160,9 +161,13 @@
     "confirmPassword": "Confirm Password",
     "email": "Email",
     "errors": {
+      "credentialsRequired": "Username and password are required.",
       "EmailInUse": "Email is already in use",
       "passwordsDoNotMatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters.",
       "passwordTooWeak": "Password is too weak",
+      "registrationFailed": "Registration failed. Please try again.",
+      "userAlreadyExistsWithFullName": "A user with this first and last name already exists.",
       "usernameAlreadyExists": "Username already exists"
     },
     "firstName": "First Name",
@@ -203,7 +208,6 @@
     "roleNameExists": "Role name already exists",
     "roleNameRequired": "Role name is required",
     "roles": "Roles",
-    "rolesAll": "Add Role",
     "title": "Manage Roles"
   },
   "Search": "Search",

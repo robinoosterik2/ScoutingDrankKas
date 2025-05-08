@@ -1,6 +1,6 @@
 <template>
 	<div class="flex items-center justify-center">
-		<div class="max-w-sm w-full space-y-2 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+		<div class="w-full max-w-sm p-4 space-y-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
 			<h2 class="text-xl font-extrabold text-center text-gray-900 dark:text-white">
 				{{ $t('register.title') }}
 			</h2>
@@ -14,10 +14,10 @@
 							name="firstName"
 							type="text"
 							required
-							class="appearance-none text-2xs rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+							class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none text-2xs focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 							:placeholder="$t('register.firstName')"
 						>
-						<div id="errorFirstName" class="text-red-500 text-sm mt-1"></div>
+						<div id="errorFirstName" class="mt-1 text-sm text-red-500"></div>
 					</div>
 					<div class="w-1/2">
 						<label class="text-xs" for="lastName">{{ $t('register.lastName') }}</label>
@@ -27,10 +27,10 @@
 							name="lastName"
 							type="text"
 							required
-							class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+							class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 							:placeholder="$t('register.lastName')"
 						>
-						<div id="errorLastName" class="text-red-500 text-sm mt-1"></div>
+						<div id="errorLastName" class="mt-1 text-sm text-red-500"></div>
 					</div>
 				</div>
 				<div>
@@ -41,10 +41,10 @@
 						name="username"
 						type="text"
 						required
-						class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+						class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 						:placeholder="$t('register.usernamePlaceholder')"
 					>
-					<div id="errorUsername" class="text-red-500 text-sm mt-1"></div>
+					<div id="errorUsername" class="mt-1 text-sm text-red-500"></div>
 				</div>
 				<div>
 					<label class="text-xs" for="email">{{ $t('register.email') }}</label>
@@ -54,10 +54,10 @@
 						name="email"
 						type="email"
 						required
-						class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+						class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 						:placeholder="$t('register.email')"
 					>
-					<div id="errorEmail" class="text-red-500 text-sm mt-1"></div>
+					<div id="errorEmail" class="mt-1 text-sm text-red-500"></div>
 				</div>
 				<div>
 					<label class="text-xs" for="password">{{ $t('register.password') }}</label>
@@ -67,10 +67,10 @@
 						name="password"
 						type="password"
 						required
-						class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+						class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 						placeholder="••••••••••"
 					>
-					<div id="errorPassword" class="text-red-500 text-sm mt-1"></div>
+					<div id="errorPassword" class="mt-1 text-sm text-red-500"></div>
 				</div>
 				<div>
 					<label class="text-xs" for="confirmPassword">{{ $t('register.confirmPassword') }}</label>
@@ -80,15 +80,15 @@
 						name="confirmPassword"
 						type="password"
 						required
-						class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+						class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 						placeholder="••••••••••"
 					>
-					<div id="errorConfirmPassword" class="text-red-500 text-sm mt-1"></div>
+					<div id="errorConfirmPassword" class="mt-1 text-sm text-red-500"></div>
 				</div>
 				<div class="pt-4">
 					<button
 						type="submit"
-						class="group relative w-full flex justify-center py-1 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+						class="relative flex justify-center w-full px-4 py-1 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md group hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
 					>
 						{{ $t('register.submit') }}
 					</button>
@@ -136,7 +136,7 @@ const handleRegister = async () => {
    }
 
    try {
-       const data = await $fetch('/api/auth/register', {
+       await $fetch('/api/auth/register', {
            method: 'POST',
            body: { 
                firstName: firstName.value,
@@ -147,24 +147,28 @@ const handleRegister = async () => {
 			   confirmPassword: confirmPassword.value
            }
        })
-
-       if (data) {
-           fetch()
-           navigateTo('/')
-       }
-   } catch (error) {       
-       // Handle specific error cases
-       if (error.statusMessage === 'Username already exists') {
+       // Successful registration
+       navigateTo('/') // Navigate to home or dashboard
+   } catch (error) {
+       const statusMessage = error.data?.statusMessage || error.statusMessage || ''
+       
+       if (statusMessage === 'Username and password are required') {
+           // This error is general, let's show it under the password field or a general error area if available.
+           // For now, under password as it's a key part of credentials.
+           document.getElementById('errorPassword').textContent = t('register.errors.credentialsRequired')
+       } else if (statusMessage === 'Username already exists') {
            document.getElementById('errorUsername').textContent = t('register.errors.usernameAlreadyExists')
-       } else if (error.statusMessage === 'Email already in use') {
-           document.getElementById('errorEmail').textContent = t('register.errors.EmailInUse')
-       } else if (error.statusMessage === 'Password too weak') {
-           document.getElementById('errorPassword').textContent = t('register.errors.passwordTooWeak')
-	   } else if (error.statusMessage === 'Passwords do not match') {
+       } else if (statusMessage === 'Email already exists') { // Backend uses "Email already exists"
+           document.getElementById('errorEmail').textContent = t('register.errors.emailInUse') // Frontend key is emailInUse
+       } else if (statusMessage === 'User already has an account') {
+           document.getElementById('errorLastName').textContent = t('register.errors.userAlreadyExistsWithFullName')
+       } else if (statusMessage === 'Password must be at least 8 characters') {
+           document.getElementById('errorPassword').textContent = t('register.errors.passwordTooShort')
+	   } else if (statusMessage === 'Passwords do not match') { // This is also checked client-side, but good to handle backend error too
 		   document.getElementById('errorConfirmPassword').textContent = t('register.errors.passwordsDoNotMatch')
        } else {
            // Generic error handling
-           document.getElementById('errorPassword').textContent = 'Registration failed'
+           document.getElementById('errorPassword').textContent = t('register.errors.registrationFailed')
        }
    }
 }

@@ -2,7 +2,7 @@ FROM node:18
 
 # Set workdir
 WORKDIR /app
-
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 # Install deps
 COPY package*.json ./
 RUN npm install
