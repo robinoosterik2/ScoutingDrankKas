@@ -1,45 +1,49 @@
 export default defineNuxtRouteMiddleware(async (event) => {
     const nonAuthRequiredPaths = ['/login', '/register', '/logout', '/reset-password', '/user/forgot-password'];
     const localeRoute = useLocaleRoute()
-    
+    // Get the path without the locale prefix
+    const pathWithoutLocale = event.fullPath.replace(/^\/(en|nl)/, '') || '/';
+
+    console.log(event.fullPath);
     // Skip auth check for non-auth required paths
-    if (nonAuthRequiredPaths.some(path => event.fullPath.startsWith(path))) {
+    if (nonAuthRequiredPaths.some(path => pathWithoutLocale.startsWith(path))) {
         return;
     }
     
     // Handle admin routes
-    if (event.fullPath.startsWith('/admin') || event.fullPath.startsWith('/api/admin')) {
+    if (pathWithoutLocale.startsWith('/admin') || pathWithoutLocale.startsWith('/api/admin')) {
         try {
-            const { loggedIn, user, session, fetch, clear } = useUserSession();
+            const { user, session, fetch } = useUserSession();
             
             // Refresh auth state
             await fetch();
             
             if (!user.value) {
                 console.error("User is undefined");
-                return navigateTo('/login');
+                return navigateTo(localeRoute('/login')?.fullPath || '/login');
             }
-            if (!session.value.isAdmin) {
-                console.error("User is not an admin");
-                return navigateTo('/');
+            // Add a check for session.value
+            if (!session.value || !session.value.isAdmin) {
+                console.error("User is not an admin or session is not available");
+                return navigateTo(localeRoute('/')?.fullPath || '/');
             }
         } catch (error) {
             console.error("Authentication error", error);
-            if (event.fullPath.startsWith('/api/')) {
+            if (pathWithoutLocale.startsWith('/api/')) {
                 throw createError({ statusCode: 401, statusMessage: "Unauthorized", message: "Authentication required" });
             } else {
-                return navigateTo('/login');
+                return navigateTo(localeRoute('/login')?.fullPath || '/login');
             }
         }
     } else {
         // For non-admin routes that require authentication
-        const { loggedIn, user, fetch } = useUserSession();
+        const { user, fetch } = useUserSession();
         
         // Refresh auth state
         await fetch();
         
         if (!user.value) {
-            return navigateTo('/login');
+            return navigateTo(localeRoute('/login')?.fullPath || '/login');
         }
     }
 });
