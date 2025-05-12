@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const actions = ["Create", "Update", "Delete", "Sold", "Raise"];
 const LogSchema = new Schema({
@@ -10,7 +10,12 @@ const LogSchema = new Schema({
         type: String,
         required: true,
     },
-    object: {
+    objectType: {
+        type: String,
+        enum: ['User', 'Product', 'Order', 'Log'],
+        required: true,
+    },
+    objectId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
     },

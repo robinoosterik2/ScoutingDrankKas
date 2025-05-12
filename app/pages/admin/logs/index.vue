@@ -10,14 +10,14 @@
       v-model="searchQuery"
       :placeholder="$t('Search') + '...'"
       class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-    />
+    >
     <select
       v-model="selectedAction"
       class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
     >
       <option value="">{{ $t("all") }}</option>
-      <option v-for="action in actions" :key="action" :value="action">
-        {{ action }}
+      <option v-for="description in descriptions" :key="description" :value="description">
+        {{ description }}
       </option>
     </select>
     <select
@@ -29,8 +29,8 @@
       <option value="timestamp">{{ $t("sortBy") }} {{ $t("timestamp") }}</option>
     </select>
     <button
+    class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
       @click="toggleSortDirection"
-      class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
     >
       {{ sortDirection === "asc" ? "▲" : "▼" }}
     </button>
@@ -49,7 +49,7 @@
           <th
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
           >
-            {{ $t("action") }}
+            {{ $t("description") }}
           </th>
           <th
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
@@ -78,17 +78,17 @@
           </td>
           <td class="px-6 py-2">
             <div class="text-sm text-gray-500 dark:text-gray-300">
-              {{ log.action }}
+              {{ log.description }}
             </div>
           </td>
           <td class="px-6 py-2">
             <div class="text-sm text-gray-500 dark:text-gray-300">
-              {{ log.object }}
+              {{ log.objectType }}
             </div>
           </td>
           <td class="px-6 py-2">
             <div class="text-sm text-gray-500 dark:text-gray-300">
-                {{ new Date(log.createdAt) }}
+                {{ new Date(log.createdAt).toLocaleString('nl-nl', { hour12: false }) }}
             </div>
           </td>
         </tr>
@@ -128,7 +128,7 @@ import { useI18n } from 'vue-i18n';
 import BackLink from '@/components/BackLink.vue';
 import CTitle from '@/components/CTitle.vue';
 
-const actions = ["Create", "Update", "Delete", "Sold", "Raise"];
+const descriptions = ref([]);
 const logs = ref([]);
 const searchQuery = ref("");
 const selectedAction = ref("");
@@ -138,6 +138,12 @@ const { t } = useI18n();
 
 try {
   logs.value = await $fetch("/api/admin/log/all", { method: "GET" });
+  for (const log of logs.value) {
+    const action = log.action;
+    if (!descriptions.value.includes(action)) {
+      descriptions.value.push(action);
+    }
+  }
 } catch (error) {
   console.error("Failed to fetch logs:", error);
 }

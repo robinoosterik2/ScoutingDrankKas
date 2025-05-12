@@ -66,7 +66,8 @@ UserSchema.methods.logAction = async function (action: any, description: any) {
 	const log = new Log({
 		executor: this._id,
 		action: action,
-		object: this._id,
+		objectType: "User",
+		objectId: this._id,
 		newValue: JSON.stringify(this),
 		description: description
 	});
@@ -90,7 +91,8 @@ UserSchema.pre('save', async function (next) {
 			const log = new Log({
 				executor: this._id,
 				action: "Create",
-				object: this._id,
+				objectType: "User",
+				objectId: this._id,
 				newValue: JSON.stringify(this),
 				description: "User created"
 			});

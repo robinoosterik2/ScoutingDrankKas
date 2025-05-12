@@ -27,7 +27,6 @@
     "nodemailer": "^6.10.0",
     "nuxt": "^3.17.2",
     "nuxt-auth-utils": "^0.5.5",
-    "nuxt-mongoose": "^1.0.6",
     "radix-vue": "^1.9.10",
     "vue": "latest",
     "vue-router": "latest"
