@@ -31,7 +31,8 @@ RaiseSchema.pre('save', async function (next) {
             const log = new Log({
                 executor: this.raiser,
                 action: "Raise",
-                object: this.user,
+                objectType: "User",
+                objectId: this.user,
                 newValue: JSON.stringify({ amount: this.amount }),
                 description: `User raised by ${this.amount}`
             });

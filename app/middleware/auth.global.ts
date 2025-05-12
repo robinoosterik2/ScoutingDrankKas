@@ -4,7 +4,6 @@ export default defineNuxtRouteMiddleware(async (event) => {
     // Get the path without the locale prefix
     const pathWithoutLocale = event.fullPath.replace(/^\/(en|nl)/, '') || '/';
 
-    console.log(event.fullPath);
     // Skip auth check for non-auth required paths
     if (nonAuthRequiredPaths.some(path => pathWithoutLocale.startsWith(path))) {
         return;

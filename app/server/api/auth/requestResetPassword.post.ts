@@ -50,7 +50,6 @@ export default defineEventHandler(async (event) => {
 		await transporter.sendMail(mailOptions)
 		return { success: true, message: 'Reset email sent' }
 	} catch (error: any) {
-		console.log(error.message)
 		throw createError({ statusCode: 500, message: 'Error sending email' })
 	}
 })
