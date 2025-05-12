@@ -106,13 +106,26 @@
   "logs": {
     "getStarted": "Nog geen logboeken beschikbaar.",
     "noLogs": "Geen logboeken gevonden",
-    "title": "Logboeken"
+    "title": "Logboeken",
+	"export": "Exporteren"
   },
   "Name": "Naam",
   "name": "naam",
   "names": "namen",
   "no": "Nee",
   "object": "Object",
+  "dateRange": "Datum range",
+  "startDate": "Startdatum",
+  "endDate": "Einddatum",
+  "allUsers": "Alle gebruikers",
+  "userSelection": "Gebruikersselectie",
+  "selectedUsers": "Geselecteerde gebruikers",
+  "searchUsers": "Zoek gebruikers",
+  "noUsersFound": "Geen gebruikers gevonden",
+  "exportFormat": "Export formaat",
+  "exportLogs": "Exporteer logboeken",
+  "exportFailed": "Exporteren mislukt",
+  "description": "Beschrijving",
   "OK": "OK",
   "On": "Op",
   "Order": "Bestelling",
@@ -165,13 +178,12 @@
     "email": "Email",
     "errors": {
       "credentialsRequired": "Gebruikersnaam en wachtwoord zijn verplicht.",
-      "EmailInUse": "E-mailadres is al in gebruik",
       "passwordsDoNotMatch": "Wachtwoorden komen niet overeen",
       "passwordTooShort": "Wachtwoord moet minimaal 8 tekens lang zijn.",
-      "passwordTooWeak": "Wachtwoord is te zwak",
       "registrationFailed": "Registratie mislukt. Probeer het opnieuw.",
       "userAlreadyExistsWithFullName": "Een gebruiker met deze voor- en achternaam bestaat al.",
-      "usernameAlreadyExists": "Gebruikersnaam bestaat al"
+      "usernameAlreadyExists": "Gebruikersnaam bestaat al",
+	  "emailInUse": "E-mailadres is al in gebruik"
     },
     "firstName": "Voornaam",
     "lastName": "Achternaam",

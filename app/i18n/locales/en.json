@@ -106,11 +106,24 @@
   "logs": {
     "getStarted": "No logs available yet.",
     "noLogs": "No logs found",
-    "title": "Logs"
+    "title": "Logs",
+	"export": "Export"
   },
   "Name": "Name",
   "name": "name",
   "names": "names",
+  "dateRange": "Date Range",
+  "startDate": "Start Date",
+  "endDate": "End Date",
+  "userSelection": "User Selection",
+  "allUsers": "All Users",
+  "selectedUsers": "Selected Users",
+  "searchUsers": "Search Users",
+  "noUsersFound": "No users found",
+  "exportFormat": "Export Format",
+  "exportLogs": "Export Logs",
+  "exportFailed": "Export failed. Please try again.",
+  "description": "Description",
   "no": "No",
   "object": "Object",
   "OK": "OK",
@@ -166,10 +179,9 @@
     "email": "Email",
     "errors": {
       "credentialsRequired": "Username and password are required.",
-      "EmailInUse": "Email is already in use",
+      "emailInUse": "Email is already in use",
       "passwordsDoNotMatch": "Passwords do not match",
       "passwordTooShort": "Password must be at least 8 characters.",
-      "passwordTooWeak": "Password is too weak",
       "registrationFailed": "Registration failed. Please try again.",
       "userAlreadyExistsWithFullName": "A user with this first and last name already exists.",
       "usernameAlreadyExists": "Username already exists"
