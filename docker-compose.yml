@@ -18,8 +18,8 @@ services:
     attach: false
 
   nuxtjs:
-    image: nuxtjs:baked # You'll tag the image built by Bake
-    container_name: nuxtjs
+    build:
+      dockerfile: Dockerfile.dev
     restart: always
     env_file:
       - .env.dev

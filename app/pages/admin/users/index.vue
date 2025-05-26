@@ -187,6 +187,7 @@
     :isOpen="isPopupOpen"
     :userId="selectedUserId"
     @close="closePopup"
+    @balanceUpdated="handleBalanceUpdated"
   />
 </template>
 
@@ -248,7 +249,6 @@ const filteredAndSortedUsers = computed(() => {
 });
 
 const handleAction = (user) => {
-  let component = document.getElementById("user-" + user._id);
   let action = selectedValue.value;
   if (action === "edit") {
     editUser(user);
@@ -282,6 +282,19 @@ const openRaisePopUp = (user) => {
 const closePopup = () => {
   isPopupOpen.value = false;
   selectedUserId.value = null;
+};
+
+// Handle balance updated event from RaisePopUp
+const handleBalanceUpdated = async ({ userId, newBalance }) => {
+  // Update the user's balance in the local state
+  const userIndex = users.value.findIndex(user => user._id === userId);
+  console.log(newBalance)
+  console.log(userId)
+  console.log("newBalance")
+  if (userIndex !== -1) {
+    users.value[userIndex].balance = newBalance;
+  }
+  closePopup();
 };
 
 // Close delete confirmation modal

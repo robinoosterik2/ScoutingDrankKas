@@ -62,13 +62,11 @@ export default defineEventHandler(async (event) => {
         mongoQuery.action = { $in: actionTypes };
       }
     }
-    console.log(mongoQuery);
     // Fetch logs with populated references
     const logs = await Log.find(mongoQuery)
       .populate('executor', 'username email firstName lastName')
       .populate('objectId', 'username name title')
       .sort({ createdAt: -1 });
-    console.log(logs);
     // Prepare response headers based on format
     if (format === 'csv') {
       event.res.setHeader('Content-Type', 'text/csv');

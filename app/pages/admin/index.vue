@@ -69,11 +69,6 @@
           type="secondary"
           :label="$t('admin.viewAllUsers')"
         />
-        <DashboardLink
-          to="/register"
-          type="users"
-          :label="$t('admin.createUser')"
-        />
       </template>
     </AdminCard>
 

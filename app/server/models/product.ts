@@ -71,6 +71,7 @@ ProductSchema.index({ popularityScore: -1 });
 ProductSchema.methods.updateOrderMetrics = async function(quantity: any) {
   this.totalOrders += 1;
   this.totalQuantitySold += quantity;
+  this.stock -= quantity;
   
   // Add to recent orders
   this.recentOrders.push({

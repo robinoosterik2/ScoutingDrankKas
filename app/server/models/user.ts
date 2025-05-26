@@ -144,6 +144,21 @@ export const isAdministrator = async function (userId: string) {
 	return false;
 };
 
+export const isStam = async function (userId: string) {
+	const user = await User.findById(userId).populate("role");
+	if (!user) {
+		return false;
+	}
+	const role = user.role;
+	if (!role) {
+		return false;
+	}
+	if (role.rolePermissions.includes('stam')) {
+		return true;
+	}
+	return false;
+};
+
 export const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 

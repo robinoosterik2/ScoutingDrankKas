@@ -98,6 +98,7 @@
 
 <script>
 export default {
+	emits: ['balanceUpdated', 'close'],
 	props: {
 		isOpen: {
 			type: Boolean,
@@ -144,7 +145,7 @@ export default {
 			}
 
 			try {
-				await $fetch(`/api/admin/raises/create`, {
+				const response = await $fetch(`/api/admin/raises/create`, {
 					method: "POST",
 					body: {
 						userId: this.userId,
@@ -153,6 +154,8 @@ export default {
 				});
 				this.fetchRecentRaises();
 				this.raiseAmount = null;
+				// Emit event with the updated balance
+				this.$emit('balanceUpdated', { userId: this.userId, newBalance: response.newBalance });
 			} catch (error) {
 				console.error("Failed to raise balance", error);
 				alert("Failed to raise balance. Please try again. Error: ", error);

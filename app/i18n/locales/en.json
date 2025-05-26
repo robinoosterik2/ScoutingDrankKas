@@ -132,7 +132,9 @@
   "orderDetails": "Order Details",
   "orders": {
     "allCategories": "All Categories",
+    "checkBackLater": "Check back later or try adjusting your filters",
     "confirmDelete": "Are you sure you want to delete this order?",
+    "noOrders": "No orders found",
     "noProductsSelected": "No products selected",
     "placeOrder": "Place Order",
     "searchProducts": "Search Products",
@@ -158,12 +160,22 @@
     "productStock": "Product Stock",
     "title": "Product Management"
   },
+  "raisedBy": "Raised By",
   "profile": {
     "balance": "Balance",
     "orderHistory": "Order History",
     "ordersOfMonth": "Orders This Month",
     "recentOrders": "Recent Orders",
-    "title": "Profile"
+    "title": "Profile",
+    "accountInfo": "Account Info",
+    "filter": "Filter",
+    "noOrders": "No orders found",
+    "selectMonth": "Select Month",
+    "selectYear": "Select Year",
+    "viewOrder": "View Order",
+    "raises": "Raises",
+    "last5Raises": "Last 5 Raises",
+    "noRaisesFound": "No Raises Found"
   },
   "Quantity": "Quantity",
   "Raise": "Raise",

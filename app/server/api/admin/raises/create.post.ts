@@ -15,7 +15,16 @@ export default defineEventHandler(async (event) => {
     };
     const raise = new Raise({user: userId, amount: amount, raiser: admin._id})
     await raise.save()
-    return {message: "successfully topped up"}
+    // Convert user.balance from string to number and parse amount as float
+    const currentBalance = parseFloat(user.balance.toString());
+    const amountToAdd = parseFloat(amount);
+    const newBalance = currentBalance + amountToAdd;
+    
+    // Update the user's balance in the database
+    user.balance = newBalance;
+    await user.save();
+    
+    return { newBalance: newBalance }
   } catch (error) {
     throw createError({ statusCode: 500, statusMessage: "Internal Server Error" });
   }
