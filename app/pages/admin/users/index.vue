@@ -46,7 +46,7 @@
   </div>
 
   <!-- Users Table -->
-  <div class="overflow-visible bg-white rounded-lg shadow-md dark:bg-gray-800">
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
       <thead class="bg-gray-50 dark:bg-gray-700">
         <tr class="overflow-visible">
@@ -228,10 +228,17 @@ const filteredAndSortedUsers = computed(() => {
       const matchesSearch =
         user.username.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         user.email.toLowerCase().includes(searchQuery.value.toLowerCase());
-      const matchesRole =
-        !selectedRole.value ||
-        user.role.roleName === selectedRole.value.roleName;
-      return matchesSearch && matchesRole;
+      
+      // Only apply role filter if a role is selected
+      if (selectedRole.value) {
+        // If user has no role, don't show them when a role is selected
+        if (!user.role) return false;
+        // Check if user's role matches the selected role
+        return matchesSearch && user.role.roleName === selectedRole.value.roleName;
+      }
+      
+      // If no role is selected, only apply search filter
+      return matchesSearch;
     })
     .sort((a, b) => {
       const direction = sortDirection.value === "asc" ? 1 : -1;
@@ -288,9 +295,6 @@ const closePopup = () => {
 const handleBalanceUpdated = async ({ userId, newBalance }) => {
   // Update the user's balance in the local state
   const userIndex = users.value.findIndex(user => user._id === userId);
-  console.log(newBalance)
-  console.log(userId)
-  console.log("newBalance")
   if (userIndex !== -1) {
     users.value[userIndex].balance = newBalance;
   }

@@ -1,155 +1,144 @@
 <template>
-	<div class="container mx-auto px-4 py-6">
-		<!-- Order Popup -->
-		<OrderPopUp
-			:is-open="isOrderPopupOpen"
-			:order-id="selectedOrderId"
-			@close="closeOrderPopup"
-		/>
-		<h1 class="text-3xl font-bold mb-6">{{ $t('profile.title') }}</h1>
+  <div class="container mx-auto px-4 py-6">
+    <!-- Order Popup -->
+    <OrderPopUp
+      :is-open="isOrderPopupOpen"
+      :order-id="selectedOrderId"
+      @close="closeOrderPopup"
+    />
+    <h1 class="text-3xl font-bold mb-6">{{ $t('profile.title') }}</h1>
 
-        <!-- User Info -->
-        <div class="dark:bg-gray-800 shadow-md rounded-lg p-4 mb-6">
-            <h2 class="text-xl font-semibold mb-2">{{ $t('profile.accountInfo') }}</h2>
-            <div class="grid grid-cols-2 gap-x-4 gap-y-2 max-w-md">
-                <span class="font-medium">{{ $t('username') }}:</span>
-                <span>{{ user?.username }}</span>
-                <span class="font-medium">{{ $t('email') }}:</span>
-                <span>{{ user?.email }}</span>
-                <span class="font-medium">{{ $t('balance') }}:</span>
-                <span :class="balance >= 0 ? 'text-green-600' : 'text-red-600'">€{{ balance }}</span>
-            </div>
-        </div>
-		<!-- Tabs -->
-		<div class="mb-4 flex gap-4 border-b border-gray-300">
-			<button
-				class="pb-2 px-4 font-medium"
-				:class="{ 'border-b-2 border-blue-500': activeTab === 'orders' }"
-				@click="activeTab = 'orders'"
-			>
-				{{ $t('orders') }}
-			</button>
-			<button
-				class="pb-2 px-4 font-medium"
-				:class="{ 'border-b-2 border-blue-500': activeTab === 'raises' }"
-				@click="activeTab = 'raises'"
-			>
-				{{ $t('raises') }}
-			</button>
-		</div>
+    <!-- User Info -->
+    <div class="dark:bg-gray-800 shadow-md rounded-lg p-4 mb-6">
+      <h2 class="text-xl font-semibold mb-2">{{ $t('profile.accountInfo') }}</h2>
+      <div class="grid grid-cols-2 gap-x-4 gap-y-2 max-w-md">
+        <span class="font-medium">{{ $t('username') }}:</span>
+        <span>{{ user?.username }}</span>
+        <span class="font-medium">{{ $t('email') }}:</span>
+        <span>{{ user?.email }}</span>
+        <span class="font-medium">{{ $t('balance') }}:</span>
+        <span :class="balance >= 0 ? 'text-green-600' : 'text-red-600'">€{{ balance }}</span>
+      </div>
+    </div>
 
-		<!-- Orders Tab -->
-		<div v-if="activeTab === 'orders'">
-      <!-- Month/Year Filter -->
-      <div class="flex items-center gap-4 mb-4">
+    <!-- Tabs -->
+    <div class="mb-4 flex gap-4 border-b border-gray-300">
+      <button
+        class="pb-2 px-4 font-medium"
+        :class="{ 'border-b-2 border-blue-500': activeTab === 'orders' }"
+        @click="activeTab = 'orders'"
+      >
+        {{ $t('orders') }}
+      </button>
+      <button
+        class="pb-2 px-4 font-medium"
+        :class="{ 'border-b-2 border-blue-500': activeTab === 'raises' }"
+        @click="activeTab = 'raises'"
+      >
+        {{ $t('raises') }}
+      </button>
+    </div>
+
+    <!-- Orders Tab -->
+    <div v-if="activeTab === 'orders'" class="dark:bg-gray-800 shadow-md rounded-lg p-4 mb-6">
+      <!-- Filters -->
+      <div class="flex items-center gap-4 mb-4 flex-wrap">
         <select
-            v-model="selectedMonth"
-            class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
-            >
-                <option value="">{{ $t("profile.selectMonth") }}</option>
-                <option
-                    v-for="month in monthOptions"
-                    :key="month.value"
-                    :value="month.value"
-                >
-                    {{ month.label }}
-                </option>
+          v-model="selectedMonth"
+          @change="handleFilterChange"
+          class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
+        >
+          <option value="">{{ $t('profile.selectMonth') }}</option>
+          <option
+            v-for="month in monthOptions"
+            :key="month.value"
+            :value="month.value"
+          >
+            {{ month.label }}
+          </option>
         </select>
 
         <select
-            v-model="selectedYear"
-            class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
-            >
-                <option value="">{{ $t("profile.selectYear") }}</option>
-                <option
-                    v-for="year in yearOptions"
-                    :key="year.value"
-                    :value="year.value"
-                >
-                    {{ year.label }}
-                </option>
-            </select>
+          v-model="selectedYear"
+          @change="handleFilterChange"
+          class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
+        >
+          <option value="">{{ $t('profile.selectYear') }}</option>
+          <option
+            v-for="year in yearOptions"
+            :key="year.value"
+            :value="year.value"
+          >
+            {{ year.label }}
+          </option>
+        </select>
       </div>
 
-      <!-- Orders Table -->
-      <div v-if="monthlyOrders.length" class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-visible">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ $t('date') }}</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ $t('barkeeper') }}</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ $t('total') }}</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ $t('actions') }}</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="order in monthlyOrders" :key="order._id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200">
-              <td class="px-6 py-2 whitespace-nowrap">{{ formatDate(order.createdAt) }}</td>
-              <td class="px-6 py-2 whitespace-nowrap">{{ order.bartender.firstName }} {{ order.bartender.lastName }}</td>
-              <td class="px-6 py-2 whitespace-nowrap">€{{ order.total }}</td>
-              <td class="px-6 py-2 whitespace-nowrap text-right">
-                <button @click="openOrderPopup(order._id)" class="px-3 py-1 rounded bg-blue-500 text-white">{{ $t('profile.viewOrder') }}</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <!-- Pagination Controls for Orders -->
-        <div class="flex justify-center items-center gap-2 mt-4">
-          <button :disabled="ordersPage === 1" @click="() => { ordersPage--; fetchOrders(); }" class="px-2 py-1 rounded bg-gray-200 dark:bg-gray-700" >Prev</button>
-          <span>{{ ordersPage }}</span>
-          <button :disabled="ordersPage * ordersPageSize >= ordersTotal" @click="() => { ordersPage++; fetchOrders(); }" class="px-2 py-1 rounded bg-gray-200 dark:bg-gray-700">Next</button>
-          <span class="text-xs text-gray-500 ml-2">{{ $t('profile.total') }}: {{ ordersTotal }}</span>
-        </div>
-        <div v-if="monthlyOrders.length === 0" class="text-center py-12 px-4 sm:px-6 lg:px-8 text-gray-400">
-          {{ $t('profile.noOrders') }}
-        </div>
-      </div>
-      <div v-else class="text-center py-12 px-4 sm:px-6 lg:px-8 text-gray-400">
-        {{ $t('profile.noOrders') }}
-      </div>
+      <DataTable
+        :columns="[
+          { header: $t('date'), field: 'createdAt', align: 'left' },
+          { header: $t('barkeeper'), field: 'bartender', align: 'left' },
+          { header: $t('total'), field: 'total', align: 'left' },
+          { header: $t('actions'), field: 'actions', align: 'right' },
+        ]"
+        :data="monthlyOrders.map(order => ({
+          ...order,
+          bartender: order.bartender.username,
+          total: `€${order.total}`,
+          createdAt: formatDate(order.createdAt),
+          actions: ''
+        }))"
+        :pagination="{
+          page: ordersPage,
+          pageSize: ordersPageSize,
+          total: ordersTotal
+        }"
+        :no-data-text="$t('profile.noOrders')"
+        @update:page="(page) => { ordersPage = page; fetchOrders(); }"
+      >
+        <template #cell-actions="{ row: order }">
+          <button 
+            @click="openOrderPopup(order._id)" 
+            class="px-3 py-1 rounded bg-blue-500 text-white text-sm"
+          >
+            {{ $t('profile.viewOrder') }}
+          </button>
+        </template>
+      </DataTable>
+    </div>
 
-		</div>
-
-		<!-- Raises Tab -->
-		<div v-else-if="activeTab === 'raises'" class="dark:bg-gray-800 shadow-md rounded-lg p-4">
-			<h2 class="text-xl font-semibold mb-4">{{ $t('profile.raises') }}</h2>
+    <!-- Raises Tab -->
+    <div v-else-if="activeTab === 'raises'" class="dark:bg-gray-800 shadow-md rounded-lg p-4">
+      <h2 class="text-xl font-semibold mb-4">{{ $t('profile.raises') }}</h2>
       
-      <div v-if="raises.length > 0" class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ $t('date') }}</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ $t('raisedBy') }}</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ $t('Amount') }}</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="raise in raises" :key="raise._id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200">
-              <td class="px-6 py-2 whitespace-nowrap">{{ formatDate(raise.createdAt) }}</td>
-              <td class="px-6 py-2 whitespace-nowrap">
-                {{ raise.raiser.firstName }} {{ raise.raiser.lastName }}
-              </td>
-              <td class="px-6 py-2 whitespace-nowrap text-right">€{{ raise.amount.toFixed(2) }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <!-- Pagination Controls for Raises -->
-        <div class="flex justify-center items-center gap-2 mt-4">
-          <button :disabled="raisesPage === 1" @click="() => { raisesPage--; fetchRaises(); }" class="px-2 py-1 rounded bg-gray-200 dark:bg-gray-700">Prev</button>
-          <span>{{ raisesPage }}</span>
-          <button :disabled="raisesPage * raisesPageSize >= raisesTotal" @click="() => { raisesPage++; fetchRaises(); }" class="px-2 py-1 rounded bg-gray-200 dark:bg-gray-700">Next</button>
-          <span class="text-xs text-gray-500 ml-2">{{ $t('profile.total') }}: {{ raisesTotal }}</span>
-        </div>
-      </div>
-      <div v-else class="text-center py-12 px-4 sm:px-6 lg:px-8 text-gray-400">
-        {{ $t('profile.noRaisesFound') }}
-      </div>
-		</div>
+      <DataTable
+        :columns="[
+          { header: $t('date'), field: 'createdAt', align: 'left' },
+          { header: $t('raisedBy'), field: 'raiser', align: 'left' },
+          { header: $t('Amount'), field: 'amount', align: 'right' },
+        ]"
+        :data="raises.map(raise => ({
+          ...raise,
+          raiser: `${raise.raiser.firstName} ${raise.raiser.lastName}`,
+          amount: `€${raise.amount.toFixed(2)}`,
+          createdAt: formatDate(raise.createdAt)
+        }))"
+        :pagination="{
+          page: raisesPage,
+          pageSize: raisesPageSize,
+          total: raisesTotal
+        }"
+        :no-data-text="$t('profile.noRaisesFound')"
+        @update:page="(page) => { raisesPage = page; fetchRaises(); }"
+      />
+    </div>
 	</div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import CButton from '~/components/CButton.vue';
+import DataTable from '~/components/DataTable.vue'; // Import the new DataTable component
 
 const { user } = useUserSession();
 
@@ -215,6 +204,11 @@ const fetchRaises = async () => {
 
 const fetchOrders = () => {
   loadOrders(selectedMonth.value, selectedYear.value);
+};
+
+const handleFilterChange = () => {
+  ordersPage = 1; // Reset to first page when filters change
+  fetchOrders();
 };
 
 // Auto-filter on page mount
