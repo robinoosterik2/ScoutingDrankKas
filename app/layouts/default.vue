@@ -8,6 +8,9 @@
 					<NuxtLink v-if="session?.isAdmin" :to="$localePath('/admin')" class="text-blue-500 ms-2">
 						To admin
 					</NuxtLink>
+					<NuxtLink v-if="user" :to="$localePath('/user/profile')" class="text-blue-500 ms-2">
+						Profile
+					</NuxtLink>
 					<NuxtLink v-if="user" :to="$localePath('/logout')" class="text-red-500 ms-2">
 						Logout
 					</NuxtLink>

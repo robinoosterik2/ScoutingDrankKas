@@ -11,7 +11,6 @@ export default defineEventHandler(async (event) => {
       .exec();
     return recentRaises;
   } catch (error) {
-    console.log(error);
     throw createError({
       statusCode: 500,
       statusMessage: "Error while fetching Raises",

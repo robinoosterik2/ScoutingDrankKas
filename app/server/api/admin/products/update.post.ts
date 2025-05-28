@@ -5,8 +5,8 @@ import { Category } from '@/server/models/category';
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     // make sure every field is present
-    let { id, name, price, description, stock, categories } = body;
-    if (!name || !price || !description || !categories || (typeof stock !== 'number')) {
+    let { id, name, price, description, stock, categories, imageUrl } = body;
+    if (!name || !price || !description || !categories || (typeof stock !== 'number') || !imageUrl) {
         return {
             status: 400,
             body: { message: 'Missing fields' }

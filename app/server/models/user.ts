@@ -66,7 +66,8 @@ UserSchema.methods.logAction = async function (action: any, description: any) {
 	const log = new Log({
 		executor: this._id,
 		action: action,
-		object: this._id,
+		objectType: "User",
+		objectId: this._id,
 		newValue: JSON.stringify(this),
 		description: description
 	});
@@ -90,7 +91,8 @@ UserSchema.pre('save', async function (next) {
 			const log = new Log({
 				executor: this._id,
 				action: "Create",
-				object: this._id,
+				objectType: "User",
+				objectId: this._id,
 				newValue: JSON.stringify(this),
 				description: "User created"
 			});
@@ -137,6 +139,21 @@ export const isAdministrator = async function (userId: string) {
 		return false;
 	}
 	if (role.rolePermissions.includes('admin')) {
+		return true;
+	}
+	return false;
+};
+
+export const isStam = async function (userId: string) {
+	const user = await User.findById(userId).populate("role");
+	if (!user) {
+		return false;
+	}
+	const role = user.role;
+	if (!role) {
+		return false;
+	}
+	if (role.rolePermissions.includes('stam')) {
 		return true;
 	}
 	return false;

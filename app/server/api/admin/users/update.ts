@@ -1,5 +1,6 @@
 import { defineEventHandler, readBody } from "h3";
 import { User } from "@/server/models/user";
+import { CustomRole } from "~/server/models/customRole";
 
 export default defineEventHandler(async (event) => {
   try {

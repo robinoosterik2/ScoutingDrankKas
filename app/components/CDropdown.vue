@@ -47,7 +47,6 @@ const selectedItem = computed(() =>
 
 // Handle item selection
 const handleItemSelect = (item) => {
-  console.log(item.value);
   emit("update:modelValue", item.value);
   isDropdownOpen.value = false;
 };
@@ -82,14 +81,14 @@ onUnmounted(() => {
       <button
         type="button"
         @click="toggleDropdown"
-        class="inline-flex w-full items-center rounded-md bg-white dark:bg-gray-800 px-2 py-1 text-xs text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 transition-colors"
+        class="inline-flex items-center w-full px-2 py-1 text-xs text-gray-900 transition-colors bg-white rounded-md shadow-sm dark:bg-gray-800 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700"
       >
         <!-- Display selected item label or placeholder -->
         {{ selectedItem?.label || placeholder }}
         <div class="flex-1" />
         <!-- Dropdown arrow icon -->
         <svg
-          class="-mr-1 h-3 w-3 text-gray-400"
+          class="w-3 h-3 -mr-1 text-gray-400"
           viewBox="0 0 20 20"
           fill="currentColor"
         >
@@ -104,16 +103,16 @@ onUnmounted(() => {
 
     <!-- Dropdown Menu with Transition -->
     <transition
-      enter-active-class="transition ease-out duration-100"
-      enter-from-class="transform opacity-0 scale-95"
-      enter-to-class="transform opacity-100 scale-100"
-      leave-active-class="transition ease-in duration-75"
-      leave-from-class="transform opacity-100 scale-100"
-      leave-to-class="transform opacity-0 scale-95"
+      enter-active-class="transition duration-100 ease-out"
+      enter-from-class="transform scale-95 opacity-0"
+      enter-to-class="transform scale-100 opacity-100"
+      leave-active-class="transition duration-75 ease-in"
+      leave-from-class="transform scale-100 opacity-100"
+      leave-to-class="transform scale-95 opacity-0"
     >
       <div
         v-if="isDropdownOpen"
-        class="absolute right-0 z-10 w-full origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60 overflow-y-auto"
+        class="absolute right-0 z-10 w-full overflow-y-auto origin-top-right bg-white rounded-md shadow-lg dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60"
       >
         <div class="py-1" role="menu" aria-orientation="vertical">
           <button
