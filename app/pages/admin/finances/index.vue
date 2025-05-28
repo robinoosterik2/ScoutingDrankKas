@@ -47,7 +47,7 @@
     </div>
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
       <SummaryCard 
         :title="$t('finance.totalRevenue')" 
         :value="formatCurrency(summary.totalRevenue)" 
@@ -59,6 +59,12 @@
         :value="summary.totalOrders.toString()"
         icon="shopping-bag"
         color="green"
+      />
+      <SummaryCard 
+        :title="$t('finance.totalRaised')" 
+        :value="formatCurrency(summary.totalRaised)"
+        icon="hand-holding-usd"
+        color="yellow"
       />
       <SummaryCard 
         :title="$t('finance.averageOrderValue')" 
@@ -74,7 +80,7 @@
         {{ $t('finance.revenueOverTime') }}
       </h2>
       <div class="h-64">
-        <canvas ref="revenueChart"></canvas>
+        <canvas id="revenueChart"></canvas>
       </div>
     </div>
 
@@ -93,7 +99,10 @@
                 {{ $t('finance.date') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                {{ $t('finance.orderId') }}
+                {{ $t('finance.type') }}
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                {{ $t('finance.reference') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 {{ $t('finance.customer') }}
@@ -108,14 +117,17 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                 {{ formatDate(transaction.createdAt) }}
               </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 capitalize">
+                {{ transaction.type }}
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                #{{ transaction._id.toString().substring(18, 24) }}
+                {{ transaction.type === 'order' ? '#' + (transaction._id?.toString().substring(18, 24) || '') : 'Donation' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                 {{ transaction.user?.firstName }} {{ transaction.user?.lastName }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right text-gray-900 dark:text-white">
-                {{ formatCurrency(transaction.total) }}
+                {{ formatCurrency(transaction.displayAmount) }}
               </td>
             </tr>
             <tr v-if="transactions.length === 0">
@@ -153,13 +165,103 @@ const selectedYear = ref(new Date().getFullYear());
 const summary = ref({
   totalRevenue: 0,
   totalOrders: 0,
+  totalRaised: 0,
   averageOrderValue: 0
 });
 
 const transactions = ref([]);
+const orders = ref([]);
+const raises = ref([]);
 let revenueChart = null;
 
-// Methods
+// // Methods
+// const updateChart = () => {
+//   if (revenueChart) {
+//     revenueChart.destroy();
+//   }
+  
+//   const ctx = document.getElementById('revenueChart');
+//   if (!ctx) return;
+  
+//   const labels = [];
+//   const salesData = [];
+//   const raiseData = [];
+  
+//   // Group data by day
+//   const dailyData = {};
+  
+//   // Process orders
+//   orders.value.forEach(order => {
+//     const date = new Date(order.createdAt).toLocaleDateString();
+//     if (!dailyData[date]) {
+//       dailyData[date] = { sales: 0, raises: 0 };
+//     }
+//     dailyData[date].sales += order.total || 0;
+//   });
+  
+//   // Process raises
+//   raises.value.forEach(raise => {
+//     const date = new Date(raise.createdAt).toLocaleDateString();
+//     if (!dailyData[date]) {
+//       dailyData[date] = { sales: 0, raises: 0 };
+//     }
+//     dailyData[date].raises += raise.amount || 0;
+//   });
+  
+//   // Sort dates and prepare data for chart
+//   Object.entries(dailyData)
+//     .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
+//     .forEach(([date, data]) => {
+//       labels.push(date);
+//       salesData.push(data.sales);
+//       raiseData.push(data.raises);
+//     });
+  
+//   revenueChart = new Chart(ctx, {
+//     type: 'bar',
+//     data: {
+//       labels,
+//       datasets: [
+//         {
+//           label: 'Sales',
+//           data: salesData,
+//           backgroundColor: 'rgba(79, 70, 229, 0.8)',
+//           borderColor: 'rgba(79, 70, 229, 1)',
+//           borderWidth: 1
+//         },
+//         {
+//           label: 'Donations',
+//           data: raiseData,
+//           backgroundColor: 'rgba(234, 179, 8, 0.8)',
+//           borderColor: 'rgba(234, 179, 8, 1)',
+//           borderWidth: 1
+//         }
+//       ]
+//     },
+//     options: {
+//       responsive: true,
+//       maintainAspectRatio: false,
+//       scales: {
+//         y: {
+//           beginAtZero: true,
+//           ticks: {
+//             callback: (value) => `€${value}`
+//           }
+//         }
+//       },
+//       plugins: {
+//         tooltip: {
+//           callbacks: {
+//             label: (context) => {
+//               return `${context.dataset.label}: €${context.raw.toFixed(2)}`;
+//             }
+//           }
+//         }
+//       }
+//     }
+//   });
+// };
+
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(value);
 };
@@ -171,33 +273,41 @@ const formatDate = (dateString) => {
 
 const fetchFinanceData = async () => {
   try {
-    // In a real app, you would fetch this data from your API
-    // const response = await $fetch(`/api/finance/summary?month=${selectedMonth.value}&year=${selectedYear.value}`);
-    // summary.value = response.summary;
-    // transactions.value = response.transactions;
+    const response = await $fetch(`/api/admin/finances/get?month=${selectedMonth.value}&year=${selectedYear.value}`);
+    // Process orders
+    orders.value = response.orders || [];
+    const totalSales = orders.value.reduce((sum, order) => sum + (order.total || 0), 0);
     
-    // Mock data for demonstration
+    // Process raises
+    raises.value = response.raises || [];
+    const totalRaised = raises.value.reduce((sum, raise) => sum + (raise.amount || 0), 0);
+    
+    // Update summary
     summary.value = {
-      totalRevenue: 1245.67,
-      totalOrders: 42,
-      averageOrderValue: 29.66
+      totalRevenue: totalSales + totalRaised,
+      totalOrders: orders.value.length,
+      totalRaised: totalRaised,
+      averageOrderValue: orders.value.length > 0 ? totalSales / orders.value.length : 0
     };
     
-    transactions.value = [
-      {
-        _id: '60d5ec9f58309f0f8c8e9e8f',
-        createdAt: new Date(selectedYear.value, selectedMonth.value - 1, 15).toISOString(),
-        user: { firstName: 'John', lastName: 'Doe' },
-        total: 12.50
-      },
-      {
-        _id: '60d5ec9f58309f0f8c8e9e90',
-        createdAt: new Date(selectedYear.value, selectedMonth.value - 1, 10).toISOString(),
-        user: { firstName: 'Jane', lastName: 'Smith' },
-        total: 8.75
-      },
-      // Add more mock data as needed
-    ];
+    // Combine orders and raises for transactions list
+    const orderTransactions = orders.value.map(order => ({
+      ...order,
+      type: 'order',
+      displayAmount: order.total,
+      user: order.user || { firstName: 'Guest', lastName: '' }
+    }));
+    
+    const raiseTransactions = raises.value.map(raise => ({
+      ...raise,
+      type: 'raise',
+      displayAmount: raise.amount,
+      user: raise.user || { firstName: 'Donor', lastName: '' }
+    }));
+    
+    // Sort transactions by date
+    transactions.value = [...orderTransactions, ...raiseTransactions]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     
     updateChart();
   } catch (error) {
