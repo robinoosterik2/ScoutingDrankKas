@@ -22,21 +22,35 @@
     </div>
 
     <!-- Tabs -->
-    <div class="mb-4 flex gap-4 border-b border-gray-300">
-      <button
-        class="pb-2 px-4 font-medium"
-        :class="{ 'border-b-2 border-blue-500': activeTab === 'orders' }"
-        @click="activeTab = 'orders'"
-      >
-        {{ $t('orders') }}
-      </button>
-      <button
-        class="pb-2 px-4 font-medium"
-        :class="{ 'border-b-2 border-blue-500': activeTab === 'raises' }"
-        @click="activeTab = 'raises'"
-      >
-        {{ $t('raises') }}
-      </button>
+    <div class="mb-6">
+      <div class="border-b border-gray-200 dark:border-gray-700">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+          <button
+            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
+            :class="activeTab === 'orders' 
+              ? 'border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400' 
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200'"
+            @click="activeTab = 'orders'"
+          >
+            {{ $t('orders') }}
+            <span v-if="activeTab === 'orders'" class="hidden md:inline-block ml-2 py-0.5 px-2 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium">
+              {{ monthlyOrders.length }}
+            </span>
+          </button>
+          <button
+            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
+            :class="activeTab === 'raises' 
+              ? 'border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400' 
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200'"
+            @click="activeTab = 'raises'"
+          >
+            {{ $t('raises') }}
+            <span v-if="activeTab === 'raises'" class="hidden md:inline-block ml-2 py-0.5 px-2 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium">
+              {{ raises.length }}
+            </span>
+          </button>
+        </nav>
+      </div>
     </div>
 
     <!-- Orders Tab -->

@@ -274,20 +274,26 @@ const formatDate = (dateString) => {
 const fetchFinanceData = async () => {
   try {
     const response = await $fetch(`/api/admin/finances/get?month=${selectedMonth.value}&year=${selectedYear.value}`);
+    console.log(response);
+    console.log(response.totalSales);
+    console.log(response.totalRaised);
     // Process orders
     orders.value = response.orders || [];
-    const totalSales = orders.value.reduce((sum, order) => sum + (order.total || 0), 0);
+    const totalSales = response.totalSales || 0;
+
+    const salesPerDay = response.salesPerDay;
     
     // Process raises
     raises.value = response.raises || [];
-    const totalRaised = raises.value.reduce((sum, raise) => sum + (raise.amount || 0), 0);
+    const totalRaised = response.totalRaised || 0;
     
     // Update summary
     summary.value = {
       totalRevenue: totalSales + totalRaised,
       totalOrders: orders.value.length,
       totalRaised: totalRaised,
-      averageOrderValue: orders.value.length > 0 ? totalSales / orders.value.length : 0
+      averageOrderValue: orders.value.length > 0 ? totalSales / orders.value.length : 0,
+      salesPerDay: salesPerDay
     };
     
     // Combine orders and raises for transactions list
@@ -324,10 +330,10 @@ const updateChart = () => {
     revenueChart.destroy();
   }
   
-  // Mock data for the chart
   const labels = Array.from({ length: 30 }, (_, i) => `${i + 1} ${months[selectedMonth.value - 1]}`);
-  const data = Array.from({ length: 30 }, () => Math.floor(Math.random() * 100) + 50);
-  
+  // data should be the amount sold per day
+  const data = summary.value.salesPerDay.value
+  console.log(data)
   revenueChart = new Chart(ctx, {
     type: 'line',
     data: {
