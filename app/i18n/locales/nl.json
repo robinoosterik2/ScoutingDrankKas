@@ -9,10 +9,26 @@
     "createDefault": "Maak Standaard",
     "createProduct": "Nieuw product aanmaken",
     "createRole": "Nieuwe rol maken",
+    "createTransaction": "Maak transactie",
     "createUser": "Nieuwe gebruiker maken",
     "defaultDescription": "Standaard Beschrijving",
     "defaultTitle": "Standaard Titel",
     "exportLogs": "Exporteren naar csv",
+    "financeManagement": "Financieel beheer",
+    "FinanceManagementDescription": "Beheer financiële gegevens, bekijk transacties en genereer rapporten.",
+    "finance": {
+      "totalRevenue": "Totale Opbrengst",
+      "totalOrders": "Totaal Bestellingen",
+      "averageOrderValue": "Gem. Bestelwaarde",
+      "revenueOverTime": "Opbrengst Over Tijd",
+      "recentTransactions": "Recente Transacties",
+      "date": "Datum",
+      "orderId": "Bestelnummer",
+      "customer": "Klant",
+      "amount": "Bedrag",
+      "noTransactions": "Geen transacties gevonden",
+      "dailyRevenue": "Dagelijkse Opbrengst"
+    },
     "logsManagement": "Bekijk logboeken",
     "LogsManagementDescription": "Controleer de logboeken van wat gebruikers in de app deden.",
     "ordersManagement": "Orderbeheer",
@@ -25,6 +41,7 @@
     "UserManagement": "Beheer gebruikers",
     "UserManagementDescription": "Beheer gebruikersaccounts, reset wachtwoorden en beheer gebruikersrechten.",
     "viewAllCategories": "Bekijk alle categorieën",
+    "viewAllFinances": "Bekijk alle financiën",
     "viewAllLogs": "Bekijk logboeken",
     "viewAllOrders": "Bekijk bestellingen",
     "viewAllProducts": "Bekijk alle producten",
@@ -33,6 +50,9 @@
     "viewDefault": "Bekijk Standaard"
   },
   "all": "Alle",
+  "allUsers": "Alle gebruikers",
+  "prev": "Vorige",
+  "next": "Volgende",
   "Amount": "Hoeveelheid",
   "backTo": "Terug naar",
   "Balance": "Balance",
@@ -65,11 +85,17 @@
     "title": "Dashboard"
   },
   "date": "Datum",
+  "dateRange": "Datum range",
   "delete": "Verwijderen",
   "Description": "Beschrijving",
+  "description": "Beschrijving",
   "edit": "Bewerking",
   "email": "email",
+  "endDate": "Einddatum",
   "executor": "Uitvoerder",
+  "exportFailed": "Exporteren mislukt",
+  "exportFormat": "Export formaat",
+  "exportLogs": "Exporteer logboeken",
   "forgotPassword": {
     "backToLogin": "Terug naar inloggen",
     "email": "E-mailadres",
@@ -100,6 +126,7 @@
     "usernamePlaceholder": "Voer je gebruikersnaam in"
   },
   "logs": {
+    "export": "Exporteren",
     "getStarted": "Nog geen logboeken beschikbaar.",
     "noLogs": "Geen logboeken gevonden",
     "title": "Logboeken"
@@ -108,6 +135,7 @@
   "name": "naam",
   "names": "namen",
   "no": "Nee",
+  "noUsersFound": "Geen gebruikers gevonden",
   "object": "Object",
   "OK": "OK",
   "On": "Op",
@@ -115,7 +143,9 @@
   "orderDetails": "Bestelgegevens",
   "orders": {
     "allCategories": "Alle categorieën",
+    "checkBackLater": "Kom later terug of pas je filters aan",
     "confirmDelete": "Weet u zeker dat u deze bestelling wilt verwijderen?",
+    "noOrders": "Geen bestellingen gevonden",
     "noProductsSelected": "Geen producten geselecteerd",
     "placeOrder": "Bestelling plaatsen",
     "searchProducts": "Producten zoeken",
@@ -131,6 +161,7 @@
     "createProduct": "Product maken",
     "editProduct": "Product bewerken",
     "getStarted": "Ga aan de slag door een nieuw product te maken.",
+    "imageAspectRatioTip": "Upload voor het beste resultaat een afbeelding met een beeldverhouding van 16:9.",
     "noProducts": "Geen producten gevonden",
     "productDescription": "Product beschrijving",
     "productImage": "Productafbeelding",
@@ -139,12 +170,42 @@
     "productStock": "Productvoorraad",
     "title": "Productenbeheer"
   },
+  "filters": {
+    "title": "Filters",
+    "month": "Maand",
+    "year": "Jaar",
+    "apply": "Filters Toepassen"
+  },
+  "months": {
+    "january": "Januari",
+    "february": "Februari",
+    "march": "Maart",
+    "april": "April",
+    "may": "Mei",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "Augustus",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "December"
+  },
   "profile": {
+    "accountInfo": "Account Info",
     "balance": "Saldo",
+    "last5Raises": "Laatste 5 verhogingen",
+    "noOrders": "Geen bestellingen gevonden",
+    "noOrdersFound": "Geen bestellingen gevonden",
+    "noOrdersOfMonth": "Geen bestellingen deze maand",
+    "noRaisesFound": "Geen verhogingen gevonden",
     "orderHistory": "Bestelgeschiedenis",
     "ordersOfMonth": "Bestellingen deze maand",
+    "raises": "Verhogingen",
     "recentOrders": "Recente bestellingen",
-    "title": "Profiel"
+    "selectMonth": "Selecteer Maand",
+    "selectYear": "Selecteer Jaar",
+    "title": "Profiel",
+    "viewOrder": "Bestelling bekijken"
   },
   "Quantity": "Aantal",
   "Raise": "Ophogen",
@@ -154,14 +215,18 @@
     "noRaisesFound": "Geen verhogingen gevonden",
     "raiseBalance": "Verhoog balance"
   },
+  "raisedBy": "Verhoogd door",
   "register": {
     "alreadyHaveAccount": "Heeft u al een account?",
     "confirmPassword": "Bevestig wachtwoord",
     "email": "Email",
     "errors": {
-      "EmailInUse": "E-mailadres is al in gebruik",
+      "credentialsRequired": "Gebruikersnaam en wachtwoord zijn verplicht.",
+      "emailInUse": "E-mailadres is al in gebruik",
       "passwordsDoNotMatch": "Wachtwoorden komen niet overeen",
-      "passwordTooWeak": "Wachtwoord is te zwak",
+      "passwordTooShort": "Wachtwoord moet minimaal 8 tekens lang zijn.",
+      "registrationFailed": "Registratie mislukt. Probeer het opnieuw.",
+      "userAlreadyExistsWithFullName": "Een gebruiker met deze voor- en achternaam bestaat al.",
       "usernameAlreadyExists": "Gebruikersnaam bestaat al"
     },
     "firstName": "Voornaam",
@@ -202,11 +267,13 @@
     "roleNameExists": "Rolnaam bestaat al",
     "roleNameRequired": "Rolnaam is vereist",
     "roles": "Rollen",
-    "rolesAll": "Rollen toevoegen",
     "title": "Rollenbeheer"
   },
   "Search": "Zoeken",
+  "searchUsers": "Zoek gebruikers",
+  "selectedUsers": "Geselecteerde gebruikers",
   "sortBy": "Sorteer op",
+  "startDate": "Startdatum",
   "stock": "Voorraad",
   "timestamp": "Tijdstempel",
   "Total": "Totaal",
@@ -222,6 +289,7 @@
     "noUsers": "Geen gebruikers gevonden",
     "title": "Gebruikersbeheer"
   },
+  "userSelection": "Gebruikersselectie",
   "view": "Bekijk",
   "yes": "Ja"
 }

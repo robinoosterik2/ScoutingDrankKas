@@ -1,75 +1,88 @@
-const noneLoginRequiredPaths = ['/', '/login', '/register', '/api/_auth/session', '/logout', '', '/reset-password'];
+import { isAdministrator } from "@/server/models/user";
 
-export default defineEventHandler(async (event) => { 
-  if (noneLoginRequiredPaths.includes(event._path) || event._path?.startsWith('/api/auth')) {
+const noneLoginRequiredPaths = [
+  "/",
+  "/login",
+  "/register",
+  "/api/_auth/session",
+  "/logout",
+  "",
+  "/reset-password",
+];
+
+export default defineEventHandler(async (event) => {
+  const path = event.path || event._path; // Use both, event.path is preferred.
+
+  if (noneLoginRequiredPaths.includes(path) || path?.startsWith("/api/auth")) {
     return;
   }
 
-  // Handle admin routes for both web and API
-  if (event._path?.startsWith('/admin') || event._path?.startsWith('/api/admin')) {
-    
+  // Helper function to handle redirection and errors
+  const handleAuthError = (event: any, isApi: boolean, message: string, statusCode: number) => {
+    if (isApi) {
+      throw createError({
+        statusCode,
+        statusMessage: statusCode === 401 ? "Unauthorized" : "Forbidden",
+        message,
+      });
+    } else {
+      return sendRedirect(event, "/login", sanitizeStatusCode(302));
+    }
+  };
+
+  // Admin route handling (both web and API)
+  if (path?.startsWith("/admin") || path?.startsWith("/api/admin")) {
     try {
-      const result = await getUserSession(event);
-      
-      // If no user session, handle differently for web vs API
-      if (!result.user) {
-        console.error("User is undefined");
-        
-        if (event._path?.startsWith('/api/')) {
-          // For API routes, throw an unauthorized error
-          console.log("Throwing auth error");
-          throw createError({ 
-            statusCode: 401, 
-            statusMessage: "Unauthorized",
-            message: "Authentication required" 
-          });
-        } else {
-          // For web routes, redirect to login
-          return sendRedirect(event, '/login', sanitizeStatusCode(302));
-        }
+      const session = await getUserSession(event); // Await the promise
+      const user = session?.user;
+
+      if (!user) {
+        return handleAuthError(
+          event,
+          path.startsWith("/api/"),
+          "Authentication required",
+          401
+        );
       }
-      
-      // Check admin status
-      const isAdmin = await isAdministrator(result.user._id);
-      
+
+      const isAdmin = await isAdministrator(user._id); // Await the promise
+
       if (!isAdmin) {
-        console.error("User is not an admin");
-        
-        if (event._path?.startsWith('/api/')) {
-          // For API routes, throw a forbidden error
-          throw createError({ 
-            statusCode: 403, 
-            statusMessage: "Forbidden",
-            message: "Admin access required" 
-          });
-        } else {
-          // For web routes, redirect to login
-          return sendRedirect(event, '/login', sanitizeStatusCode(302));
-        }
+        return handleAuthError(
+          event,
+          path.startsWith("/api/"),
+          "Admin access required",
+          403
+        );
       }
-      
-    } catch (error) {
-      console.error("Authentication error", error);
-      
-      if (event._path?.startsWith('/api/')) {
-        // For API routes, throw appropriate error
-        throw createError({ 
-          statusCode: 401, 
-          statusMessage: "Unauthorized",
-          message: error instanceof Error ? error.message : "Authentication failed"
-        });
-      } else {
-        // For web routes, redirect to login
-        return sendRedirect(event, '/login', sanitizeStatusCode(302));
-      }
+      //If the user is admin, we should just return and let the request go through.
+      return;
+
+    } catch (error: any) {
+        // Handle errors, ensure a proper HTTP response is sent.
+        const isApi = path.startsWith("/api/");
+        const errorMessage = error instanceof Error ? error.message : "Authentication failed";
+        const statusCode = isApi ? 401 : 302; // Default to 401 for API, 302 for redirect
+        return handleAuthError(event, isApi, errorMessage, statusCode);
+
     }
   }
-  const result = await getUserSession(event);
-  if (!result.user) {
-    if (!event._path?.startsWith('/api/') && !event._path?.startsWith('/reset-password')) {
-      console.log(event._path)
-      console.log("REDIRECTING")
-      return sendRedirect(event, '/login', sanitizeStatusCode(302));
+
+  // Regular user authentication (non-admin routes)
+  try {
+    const session = await getUserSession(event);
+    const user = session?.user; // Access user property
+
+    if (!user && !path?.startsWith('/api/') && !path?.startsWith('/reset-password')) {
+      return sendRedirect(event, "/login", sanitizeStatusCode(302));
     }
+    //If the user is logged in, we should just return and let the request go through.
+    return;
+
+  } catch (error: any) {
+        const isApi = path.startsWith("/api/");
+        const errorMessage = error instanceof Error ? error.message : "Authentication failed";
+        const statusCode = isApi ? 401 : 302;
+        return handleAuthError(event, isApi, errorMessage, statusCode);
   }
 });

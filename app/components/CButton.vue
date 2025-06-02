@@ -1,7 +1,7 @@
 <template>
     <button
       :class="[
-        'w-full block text-center py-2 rounded-md transition-colors',
+        'inline-flex items-center justify-center rounded transition-colors',
         typeClasses,
         hoverClasses,
       ]"

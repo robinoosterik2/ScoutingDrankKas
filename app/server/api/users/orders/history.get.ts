@@ -4,7 +4,6 @@ import { User } from '@/server/models/user';
 
 export default defineEventHandler(async (event) => {
   const { userId } = getQuery(event);
-  console.log('2 userId', userId);
 
   if (!userId) {
     throw createError({ statusCode: 400, statusMessage: 'User ID is required' });
@@ -26,7 +25,6 @@ export default defineEventHandler(async (event) => {
     },
     { $sort: { '_id.year': -1, '_id.month': -1 } }
   ]);
-  console.log(orders);
   return orders.map(order => ({
     month: order._id.month,
     year: order._id.year,

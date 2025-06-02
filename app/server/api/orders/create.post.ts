@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import { Order } from "@/server/models/order";
+import { createFromRequestBody } from "@/server/models/order";
 import { User } from "@/server/models/user";
 import { Product } from "@/server/models/product";
 
@@ -24,18 +24,15 @@ export default defineEventHandler(async (event) => {
       const priceInCents = Math.round(productData.price * 100);
       totalInCents += priceInCents * product.count; // Perform calculation with integers
 
-      console.log(productData)
       await productData.updateOrderMetrics(product.count);
     }
-    console.log(totalInCents); // This will be the total in cents, e.g., 1234 for €12.34
 
     // Convert the total in cents back to a decimal format (e.g., euros)
     const finalTotalDecimal = totalInCents / 100;
     // Store the total as a number, ensuring it's represented with up to two decimal places,
     // consistent with the original parseFloat(total.toFixed(2))
     body.total = parseFloat(finalTotalDecimal.toFixed(2));
-    console.log(body.total);
-    const order = await Order.createFromRequestBody(body);
+    const order = await createFromRequestBody(body);
     await order.save();
     return { message: "Order created successfully" };
   } catch (error) {

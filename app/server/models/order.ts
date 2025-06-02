@@ -1,5 +1,7 @@
-import mongoose, { Schema, model } from 'mongoose';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import mongoose, { Schema } from 'mongoose';
 import { Log } from './log';
+import { User } from './user';
 
 const OrderProductSchema = new Schema({
   product: {
@@ -34,8 +36,8 @@ const OrderSchema = new Schema({
 });
 
 // Static method to create order from API request body
-OrderSchema.statics.createFromRequestBody = async function(bodyData) {
-  const products = bodyData.products.map(item => ({
+export const createFromRequestBody = async function(bodyData: { products: any[]; userId: any; total: number; bartenderId: any; }) {
+  const products = bodyData.products.map((item: { productId: any; count: any; }) => ({
     product: item.productId,
     count: item.count
   }));
@@ -47,7 +49,7 @@ OrderSchema.statics.createFromRequestBody = async function(bodyData) {
   user.balance -= bodyData.total;
   await user.save();
 
-  const order = new this({
+  const order = new Order({
     user: bodyData.userId,
     products: products,
     total: bodyData.total,
@@ -57,7 +59,8 @@ OrderSchema.statics.createFromRequestBody = async function(bodyData) {
   const log = new Log({
     executor: bodyData.userId,
     action: "Buy",
-    object: order._id,
+    objectType: "Order",
+    objectId: order._id,
     newValue: JSON.stringify(order),
     description: `User bought products worth ${bodyData.total}`
   });
