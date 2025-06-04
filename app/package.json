@@ -8,8 +8,10 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint . --ext .vue,.js,.ts,.mjs",
+    "lint:fix": "eslint . --ext .vue,.js,.ts,.mjs --fix",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
     "test": "vitest run",
     "i18n:sort": "node scripts/sort-locales.js"
   },

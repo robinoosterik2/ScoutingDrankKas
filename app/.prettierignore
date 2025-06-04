@@ -1,0 +1,8 @@
+# Ignore YAML files at the root, and any other non-app files
+# that Prettier might try to format by default.
+*.yml
+*.yaml
+# Also ignore common folders that should not be formatted
+dist
+.nuxt
+node_modules

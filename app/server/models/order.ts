@@ -35,6 +35,10 @@ const OrderSchema = new Schema({
   timestamps: true
 });
 
+// Add indexes
+OrderSchema.index({ user: 1 }); // Index for querying orders by user
+OrderSchema.index({ createdAt: -1 }); // Index for sorting orders by creation date (descending)
+
 // Static method to create order from API request body
 export const createFromRequestBody = async function(bodyData: { products: any[]; userId: any; total: number; bartenderId: any; }) {
   const products = bodyData.products.map((item: { productId: any; count: any; }) => ({

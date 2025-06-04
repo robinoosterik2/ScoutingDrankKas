@@ -24,7 +24,7 @@
       class="px-3 py-2 text-sm border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
     >
       <option value="">{{ $t("roles.roles") }}</option>
-      <option v-for="role in roles" :key="role" :value="role">
+      <option v-for="role in roles" :key="role._id" :value="role"> <!-- Changed :key -->
         {{ role.roleName }}
       </option>
     </select>
@@ -191,72 +191,129 @@
   />
 </template>
 
-<script setup>
+<script setup lang="ts"> // Enable TypeScript
+import { ref, computed, watch } from 'vue'; // Import ref, computed, and watch
 import DeleteConfirmationModal from "@/components/ConfirmDelete.vue";
-import RaisePopUpModal from '@/components/RaisePopUp'
+import RaisePopUpModal from '@/components/RaisePopUp';
+import { useAdminUsers, type User, type Role } from '~/composables/useAdminUsers'; // Import the composable and types
 
-const roles = ref([]);
-const users = ref([]);
-const searchQuery = ref("");
-const selectedRole = ref("");
-const sortBy = ref("name");
-const sortDirection = ref("asc");
-const isPopupOpen = ref(false);
-const selectedUserId = ref(null);
+// Define types for local refs
+type SortByType = "name" | "email" | "role" | "balance";
+type SortDirectionType = "asc" | "desc";
+type DropdownAction = "edit" | "delete" | "raise";
+
+interface DropdownItem {
+  label: string;
+  value: DropdownAction;
+}
+
+// Use the composable
+const {
+  users,
+  roles,
+  isLoadingUsers,
+  isLoadingRoles,
+  usersError,
+  rolesError,
+  refetchUsers
+} = useAdminUsers();
+
+const searchQuery = ref<string>("");
+const debouncedSearchQuery = ref<string>(searchQuery.value); // For debounced search
+let debounceTimer: number | undefined = undefined;
+
+watch(searchQuery, (newValue) => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer);
+  }
+  debounceTimer = window.setTimeout(() => { // Use window.setTimeout for NodeJS compatibility if needed, otherwise just setTimeout
+    debouncedSearchQuery.value = newValue;
+  }, 400); // 400ms debounce delay
+});
+
+const selectedRole = ref<Role | null | string>(null); // Can be Role object, null, or empty string for "All roles"
+const sortBy = ref<SortByType>("name");
+const sortDirection = ref<SortDirectionType>("asc");
+const isPopupOpen = ref<boolean>(false);
+const selectedUserId = ref<string | null>(null);
 const { t } = useI18n();
 
 // Define the items for the dropdown
-const dropdownItems = ref([
+const dropdownItems = ref<DropdownItem[]>([
   { label: t("edit"), value: "edit" },
   { label: t("delete"), value: "delete" },
   { label: t("Raise"), value: "raise" },
 ]);
 
 // Define the variable to hold the selected value
-const selectedValue = ref(null);
+const selectedValue = ref<DropdownAction | null>(null);
 
-try {
-  roles.value = await $fetch("/api/roles/all", { method: "GET" });
-  users.value = await $fetch("/api/users/all", { method: "GET" });
-} catch (error) {
-  console.error("Failed to fetch users:", error);
-}
+// Data fetching is now handled by the composable's onMounted hook
+// Types for users and roles are inferred from useAdminUsers composable
+// const users: Ref<User[]> = useAdminUsers().users; (example if not destructuring)
+// const roles: Ref<Role[]> = useAdminUsers().roles;
 
-const filteredAndSortedUsers = computed(() => {
-  return users.value
-    .filter((user) => {
-      const matchesSearch =
-        user.username.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.value.toLowerCase());
-      
-      // Only apply role filter if a role is selected
-      if (selectedRole.value) {
-        // If user has no role, don't show them when a role is selected
-        if (!user.role) return false;
-        // Check if user's role matches the selected role
-        return matchesSearch && user.role.roleName === selectedRole.value.roleName;
-      }
-      
-      // If no role is selected, only apply search filter
-      return matchesSearch;
-    })
-    .sort((a, b) => {
-      const direction = sortDirection.value === "asc" ? 1 : -1;
-      if (sortBy.value === "name") {
-        return a.username.localeCompare(b.username) * direction;
-      } else if (sortBy.value === "email") {
-        return a.email.localeCompare(b.email) * direction;
-      } else if (sortBy.value === "role") {
-        return a.role.roleName.localeCompare(b.role.roleName) * direction;
-      } else if (sortBy.value === "balance") {
-        return (a.balance - b.balance) * direction;
-      }
-      return 0;
-    });
+// Step 1: Filter by debounced search query
+const searchedUsers = computed(() => {
+  const query = debouncedSearchQuery.value.toLowerCase();
+  if (!query) {
+    return users.value;
+  }
+  return users.value.filter(
+    (user) =>
+      user.username.toLowerCase().includes(query) ||
+      user.email.toLowerCase().includes(query)
+  );
 });
 
-const handleAction = (user) => {
-  let action = selectedValue.value;
+// Step 2: Filter by selected role
+const roleFilteredUsers = computed(() => {
+  // Ensure selectedRole.value is treated as Role type for filtering
+  const currentSelectedRole = selectedRole.value as Role;
+  if (!currentSelectedRole || !currentSelectedRole.roleName) {
+    return searchedUsers.value;
+  }
+  return searchedUsers.value.filter((user: User) => { // Add User type to user parameter
+    if (!user.role) return false;
+    // Ensure user.role is an object with roleName, not just an ID string
+    const userRole = user.role as Role; // Assuming role on user is Role object
+    return typeof userRole === 'object' && userRole.roleName === currentSelectedRole.roleName;
+  });
+});
+
+// Step 3: Sort the role-filtered users
+const filteredAndSortedUsers = computed(() => {
+  const usersToProcess = Array.isArray(roleFilteredUsers.value) ? roleFilteredUsers.value : [] as User[];
+
+  return [...usersToProcess].sort((a: User, b: User) => { // Add User types
+    const direction = sortDirection.value === "asc" ? 1 : -1;
+    // Ensure properties exist before trying to access or compare them
+    const aUsername = a.username || "";
+    const bUsername = b.username || "";
+    const aEmail = a.email || "";
+    const bEmail = b.email || "";
+
+    // Assuming user.role is an object with roleName, or null/undefined
+    const roleAName = (typeof a.role === 'object' && a.role ? (a.role as Role).roleName : "") || "";
+    const roleBName = (typeof b.role === 'object' && b.role ? (b.role as Role).roleName : "") || "";
+
+    if (sortBy.value === "name") {
+      return aUsername.localeCompare(bUsername) * direction;
+    } else if (sortBy.value === "email") {
+      return aEmail.localeCompare(bEmail) * direction;
+    } else if (sortBy.value === "role") {
+      return roleAName.localeCompare(roleBName) * direction;
+    } else if (sortBy.value === "balance") {
+      const balanceA = parseFloat(String(a.balance).replace(',', '.')) || 0;
+      const balanceB = parseFloat(String(b.balance).replace(',', '.')) || 0;
+      return (balanceA - balanceB) * direction;
+    }
+    return 0;
+  });
+});
+
+const handleAction = (user: User) => { // Add User type
+  let action = selectedValue.value; // Type is DropdownAction | null
   if (action === "edit") {
     editUser(user);
   } else if (action === "delete") {
@@ -267,21 +324,21 @@ const handleAction = (user) => {
 };
 
 // Edit user method (navigate to edit page)
-const editUser = (user) => {
+const editUser = (user: User) => { // Add User type
   navigateTo(`/admin/users/edit/${user._id}`);
 };
 
 // Delete confirmation modal state
-const isDeleteModalOpen = ref(false);
-const userToDelete = ref(null);
+const isDeleteModalOpen = ref<boolean>(false);
+const userToDelete = ref<User | null>(null); // User type for userToDelete
 
 // Open delete confirmation modal
-const openDeleteConfirmation = (user) => {
+const openDeleteConfirmation = (user: User) => { // Add User type
   userToDelete.value = user;
   isDeleteModalOpen.value = true;
 };
 
-const openRaisePopUp = (user) => {
+const openRaisePopUp = (user: User) => { // Add User type
   selectedUserId.value = user._id; // Pass the selected user's ID
   isPopupOpen.value = true;
 };
@@ -292,12 +349,16 @@ const closePopup = () => {
 };
 
 // Handle balance updated event from RaisePopUp
-const handleBalanceUpdated = async ({ userId, newBalance }) => {
-  // Update the user's balance in the local state
-  const userIndex = users.value.findIndex(user => user._id === userId);
-  if (userIndex !== -1) {
-    users.value[userIndex].balance = newBalance;
+interface BalanceUpdatePayload {
+  userId: string;
+  newBalance: string | number; // Match User['balance'] type
+}
+const handleBalanceUpdated = async ({ userId, newBalance }: BalanceUpdatePayload) => {
+  const user = users.value.find(u => u._id === userId);
+  if (user) {
+    user.balance = newBalance;
   }
+  await refetchUsers();
   closePopup();
 };
 
@@ -312,14 +373,16 @@ const toggleSortDirection = () => {
   sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
 };
 
-const deleteUser = async (userId) => {
+const deleteUser = async (userId: string) => { // Add string type
   try {
     await $fetch(`/api/admin/users/delete`, {
       method: "POST",
       body: JSON.stringify({ userId }),
     });
-    users.value = users.value.filter((user) => user._id !== userId);
+    await refetchUsers(); // Refetch users to update the list
   } catch (error) {
+    // TODO: Implement user-friendly error handling, e.g., toast notification
+    console.error("Failed to delete user:", error);
     alert("Failed to delete user. Please try again.");
   }
 };
