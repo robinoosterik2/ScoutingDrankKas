@@ -87,6 +87,23 @@
             <div class="text-2xl">+</div>              
             </button>
           </div>
+          <!-- Crate Input Section -->
+          <div class="flex mt-3 items-center justify-between space-x-2">
+            <input
+              type="number"
+              v-model.number="crateCounts[product.id]"
+              min="1"
+              placeholder="Crates"
+              class="w-20 px-2 py-1 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
+            />
+            <button
+              @click="incrementProductByCrates(product, crateCounts[product.id])"
+              :disabled="!crateCounts[product.id] || crateCounts[product.id] <= 0"
+              class="px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 disabled:bg-gray-400 dark:disabled:bg-gray-600"
+            >
+              Add Crates
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -111,6 +128,8 @@ const products = ref([]);
 const categories = ref([]);
 const selectedUser = ref(null);
 const productCounts = ref({});
+const crateCounts = ref({}); // Added for crate counts
+const CRATE_SIZE = 24; // Defined crate size
 const showConfirmation = ref(false);
 const searchQuery = ref("");
 const selectedCategory = ref("");
@@ -123,6 +142,7 @@ onMounted(async () => {
 
     products.value.forEach((product) => {
       productCounts.value[product.id] = 0;
+      crateCounts.value[product.id] = ''; // Initialize crate count for each product
     });
   } catch (error) {
     console.error("Failed to fetch users, products, or categories:", error);
@@ -139,6 +159,14 @@ const incrementProduct = (product) => {
 const decrementProduct = (product) => {
   if (productCounts.value[product.id] > 0) {
     productCounts.value[product.id] -= 1;
+  }
+};
+
+const incrementProductByCrates = (product, numberOfCrates) => {
+  const numCrates = parseInt(numberOfCrates);
+  if (numCrates > 0) {
+    productCounts.value[product.id] += numCrates * CRATE_SIZE;
+    crateCounts.value[product.id] = ''; // Reset crate input
   }
 };
 
@@ -180,6 +208,9 @@ const placeOrder = async () => {
     selectedUser.value = null;
     Object.keys(productCounts.value).forEach(
       (key) => (productCounts.value[key] = 0)
+    );
+    Object.keys(crateCounts.value).forEach(
+      (key) => (crateCounts.value[key] = '') // Also reset crate counts
     );
   } catch (error) {
     console.error("Failed to place order: ", error);

@@ -207,6 +207,35 @@
         />
       </template>
     </AdminCard>
+
+    <!-- Add Stock -->
+    <AdminCard>
+      <template #icon>
+        <!-- Re-using product icon, consider a more specific one if available -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-8 w-8 min-h-8 min-w-8 text-teal-600"
+          viewBox="0 0 32 32"
+          xml:space="preserve"
+          stroke="currentColor"
+        >
+          <path
+            d="M13.643 10.312c-.084 0-.16-.012-.237-.024a2.72 2.72 0 0 1-.044.662h8.892v14.68a3.6 3.6 0 0 1-3.601 3.601H9.361A3.6 3.6 0 0 1 5.76 25.63V10.95h.411a1.255 1.255 0 0 1-.225-.441 1.252 1.252 0 0 1-.46-.22c-.071.01-.14.022-.218.022-.121 0-.233-.014-.337-.037a.44.44 0 0 0-.07.226v15.13a4.5 4.5 0 0 0 4.5 4.5h9.292a4.5 4.5 0 0 0 4.5-4.5V10.103c-3.119.25-6.339.214-9.51.209z"
+          />
+          <!-- Simple plus icon overlay or alternative -->
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" transform="scale(0.5) translate(16 16)" />
+        </svg>
+      </template>
+      <template #title>{{ $t("admin.addStockTitle") }}</template>
+      <template #description>{{ $t("admin.addStockDescription") }}</template>
+      <template #links>
+        <DashboardLink
+          to="/admin/products/addstock"
+          type="primary"
+          :label="$t('admin.goToAddStockLink')"
+        />
+      </template>
+    </AdminCard>
   </div>
 </template>
 

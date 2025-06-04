@@ -19,6 +19,12 @@ export default defineEventHandler(async (event) => {
       if (!productData) {
         throw createError({ statusCode: 400, statusMessage: "Product not found" });
       }
+      // Stock check
+      if (productData.stock < product.count) {
+        throw createError({ statusCode: 400, statusMessage: `Insufficient stock for product: ${productData.name}. Available: ${productData.stock}, Requested: ${product.count}` });
+      }
+      // Decrement stock
+      productData.stock -= product.count;
       // Convert product price to cents to avoid floating point arithmetic during summation
       // Math.round is used to handle potential tiny inaccuracies if productData.price itself is a float like 1.9900000000000002
       const priceInCents = Math.round(productData.price * 100);
