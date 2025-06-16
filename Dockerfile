@@ -23,11 +23,15 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Copy only necessary files from builder
-COPY --from=builder /app/.output ./.output
+# Copy package files and install production dependencies
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-# COPY --from=builder /app/.env .env 
+RUN npm ci --only=production --prefer-offline --no-audit --progress=false
+
+# Install additional required packages for production
+RUN npm install @azure/msal-node node-fetch
+
+# Copy built application
+COPY --from=builder /app/.output ./.output
 
 # Clean up npm cache to reduce image size
 RUN npm cache clean --force
