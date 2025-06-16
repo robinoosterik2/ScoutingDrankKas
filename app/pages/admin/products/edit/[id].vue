@@ -63,18 +63,33 @@
         <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" for="productImage">
           {{ $t("products.productImage") }}
         </label>
-        <input type="file" id="productImage" accept="image/*" @change="handleImageUpload"
-          class="block w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 dark:file:bg-indigo-500 dark:hover:file:bg-indigo-600" />
-
+        <input
+          id="productImage"
+          type="file"
+          accept="image/*"
+          @change="handleImageUpload"
+          class="block w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 dark:file:bg-indigo-500 dark:hover:file:bg-indigo-600"
+        />
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $t("products.imageAspectRatioTip") }}</p>
+        <!-- Image Preview -->
+        <div v-if="formData.imageUrl" class="mt-2">
+          <img :src="formData.imageUrl" alt="Product Image Preview" class="object-cover w-32 rounded aspect-video">
+        </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="flex justify-end mt-6 space-x-4">
-        <button type="button" @click="navigateTo('/admin/products')"
-          class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
+        <button
+          type="button"
+          class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+          @click="navigateTo('/admin/products')"
+        >
           Cancel
         </button>
-        <button type="submit" class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+        <button
+          type="submit"
+          class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
+        >
           {{ productId ? "Update Product" : "Create Product" }}
         </button>
       </div>
@@ -83,7 +98,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 
 // Get product ID from route
 const route = useRoute();
@@ -99,7 +114,11 @@ const formData = ref({
   price: null,
   stock: 0,
   categories: [],
+  imageUrl: "/images/placeholder.jpg", // Default for display
+  imageFile: null, // To store the actual File object for new uploads
 });
+
+const originalImageUrl = ref("/images/placeholder.jpg"); // Store the initial/fetched image URL
 
 // Fetch categories on component mount
 onMounted(async () => {
@@ -117,8 +136,15 @@ onMounted(async () => {
         description: product.description,
         price: product.price,
         stock: product.stock,
-        categories: product.categories,
+        categories: product.categories.map(cat => typeof cat === 'object' ? cat._id : cat), // Ensure categories are IDs
+        imageUrl: product.imageUrl || "/images/placeholder.jpg",
+        imageFile: null, // Reset on load
       };
+      originalImageUrl.value = product.imageUrl || "/images/placeholder.jpg";
+    } else {
+      // Fallback for placeholder if somehow productId is not available
+      formData.value.imageUrl = "/images/placeholder.jpg";
+      originalImageUrl.value = "/images/placeholder.jpg";
     }
   } catch (error) {
     console.error("Failed to fetch categories or product:", error);
@@ -126,14 +152,58 @@ onMounted(async () => {
   }
 });
 
+onUnmounted(() => {
+  if (formData.value.imageUrl && formData.value.imageUrl.startsWith('blob:')) {
+    URL.revokeObjectURL(formData.value.imageUrl);
+  }
+});
+
+const handleImageUpload = (event) => {
+  // Revoke previous blob URL if it exists
+  if (formData.value.imageUrl && formData.value.imageUrl.startsWith('blob:')) {
+    URL.revokeObjectURL(formData.value.imageUrl);
+  }
+
+  const file = event.target.files[0];
+  if (file) {
+    formData.value.imageFile = file; // Store the actual file
+    formData.value.imageUrl = URL.createObjectURL(file); // Preview new image
+  } else {
+    formData.value.imageFile = null;
+    formData.value.imageUrl = originalImageUrl.value; // Revert to original/placeholder on cancel
+  }
+};
+
 // Save product method (create or update)
 const saveProduct = async () => {
   try {
+    const finalProductData = { ...formData.value };
+
+    if (formData.value.imageFile) { // A new file is staged for upload
+      const imageFormData = new FormData();
+      imageFormData.append('image', formData.value.imageFile);
+
+      const uploadResponse = await $fetch('/api/upload/image', {
+        method: 'POST',
+        body: imageFormData,
+      });
+      finalProductData.imageUrl = uploadResponse.imageUrl; // Update with the new server URL
+    }
+    // If no imageFile, finalProductData.imageUrl already holds the correct URL (original or placeholder)
+
+    // Remove imageFile from payload as it's not part of the Product model schema for this endpoint
+    delete finalProductData.imageFile;
+    
+    // Ensure categories are an array of IDs
+    if (finalProductData.categories && Array.isArray(finalProductData.categories)) {
+      finalProductData.categories = finalProductData.categories.map(cat => typeof cat === 'object' && cat._id ? cat._id : cat);
+    }
+
     await $fetch("/api/admin/products/update", {
       method: "POST",
       body: JSON.stringify({
         id: productId.value,
-        ...formData.value,
+        ...finalProductData,
       }),
     });
 
@@ -141,7 +211,8 @@ const saveProduct = async () => {
     navigateTo("/admin/products");
   } catch (error) {
     console.error("Failed to save product:", error);
-    alert(error.message || "Failed to save product. Please try again.");
+    const errorMessage = error.data?.body?.message || error.data?.message || error.message || "Failed to save product. Please try again.";
+    alert(errorMessage);
   }
 };
 </script>

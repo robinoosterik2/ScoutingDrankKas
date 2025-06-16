@@ -137,7 +137,10 @@ const order = ref(null);
 
 const fetchOrderDetails = async () => {
   try {
+    console.log(props.orderId);
     order.value = await $fetch(`/api/orders/${props.orderId}`);
+    console.log("TESTTEST2")
+    console.log(order.value);
   } catch (error) {
     console.error('Failed to fetch order details', error);
   }

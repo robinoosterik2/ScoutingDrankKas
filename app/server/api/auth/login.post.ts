@@ -52,10 +52,20 @@ export default defineEventHandler(async (event) => {
     const isAdmin = await isAdministrator(user._id);
     // remove password from user object
     delete user.password;
-    // Create user session
-    await setUserSession(event, { user, loggedInAt: Date.now(), isAdmin });
-
-    // Check if user is an admin
+    if (body.rememberMe) {
+      await setUserSession(
+        event,
+        { user, loggedInAt: Date.now(), isAdmin },
+        {maxAge: 60 * 60 * 24 * 30}
+      );
+    } else {
+      await setUserSession(
+        event,
+        { user, loggedInAt: Date.now(), isAdmin },
+        {maxAge: 60 * 10}
+      );
+    }
+    
     return { 
       statusCode: 200, 
       message: "Login successful",

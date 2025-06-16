@@ -1,11 +1,11 @@
 <template>
   <CTitle :text="$t('users.title')" />
-  <div class="flex justify-between items-center mb-2">
+  <div class="flex items-center justify-between mb-2">
     <BackLink to="/admin" :backPage="$t('admin.title')"></BackLink>
     <div>
       <DashboardLink
         to="/register"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out"
+        class="px-4 py-2 font-bold text-white transition duration-300 ease-in-out bg-indigo-600 rounded-md hover:bg-indigo-700"
       >
         {{ $t("users.createUser") }}
       </DashboardLink>
@@ -13,24 +13,24 @@
   </div>
 
   <!-- Filters and Sorting -->
-  <div class="mb-4 flex space-x-4">
+  <div class="flex mb-4 space-x-4">
     <input
       v-model="searchQuery"
       :placeholder="$t('Search') + '...'"
-      class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+      class="flex-grow px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
     />
     <select
       v-model="selectedRole"
-      class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
+      class="px-3 py-2 text-sm border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
     >
-      <option value="">{{ $t("roles.rolesAll") }}</option>
+      <option value="">{{ $t("roles.roles") }}</option>
       <option v-for="role in roles" :key="role" :value="role">
         {{ role.roleName }}
       </option>
     </select>
     <select
       v-model="sortBy"
-      class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+      class="px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
     >
       <option value="name">{{ $t("sortBy") }} {{ $t("names") }}</option>
       <option value="email">{{ $t("sortBy") }} {{ $t("email") }}</option>
@@ -39,51 +39,51 @@
     </select>
     <button
       @click="toggleSortDirection"
-      class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+      class="px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
     >
       {{ sortDirection === "asc" ? "▲" : "▼" }}
     </button>
   </div>
 
   <!-- Users Table -->
-  <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-visible">
+  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
       <thead class="bg-gray-50 dark:bg-gray-700">
         <tr class="overflow-visible">
           <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300"
           >
             {{ $t("username") }}
           </th>
           <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300"
           >
             {{ $t("email") }}
           </th>
           <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300"
           >
             {{ $t("role") }}
           </th>
           <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300"
           >
             {{ $t("Balance") }}
           </th>
           <th
-            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+            class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase dark:text-gray-300"
           >
             {{ $t("actions") }}
           </th>
         </tr>
       </thead>
       <tbody
-        class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+        class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
       >
         <tr
           v-for="user in filteredAndSortedUsers"
           :key="user.id"
-          class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200 overflow-visible relative"
+          class="relative overflow-visible transition duration-200 hover:bg-gray-50 dark:hover:bg-gray-700"
         >
           <td class="px-6 py-2 whitespace-nowrap">
             <div class="text-sm font-medium text-gray-900 dark:text-white">
@@ -112,14 +112,14 @@
             </span>
             <span
               v-else
-              class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+              class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full dark:bg-red-900 dark:text-red-200"
             >
               NoRole
             </span>
           </td>
           <td>
             <div
-              class="text-sm px-6"
+              class="px-6 text-sm"
               :class="{
                 'text-red-500 dark:text-red-300': user.balance < 0,
                 'text-green-500 dark:text-green-300': user.balance >= 0,
@@ -129,7 +129,7 @@
             </div>
           </td>
           <td
-            class="px-6 py-2 whitespace-nowrap text-right text-sm font-medium overflow-visible"
+            class="px-6 py-2 overflow-visible text-sm font-medium text-right whitespace-nowrap"
           >
             <!-- custom id for each user -->
             <CDropdown
@@ -147,10 +147,10 @@
     <!-- Empty State -->
     <div
       v-if="filteredAndSortedUsers.length === 0"
-      class="text-center py-12 px-4 sm:px-6 lg:px-8"
+      class="px-4 py-12 text-center sm:px-6 lg:px-8"
     >
       <svg
-        class="mx-auto h-12 w-12 text-gray-400"
+        class="w-12 h-12 mx-auto text-gray-400"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -187,6 +187,7 @@
     :isOpen="isPopupOpen"
     :userId="selectedUserId"
     @close="closePopup"
+    @balanceUpdated="handleBalanceUpdated"
   />
 </template>
 
@@ -227,10 +228,17 @@ const filteredAndSortedUsers = computed(() => {
       const matchesSearch =
         user.username.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         user.email.toLowerCase().includes(searchQuery.value.toLowerCase());
-      const matchesRole =
-        !selectedRole.value ||
-        user.role.roleName === selectedRole.value.roleName;
-      return matchesSearch && matchesRole;
+      
+      // Only apply role filter if a role is selected
+      if (selectedRole.value) {
+        // If user has no role, don't show them when a role is selected
+        if (!user.role) return false;
+        // Check if user's role matches the selected role
+        return matchesSearch && user.role.roleName === selectedRole.value.roleName;
+      }
+      
+      // If no role is selected, only apply search filter
+      return matchesSearch;
     })
     .sort((a, b) => {
       const direction = sortDirection.value === "asc" ? 1 : -1;
@@ -248,7 +256,6 @@ const filteredAndSortedUsers = computed(() => {
 });
 
 const handleAction = (user) => {
-  let component = document.getElementById("user-" + user._id);
   let action = selectedValue.value;
   if (action === "edit") {
     editUser(user);
@@ -282,6 +289,16 @@ const openRaisePopUp = (user) => {
 const closePopup = () => {
   isPopupOpen.value = false;
   selectedUserId.value = null;
+};
+
+// Handle balance updated event from RaisePopUp
+const handleBalanceUpdated = async ({ userId, newBalance }) => {
+  // Update the user's balance in the local state
+  const userIndex = users.value.findIndex(user => user._id === userId);
+  if (userIndex !== -1) {
+    users.value[userIndex].balance = newBalance;
+  }
+  closePopup();
 };
 
 // Close delete confirmation modal

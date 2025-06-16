@@ -1,16 +1,26 @@
 import { Category } from '@/server/models/category';
+import { Log } from '@/server/models/log';
 
 export default defineEventHandler(async (event) => {
     try {
         const body = await readBody(event);
+        const user = await getUserSession(event);
 
         const { name, ageRestriction } = body;
-        let categoryExists = await Category.findOne({ "name": name });
-        console.log(categoryExists);
+        const categoryExists = await Category.findOne({ "name": name });
         if (categoryExists) {
             throw createError({ statusCode: 400, statusMessage: "Category already exists" });
         }
-        let category = new Category({ name, ageRestriction });
+        const category = new Category({ name, ageRestriction });
+        const log = new Log({
+            executor: user.user?._id,
+            action: "Buy",
+            objectType: "Order",
+            objectId: category._id,
+            newValue: JSON.stringify(category),
+            description: `User created a new category: ${category.name}`,
+          });
+        await log.save();
         await category.save();
         return body;
     } catch (error) {

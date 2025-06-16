@@ -14,6 +14,10 @@ const RaiseSchema = new Schema({
     raiser: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    },
+    cash: {
+        type: Boolean,
+        default: false,
     }
 }, {
     timestamps: true
@@ -28,12 +32,15 @@ RaiseSchema.pre('save', async function (next) {
             }
             await user.raise(this.amount);
 
+            const description = this.cash ? "Cash raise" : "Bank raise";
+
             const log = new Log({
                 executor: this.raiser,
                 action: "Raise",
-                object: this.user,
+                objectType: "User",
+                objectId: this.user,
                 newValue: JSON.stringify({ amount: this.amount }),
-                description: `User raised by ${this.amount}`
+                description: description
             });
             await log.save();
 
