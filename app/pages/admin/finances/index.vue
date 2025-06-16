@@ -114,7 +114,7 @@
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="transaction in transactions" :key="transaction._id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+            <tr v-for="transaction in paginatedTransactions" :key="transaction._id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                 {{ formatDate(transaction.createdAt) }}
               </td>
@@ -138,6 +138,78 @@
               </td>
             </tr>
           </tbody>
+          <tfoot class="bg-white dark:bg-gray-800">
+            <tr>
+              <td colspan="5" class="px-6 py-3 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                  <div class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ $t('pagination.showing') }} 
+                    <span class="font-medium">{{ Math.min((currentPage - 1) * itemsPerPage + 1, transactions.length) }}</span>
+                    {{ $t('pagination.to') }} 
+                    <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, transactions.length) }}</span>
+                    {{ $t('pagination.of') }} 
+                    <span class="font-medium">{{ transactions.length }}</span>
+                    {{ $t('pagination.entries') }}
+                  </div>
+                  <div class="flex space-x-1">
+                    <button 
+                      :disabled="currentPage === 1"
+                      class="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      @click="goToPage(1)" 
+                    >
+                      &laquo;
+                    </button>
+                    <button 
+                      :disabled="currentPage === 1"
+                      class="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      @click="goToPage(currentPage - 1)" 
+                    >
+                      &lsaquo;
+                    </button>
+                    <template v-for="page in Math.min(5, totalPages)" :key="page">
+                      <button 
+                        :class="{
+                          'bg-indigo-600 text-white': currentPage === page,
+                          'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600': currentPage !== page
+                        }"
+                        class="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium"
+                        @click="goToPage(page)" 
+                      >
+                        {{ page }}
+                      </button>
+                    </template>
+                    <template v-if="totalPages > 5">
+                      <span class="px-2 py-1">...</span>
+                      <button 
+                        :class="{
+                          'bg-indigo-600 text-white': currentPage === totalPages,
+                          'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600': currentPage !== totalPages
+                        }"
+                        class="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium"
+                        @click="goToPage(totalPages)" 
+                      >
+                        {{ totalPages }}
+                      </button>
+                    </template>
+                    <button 
+                      :disabled="currentPage === totalPages"
+                      class="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      @click="goToPage(currentPage + 1)" 
+                    >
+                      &rsaquo;
+                    </button>
+                    <button 
+                      :disabled="currentPage === totalPages"
+                      class="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      @click="goToPage(totalPages)" 
+                    >
+                      &raquo;
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>
@@ -145,7 +217,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import Chart from 'chart.js/auto';
@@ -154,6 +226,29 @@ import BackLink from '~/components/BackLink.vue';
 import SummaryCard from '~/components/SummaryCard.vue';
 
 const { t } = useI18n();
+
+// Pagination
+const itemsPerPage = 10;
+const currentPage = ref(1);
+
+// Computed properties
+const paginatedTransactions = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return transactions.value.slice(start, end);
+});
+
+const totalPages = computed(() => {
+  return Math.ceil(transactions.value.length / itemsPerPage);
+});
+
+// Methods
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
 
 // Data
 const months = [
@@ -381,8 +476,9 @@ onMounted(() => {
   fetchFinanceData();
 });
 
-// Watch for changes in filters
+// Watch for filter changes
 watch([selectedMonth, selectedYear], () => {
+  currentPage.value = 1; // Reset to first page when filters change
   fetchFinanceData();
 });
 </script>
