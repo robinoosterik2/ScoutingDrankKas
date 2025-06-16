@@ -15,10 +15,10 @@
           </label>
           <select 
             v-model="selectedMonth"
-            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1 px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           >
-            <option v-for="(month, index) in months" :key="index" :value="index + 1">
-              {{ month }}
+            <option v-for="month in months" :key="month.value" :value="month.value" :disabled="!selectedYear && month.value !== null">
+              {{ month.label }}
             </option>
           </select>
         </div>
@@ -28,7 +28,7 @@
           </label>
           <select 
             v-model="selectedYear"
-            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1 px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           >
             <option v-for="year in years" :key="year" :value="year">
               {{ year }}
@@ -101,11 +101,12 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 {{ $t('finance.type') }}
               </th>
+
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                {{ $t('finance.reference') }}
+                {{ $t('finance.actionBy') }}
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                {{ $t('finance.customer') }}
+                {{ $t('finance.affectedUser') }}
               </th>
               <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 {{ $t('finance.amount') }}
@@ -120,11 +121,12 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 capitalize">
                 {{ transaction.type }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                {{ transaction.type === 'order' ? '#' + (transaction._id?.toString().substring(18, 24) || '') : 'Donation' }}
-              </td>
+
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                 {{ transaction.user?.firstName }} {{ transaction.user?.lastName }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                {{ transaction.affectedUser?.firstName }} {{ transaction.affectedUser?.lastName }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right text-gray-900 dark:text-white">
                 {{ formatCurrency(transaction.displayAmount) }}
@@ -145,6 +147,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import Chart from 'chart.js/auto';
 import CTitle from '~/components/CTitle.vue';
 import BackLink from '~/components/BackLink.vue';
@@ -154,12 +157,22 @@ const { t } = useI18n();
 
 // Data
 const months = [
-  t('months.january'), t('months.february'), t('months.march'), t('months.april'),
-  t('months.may'), t('months.june'), t('months.july'), t('months.august'),
-  t('months.september'), t('months.october'), t('months.november'), t('months.december')
+  { value: null, label: t('filters.allMonths') },
+  { value: 1, label: t('months.january') },
+  { value: 2, label: t('months.february') },
+  { value: 3, label: t('months.march') },
+  { value: 4, label: t('months.april') },
+  { value: 5, label: t('months.may') },
+  { value: 6, label: t('months.june') },
+  { value: 7, label: t('months.july') },
+  { value: 8, label: t('months.august') },
+  { value: 9, label: t('months.september') },
+  { value: 10, label: t('months.october') },
+  { value: 11, label: t('months.november') },
+  { value: 12, label: t('months.december') }
 ];
 const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
-const selectedMonth = ref(new Date().getMonth() + 1);
+const selectedMonth = ref(null); // Default to all months
 const selectedYear = ref(new Date().getFullYear());
 
 const summary = ref({
@@ -174,94 +187,6 @@ const orders = ref([]);
 const raises = ref([]);
 let revenueChart = null;
 
-// // Methods
-// const updateChart = () => {
-//   if (revenueChart) {
-//     revenueChart.destroy();
-//   }
-  
-//   const ctx = document.getElementById('revenueChart');
-//   if (!ctx) return;
-  
-//   const labels = [];
-//   const salesData = [];
-//   const raiseData = [];
-  
-//   // Group data by day
-//   const dailyData = {};
-  
-//   // Process orders
-//   orders.value.forEach(order => {
-//     const date = new Date(order.createdAt).toLocaleDateString();
-//     if (!dailyData[date]) {
-//       dailyData[date] = { sales: 0, raises: 0 };
-//     }
-//     dailyData[date].sales += order.total || 0;
-//   });
-  
-//   // Process raises
-//   raises.value.forEach(raise => {
-//     const date = new Date(raise.createdAt).toLocaleDateString();
-//     if (!dailyData[date]) {
-//       dailyData[date] = { sales: 0, raises: 0 };
-//     }
-//     dailyData[date].raises += raise.amount || 0;
-//   });
-  
-//   // Sort dates and prepare data for chart
-//   Object.entries(dailyData)
-//     .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
-//     .forEach(([date, data]) => {
-//       labels.push(date);
-//       salesData.push(data.sales);
-//       raiseData.push(data.raises);
-//     });
-  
-//   revenueChart = new Chart(ctx, {
-//     type: 'bar',
-//     data: {
-//       labels,
-//       datasets: [
-//         {
-//           label: 'Sales',
-//           data: salesData,
-//           backgroundColor: 'rgba(79, 70, 229, 0.8)',
-//           borderColor: 'rgba(79, 70, 229, 1)',
-//           borderWidth: 1
-//         },
-//         {
-//           label: 'Donations',
-//           data: raiseData,
-//           backgroundColor: 'rgba(234, 179, 8, 0.8)',
-//           borderColor: 'rgba(234, 179, 8, 1)',
-//           borderWidth: 1
-//         }
-//       ]
-//     },
-//     options: {
-//       responsive: true,
-//       maintainAspectRatio: false,
-//       scales: {
-//         y: {
-//           beginAtZero: true,
-//           ticks: {
-//             callback: (value) => `€${value}`
-//           }
-//         }
-//       },
-//       plugins: {
-//         tooltip: {
-//           callbacks: {
-//             label: (context) => {
-//               return `${context.dataset.label}: €${context.raw.toFixed(2)}`;
-//             }
-//           }
-//         }
-//       }
-//     }
-//   });
-// };
-
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(value);
 };
@@ -273,23 +198,35 @@ const formatDate = (dateString) => {
 
 const fetchFinanceData = async () => {
   try {
-    const response = await $fetch(`/api/admin/finances/get?month=${selectedMonth.value}&year=${selectedYear.value}`);
-    console.log(response);
-    console.log(response.totalSales);
-    console.log(response.totalRaised);
+    // Build query parameters object
+    const params = new URLSearchParams();
+    if (selectedMonth.value) params.append('month', selectedMonth.value);
+    if (selectedYear.value) params.append('year', selectedYear.value);
+    
+    const response = await $fetch(`/api/admin/finances/get?${params.toString()}`);
     // Process orders
-    orders.value = response.orders || [];
+    orders.value = (response.orders || []).map(order => ({
+      ...order,
+      type: 'order',
+      displayAmount: order.total,
+      affectedUser: order.affectedUser
+    }));
     const totalSales = response.totalSales || 0;
 
     const salesPerDay = response.salesPerDay;
     
     // Process raises
-    raises.value = response.raises || [];
+    raises.value = (response.raises || []).map(raise => ({
+      ...raise,
+      type: 'raise',
+      displayAmount: raise.amount,
+      affectedUser: raise.affectedUser
+    }));
     const totalRaised = response.totalRaised || 0;
     
     // Update summary
     summary.value = {
-      totalRevenue: totalSales + totalRaised,
+      totalRevenue: totalSales,
       totalOrders: orders.value.length,
       totalRaised: totalRaised,
       averageOrderValue: orders.value.length > 0 ? totalSales / orders.value.length : 0,
@@ -301,14 +238,14 @@ const fetchFinanceData = async () => {
       ...order,
       type: 'order',
       displayAmount: order.total,
-      user: order.user || { firstName: 'Guest', lastName: '' }
+      user: order.user
     }));
     
     const raiseTransactions = raises.value.map(raise => ({
       ...raise,
       type: 'raise',
       displayAmount: raise.amount,
-      user: raise.user || { firstName: 'Donor', lastName: '' }
+      user: raise.user
     }));
     
     // Sort transactions by date
@@ -329,23 +266,63 @@ const updateChart = () => {
   if (revenueChart) {
     revenueChart.destroy();
   }
+
+  // Get sales data from the response
+  const salesData = summary.value.salesPerDay || [];
   
-  const labels = Array.from({ length: 30 }, (_, i) => `${i + 1} ${months[selectedMonth.value - 1]}`);
-  // data should be the amount sold per day
-  const data = summary.value.salesPerDay.value
-  console.log(data)
+  // Prepare labels and data based on whether we're viewing a month or all months
+  let labels, data, label;
+  
+  if (selectedMonth.value) {
+    // Daily view for a specific month
+    const daysInMonth = new Date(selectedYear.value, selectedMonth.value, 0).getDate();
+    labels = Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`);
+    data = Array(daysInMonth).fill(0);
+    
+    // Fill in the actual data
+    salesData.forEach(item => {
+      const day = new Date(item.date).getDate();
+      data[day - 1] = item.total;
+    });
+    
+    label = t('finance.dailyRevenue');
+  } else {
+    // Monthly view for the year
+    labels = months.map(m => m.label);
+    data = Array(12).fill(0);
+    
+    // Fill in the actual data
+    salesData.forEach(item => {
+      const month = new Date(item.date).getMonth();
+      data[month] = item.total;
+    });
+    
+    label = t('finance.monthlyRevenue');
+  }
+  
+  // Register the datalabels plugin
+  Chart.register(ChartDataLabels);
+  
   revenueChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels,
       datasets: [
         {
-          label: t('finance.dailyRevenue'),
+          label,
           data,
           borderColor: 'rgb(99, 102, 241)',
           backgroundColor: 'rgba(99, 102, 241, 0.1)',
           tension: 0.4,
-          fill: true
+          fill: true,
+          pointBackgroundColor: 'rgb(99, 102, 241)',
+          pointBorderColor: '#fff',
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: 'rgb(99, 102, 241)',
+          pointHoverBorderColor: '#fff',
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          pointRadius: 4
         }
       ]
     },
@@ -355,6 +332,26 @@ const updateChart = () => {
       plugins: {
         legend: {
           display: false
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: function(context) {
+              return `${context.dataset.label}: €${context.parsed.y.toFixed(2)}`;
+            }
+          }
+        },
+        datalabels: {
+          display: (context) => {
+            // Only show label if value is greater than 0
+            return context.dataset.data[context.dataIndex] > 0;
+          },
+          color: '#4B5563',
+          anchor: 'end',
+          align: 'top',
+          offset: 8,
+          formatter: (value) => `€${value.toFixed(2)}`
         }
       },
       scales: {
@@ -362,10 +359,20 @@ const updateChart = () => {
           beginAtZero: true,
           ticks: {
             callback: (value) => `€${value}`
+          },
+          // Add padding at the top of the y-axis
+          afterFit: function(scale) {
+            scale.paddingTop = 20; // Add 20px padding at the top
+          },
+          // Add a buffer to the max value to ensure labels fit
+          afterDataLimits: function(scale) {
+            const max = scale.max;
+            scale.max = max * 1.1; // Add 10% buffer to the max value
           }
         }
       }
-    }
+    },
+    plugins: [ChartDataLabels]
   });
 };
 
