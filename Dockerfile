@@ -5,14 +5,9 @@ WORKDIR /app
 
 # Install dependencies first for better caching
 COPY app/package*.json ./
-<<<<<<< HEAD
 
 # Use npm ci for faster, more reliable installs
 RUN npm ci --prefer-offline --no-audit --progress=false
-=======
-# COPY .env .env
-RUN npm install
->>>>>>> master
 
 # Copy the rest of the app
 
@@ -38,15 +33,9 @@ RUN npm install @azure/msal-node node-fetch
 
 # Copy built application
 COPY --from=builder /app/.output ./.output
-<<<<<<< HEAD
 
 # Clean up npm cache to reduce image size
 RUN npm cache clean --force
-=======
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/node_modules ./node_modules
-# COPY --from=builder /app/.env .env 
->>>>>>> master
 
 EXPOSE 3000
 
