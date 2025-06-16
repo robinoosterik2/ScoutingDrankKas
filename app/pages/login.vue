@@ -22,6 +22,13 @@
                  placeholder="••••••••••">
           <div id="errorPassword" class="text-red-500 mt-1"></div>
         </div>
+        <!-- Remember me -->
+        <div class="flex items-center">
+          <input id="rememberMe" v-model="rememberMe" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+          <label for="rememberMe" class="ml-2 block text-sm text-gray-900 dark:text-white">
+            {{ $t('login.rememberMe') }}
+          </label>
+        </div>
         <div class="pt-4">
           <button type="submit"
                   class="group relative w-full flex justify-center py-1 px-4 border border-transparent font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -56,6 +63,7 @@ const { t } = useI18n()
 
 const username = ref('')
 const password = ref('')
+const rememberMe = ref(false)
 const resetSuccess = ref(false)
 
 onMounted(() => {
@@ -70,7 +78,7 @@ const handleLogin = async () => {
   try {
     const data = await $fetch('/api/auth/login', {
       method: 'POST',
-      body: { username: username.value, password: password.value }
+      body: { username: username.value, password: password.value, rememberMe: rememberMe.value }
     })
     if (data) {
       await fetch()
