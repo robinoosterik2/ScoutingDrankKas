@@ -26,7 +26,7 @@
     "chart.js": "^4.4.9",
     "chartjs-plugin-datalabels": "^2.2.0",
     "mongodb-memory-server": "^10.1.4",
-    "mongoose": "^8.14.1",
+    "mongoose": "^8.16.0",
     "msal-node": "^0.0.1-security",
     "node-cron": "^4.1.0",
     "node-fetch": "^3.3.2",
