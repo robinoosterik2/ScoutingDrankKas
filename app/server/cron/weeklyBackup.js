@@ -1,8 +1,8 @@
 // server/cron/weeklyBackup.js
+import { join } from 'path';
 import cron from 'node-cron';
 import { spawn } from 'child_process';
 import fs from 'fs';
-import path from 'path';
 import { ConfidentialClientApplication } from '@azure/msal-node';
 import fetch from 'node-fetch';
 
@@ -33,12 +33,12 @@ async function initBackupCron() {
   }
 
   // Config from environment variables
-  const backupDir = path.resolve(process.env.BACKUP_DIR || './mongo_backups');
+  const backupDir = join(process.cwd(), process.env.BACKUP_DIR || 'mongo_backups');
   const dbName = process.env.MONGO_DATABASE;
   
   // Create a fresh dump file path each time the function runs
   const getDumpFilePath = () => 
-    path.join(backupDir, `${dbName}-${new Date().toISOString().split('T')[0]}.gz`);
+    join(backupDir, `${dbName}-${new Date().toISOString().split('T')[0]}.gz`);
 
   // Optional environment variables with defaults
   const CRON_SCHEDULE = process.env.BACKUP_CRON_SCHEDULE || '0 2 * * 0'; // Default: Every Sunday at 2 AM
@@ -113,7 +113,7 @@ async function initBackupCron() {
       console.log('🕑 Weekly backup started...');
       const currentDumpFile = getDumpFilePath();
       await runMongoDump(currentDumpFile);
-      await uploadToOneDrive(currentDumpFile, path.basename(currentDumpFile));
+      await uploadToOneDrive(currentDumpFile, currentDumpFile.split('/').pop());
       console.log('🎉 Weekly backup completed.');
     } catch (err) {
       console.error('❌ Backup failed:', err);
