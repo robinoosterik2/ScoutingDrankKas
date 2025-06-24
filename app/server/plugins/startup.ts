@@ -1,4 +1,6 @@
 import { connectDB } from '@/utils/mongoose';
+import initBackupCron from '~/server/cron/weeklyBackup';
+
 
 // Define a unique symbol for the flag
 const adminSetupDoneFlag = Symbol.for('nitro.adminSetupDone');
@@ -7,6 +9,10 @@ export default defineNitroPlugin(async (nitroApp) => {
   if (!process.env.MONGODB_URI) {
     console.error("Startup plugin: MONGODB_URI is not defined");
     return;
+  }
+  console.log(process.env.NODE_ENV)
+  if (process.env.NODE_ENV == 'production') {
+    await initBackupCron();
   }
 
   try {
