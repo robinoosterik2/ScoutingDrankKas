@@ -1,80 +1,76 @@
-import { connectDB } from '@/utils/mongoose';
-import initBackupCron from '~/server/cron/weeklyBackup';
-
+import { connectDB } from "@/utils/mongoose";
 
 // Define a unique symbol for the flag
-const adminSetupDoneFlag = Symbol.for('nitro.adminSetupDone');
+const adminSetupDoneFlag = Symbol.for("nitro.adminSetupDone");
 
 export default defineNitroPlugin(async (nitroApp) => {
   if (!process.env.MONGODB_URI) {
     console.error("Startup plugin: MONGODB_URI is not defined");
     return;
   }
-  console.log(process.env.NODE_ENV)
-  if (process.env.NODE_ENV == 'production') {
-    await initBackupCron();
-  }
 
   try {
     await connectDB(process.env.MONGODB_URI);
-    console.log('Startup plugin: Using centralized MongoDB connection.');
+    console.log("Startup plugin: Using centralized MongoDB connection.");
   } catch (error) {
-    console.error('Startup plugin: Error connecting to MongoDB (centralized):', error);
+    console.error(
+      "Startup plugin: Error connecting to MongoDB (centralized):",
+      error
+    );
     return;
   }
 
   // @ts-expect-error - Check if the flag is already set
   if (nitroApp[adminSetupDoneFlag]) {
-    console.log('Startup plugin: Admin setup already done.');
+    console.log("Startup plugin: Admin setup already done.");
     return;
   }
 
-	try {
-		console.log('Startup plugin: Proceeding with admin role and user setup...');
-		// Import models only after connection is confirmed
-		const { CustomRole } = await import('../models/customRole');
-		const { User } = await import('../models/user');
-		// hashPassword should be auto-imported by nuxt-auth-utils on the server-side
+  try {
+    console.log("Startup plugin: Proceeding with admin role and user setup...");
+    // Import models only after connection is confirmed
+    const { CustomRole } = await import("../models/customRole");
+    const { User } = await import("../models/user");
+    // hashPassword should be auto-imported by nuxt-auth-utils on the server-side
 
-		let adminRole = await CustomRole.findOne({ roleName: 'admin' });
-		
-		if (!adminRole) {
-			console.log('Startup plugin: Creating admin role...');
-			adminRole = new CustomRole({
-				roleName: 'admin',
-				roleDescription: 'Administrator with full access',
-				rolePermissions: ['admin']
-			});
-			await adminRole.save();
-			console.log('Startup plugin: Admin role created successfully');
-		}
+    let adminRole = await CustomRole.findOne({ roleName: "admin" });
 
-		let adminUser = await User.findOne({ email: 'robinoosterik03@gmail.com' });
-		
-		if (!adminUser) {
-			console.log('Startup plugin: Creating admin user...');
-			const hashedPassword = await hashPassword('admin'); // Provided by nuxt-auth-utils
-			
-			adminUser = new User({
-				email: 'robinoosterik03@gmail.com',
-				username: 'admin',
-				firstName: 'admin',
-				lastName: 'admin',
-				password: hashedPassword,
-				role: adminRole._id // Ensure adminRole is defined (it will be, from findOne or new)
-			});
-			
-			await User.collection.insertOne(adminUser);
-			console.log('Startup plugin: Admin user created successfully');
-		}
+    if (!adminRole) {
+      console.log("Startup plugin: Creating admin role...");
+      adminRole = new CustomRole({
+        roleName: "admin",
+        roleDescription: "Administrator with full access",
+        rolePermissions: ["admin"],
+      });
+      await adminRole.save();
+      console.log("Startup plugin: Admin role created successfully");
+    }
 
-		// @ts-expect-error - Set the flag on nitroApp after successful setup
-		nitroApp[adminSetupDoneFlag] = true;
-		console.log('Startup plugin: Admin setup performed and flag set.');
+    let adminUser = await User.findOne({ email: "robinoosterik03@gmail.com" });
 
-	} catch (error) {
-		console.error('Startup plugin: Error during admin setup:', error);
-		// Do not set the flag if setup fails, so it might be retried on a subsequent HMR, 
-		// or log this as a critical failure.
-	}
+    if (!adminUser) {
+      console.log("Startup plugin: Creating admin user...");
+      const hashedPassword = await hashPassword("admin"); // Provided by nuxt-auth-utils
+
+      adminUser = new User({
+        email: "robinoosterik03@gmail.com",
+        username: "admin",
+        firstName: "admin",
+        lastName: "admin",
+        password: hashedPassword,
+        role: adminRole._id, // Ensure adminRole is defined (it will be, from findOne or new)
+      });
+
+      await User.collection.insertOne(adminUser);
+      console.log("Startup plugin: Admin user created successfully");
+    }
+
+    // @ts-expect-error - Set the flag on nitroApp after successful setup
+    nitroApp[adminSetupDoneFlag] = true;
+    console.log("Startup plugin: Admin setup performed and flag set.");
+  } catch (error) {
+    console.error("Startup plugin: Error during admin setup:", error);
+    // Do not set the flag if setup fails, so it might be retried on a subsequent HMR,
+    // or log this as a critical failure.
+  }
 });
