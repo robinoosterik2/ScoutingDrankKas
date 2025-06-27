@@ -64,8 +64,8 @@
           <CButton 
             :type="pagination.page > 1 ? 'primary' : 'secondary'"
             :disabled="pagination.page === 1" 
-            @click="$emit('update:page', pagination.page - 1)"
             class="px-2 h-6 text-sm"
+            @click="$emit('update:page', pagination.page - 1)"
           >
             {{ $t('prev') }}
           </CButton>
@@ -73,8 +73,8 @@
           <CButton 
             :type="pagination.page * pagination.pageSize < pagination.total ? 'primary' : 'secondary'"
             :disabled="pagination.page * pagination.pageSize >= pagination.total" 
-            @click="$emit('update:page', pagination.page + 1)"
             class="px-2 h-6 text-sm"
+            @click="$emit('update:page', pagination.page + 1)"
           >
             {{ $t('next') }}
           </CButton>

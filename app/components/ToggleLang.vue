@@ -23,9 +23,9 @@ const handleLanguageChange = (selectedLang) => {
     <CDropdown 
       :items="languageItems"
       :model-value="locale"
-      @update:model-value="handleLanguageChange"
       placeholder="Select Language"
       class="w-20"
+      @update:model-value="handleLanguageChange"
     />
   </div>
 </template>

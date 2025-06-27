@@ -3,14 +3,14 @@
     <div class="w-full flex flex-col items-center justify-center">
       <div class="max-w-sm w-full mb-2">
       <CTitle :text="$t('roles.title')"/>
-        <BackLink to="/admin/roles" :backPage="$t('roles.roles')"></BackLink>
+        <BackLink to="/admin/roles" :back-page="$t('roles.roles')"/>
       </div>
       <div
         class="max-w-sm w-full space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md"
       >
         
 
-        <form @submit.prevent="createCustomRole" class="space-y-2">
+        <form class="space-y-2" @submit.prevent="createCustomRole">
           <div>
             <label class="text-xs" for="roleName"
               >{{ $t("roles.roleName") }}:</label
@@ -23,8 +23,8 @@
               required
               class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
               :placeholder="$t('roles.enterRoleName')"
-            />
-            <div id="errorRoleName" class="text-red-500 text-sm mt-1"></div>
+            >
+            <div id="errorRoleName" class="text-red-500 text-sm mt-1"/>
           </div>
 
           <div>
@@ -39,11 +39,11 @@
               class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
               :placeholder="$t('roles.enterRoleDescription')"
               rows="3"
-            ></textarea>
+            />
             <div
               id="errorRoleDescription"
               class="text-red-500 text-sm mt-1"
-            ></div>
+            />
           </div>
 
           <label class="text-xs block mb-2"
@@ -59,9 +59,9 @@
                 :id="permission"
                 type="checkbox"
                 :checked="roleForm.rolePermissions.includes(permission)"
-                @change="togglePermission(permission)"
                 class="form-checkbox h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-              />
+                @change="togglePermission(permission)"
+              >
               <label
                 :for="permission"
                 class="text-sm text-gray-700 dark:text-gray-300"
@@ -72,7 +72,7 @@
             <div
               id="errorRolePermissions"
               class="text-red-500 text-sm mt-1"
-            ></div>
+            />
           </div>
 
           <div class="pt-4">

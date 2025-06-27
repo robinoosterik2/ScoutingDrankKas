@@ -2,7 +2,7 @@
   <!-- Back to Dashboard Button -->
   <CTitle :text="$t('categories.title')" />
   <div class="flex justify-between items-center mb-2">
-    <BackLink to="/admin" :backPage="$t('admin.title')"></BackLink>
+    <BackLink to="/admin" :back-page="$t('admin.title')"/>
     <div>
       <DashboardLink
         to="/admin/categories/create"
@@ -61,14 +61,14 @@
             class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
           >
             <button
-              @click="editCategory(category)"
               class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
+              @click="editCategory(category)"
             >
               {{ $t("edit") }}
             </button>
             <button
-              @click="deleteCategory(category)"
               class="ml-4 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200"
+              @click="deleteCategory(category)"
             >
               {{ $t("delete") }}
             </button>

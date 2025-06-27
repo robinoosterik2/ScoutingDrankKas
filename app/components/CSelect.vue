@@ -1,22 +1,32 @@
-<!-- SearchableSelect.vue -->
 <template>
   <div class="relative">
-    <div
-      @click="toggleDropdown"
+    <!-- Input container with proper attribute order -->
+    <div 
       class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white cursor-pointer flex justify-between items-center"
+      :class="{ 'ring-2 ring-indigo-500': isOpen }"
+      @click="handleContainerClick"
     >
+      <!-- Hidden input for search -->
       <input
-        type="text"
-        v-model="searchTerm"
-        @input="onSearch"
-        @focus="isOpen = true"
-        @click="handleInputClick"
         ref="inputRef"
-        :placeholder="placeholder"
-        class="bg-transparent outline-none w-full"
-      />
+        v-model="searchTerm"
+        type="text"
+        class="bg-transparent outline-none w-full cursor-pointer"
+        :class="{ 'text-transparent': selectedUser && !isOpen }"
+        :placeholder="selectedUser ? '' : placeholder"
+        @click.stop
+        @input="onSearch"
+        @focus="openDropdown"
+      >
+      
+      <!-- Display selected user when not searching -->
+      <div v-if="selectedUser && !isOpen" class="absolute left-3 right-8 truncate">
+        {{ selectedUserDisplay }}
+      </div>
+      
+      <!-- Dropdown icon -->
       <svg
-        class="w-4 h-4 text-gray-400"
+        class="w-4 h-4 text-gray-400 flex-shrink-0"
         :class="{ 'rotate-180': isOpen }"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
@@ -30,6 +40,7 @@
       </svg>
     </div>
 
+    <!-- Dropdown menu -->
     <div
       v-if="isOpen"
       class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
@@ -43,9 +54,9 @@
       <div
         v-for="user in filteredUsers"
         :key="user._id"
-        @click="selectUser(user)"
         class="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
         :class="{ 'bg-gray-100 dark:bg-gray-700': user._id === modelValue }"
+        @click="selectUser(user)"
       >
         {{ formatName(user) }}
       </div>
@@ -56,18 +67,21 @@
   <div
     v-if="isOpen"
     class="fixed inset-0 z-40"
-    @click="isOpen = false"
-  ></div>
+    @click="handleBackdropClick"
+  />
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 
 const props = defineProps({
-  modelValue: String,
+  modelValue: {
+    type: String,
+    default: ''
+  },
   users: {
     type: Array,
-    required: true
+    default: () => []
   },
   placeholder: {
     type: String,
@@ -83,10 +97,20 @@ const inputRef = ref(null);
 
 // Format user name and username
 const formatName = (user) => {
-  const firstName = user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1);
-  const lastName = user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1);
-  return `${firstName} ${lastName} - ${user.username}`;
+  if (!user) return '';
+  const firstName = user.firstName ? user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1) : '';
+  const lastName = user.lastName ? user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1) : '';
+  return `${firstName} ${lastName} ${user.username ? `- ${user.username}` : ''}`.trim();
 };
+
+const selectedUser = computed(() => {
+  return props.users.find(user => user._id === props.modelValue);
+});
+
+const selectedUserDisplay = computed(() => {
+  if (!selectedUser.value) return '';
+  return formatName(selectedUser.value);
+});
 
 // Filter users based on search term
 const filteredUsers = computed(() => {
@@ -94,52 +118,53 @@ const filteredUsers = computed(() => {
   
   const search = searchTerm.value.toLowerCase();
   return props.users.filter(user => {
+    if (!user) return false;
     const fullName = formatName(user).toLowerCase();
     return fullName.includes(search) ||
-           user.username.toLowerCase().includes(search) ||
-           user.firstName.toLowerCase().includes(search) ||
-           user.lastName.toLowerCase().includes(search);
+           (user.username && user.username.toLowerCase().includes(search)) ||
+           (user.firstName && user.firstName.toLowerCase().includes(search)) ||
+           (user.lastName && user.lastName.toLowerCase().includes(search));
   });
 });
 
-// Update search term when modelValue changes
-watch(() => props.modelValue, (newValue) => {
-  if (!newValue) {
+// Watch for external modelValue changes
+watch(() => props.modelValue, (newVal) => {
+  if (newVal === '' && searchTerm.value) {
     searchTerm.value = '';
-    return;
-  }
-  
-  const selectedUser = props.users.find(user => user._id === newValue);
-  if (selectedUser) {
-    searchTerm.value = formatName(selectedUser);
   }
 }, { immediate: true });
 
-const handleInputClick = (event) => {
-  event.stopPropagation();
-  if (props.modelValue && searchTerm.value) {
-    // Select all text in the input
-    event.target.select();
+const openDropdown = () => {
+  if (!isOpen.value) {
+    isOpen.value = true;
+    searchTerm.value = '';
+    nextTick(() => {
+      inputRef.value?.focus();
+    });
   }
 };
 
-const toggleDropdown = () => {
-  isOpen.value = !isOpen.value;
-  if (isOpen.value && props.modelValue && inputRef.value) {
-    // Ensure input is focused and text is selected when opening dropdown
-    inputRef.value.focus();
-    inputRef.value.select();
+const handleContainerClick = () => {
+  if (!isOpen.value) {
+    openDropdown();
+  } else if (searchTerm.value === '') {
+    isOpen.value = false;
   }
 };
 
 const selectUser = (user) => {
+  if (!user) return;
   emit('update:modelValue', user._id);
-  searchTerm.value = formatName(user);
   isOpen.value = false;
+  searchTerm.value = '';
 };
 
-const onSearch = () => {
-  emit('update:modelValue', null);
-  isOpen.value = true;
+const handleBackdropClick = () => {
+  isOpen.value = false;
+  searchTerm.value = '';
+};
+
+const onSearch = (event) => {
+  event.stopPropagation();
 };
 </script>

@@ -4,7 +4,7 @@
 			<h2 class="text-xl font-extrabold text-center text-gray-900 dark:text-white">
 				{{ $t('register.title') }}
 			</h2>
-			<form @submit.prevent="handleRegister" class="space-y-1">
+			<form class="space-y-1" @submit.prevent="handleRegister">
 				<div class="flex space-x-2">
 					<div class="w-1/2">
 						<label class="text-xs" for="firstName">{{ $t('register.firstName') }}</label>
@@ -17,7 +17,7 @@
 							class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none text-2xs focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 							:placeholder="$t('register.firstName')"
 						>
-						<div id="errorFirstName" class="mt-1 text-sm text-red-500"></div>
+						<div id="errorFirstName" class="mt-1 text-sm text-red-500"/>
 					</div>
 					<div class="w-1/2">
 						<label class="text-xs" for="lastName">{{ $t('register.lastName') }}</label>
@@ -30,7 +30,7 @@
 							class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 							:placeholder="$t('register.lastName')"
 						>
-						<div id="errorLastName" class="mt-1 text-sm text-red-500"></div>
+						<div id="errorLastName" class="mt-1 text-sm text-red-500"/>
 					</div>
 				</div>
 				<div>
@@ -44,7 +44,7 @@
 						class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 						:placeholder="$t('register.usernamePlaceholder')"
 					>
-					<div id="errorUsername" class="mt-1 text-sm text-red-500"></div>
+					<div id="errorUsername" class="mt-1 text-sm text-red-500"/>
 				</div>
 				<div>
 					<label class="text-xs" for="email">{{ $t('register.email') }}</label>
@@ -57,7 +57,7 @@
 						class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 						:placeholder="$t('register.email')"
 					>
-					<div id="errorEmail" class="mt-1 text-sm text-red-500"></div>
+					<div id="errorEmail" class="mt-1 text-sm text-red-500"/>
 				</div>
 				<div>
 					<label class="text-xs" for="password">{{ $t('register.password') }}</label>
@@ -70,7 +70,7 @@
 						class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 						placeholder="••••••••••"
 					>
-					<div id="errorPassword" class="mt-1 text-sm text-red-500"></div>
+					<div id="errorPassword" class="mt-1 text-sm text-red-500"/>
 				</div>
 				<div>
 					<label class="text-xs" for="confirmPassword">{{ $t('register.confirmPassword') }}</label>
@@ -83,7 +83,7 @@
 						class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 						placeholder="••••••••••"
 					>
-					<div id="errorConfirmPassword" class="mt-1 text-sm text-red-500"></div>
+					<div id="errorConfirmPassword" class="mt-1 text-sm text-red-500"/>
 				</div>
 				<div class="pt-4">
 					<button

@@ -1,5 +1,5 @@
 # Stage 1: Base for both dev and prod
-FROM node:18-alpine AS base
+FROM node:18 AS base
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ FROM base AS builder
 RUN npm run build
 
 # Stage 3: Production image
-FROM node:18-alpine AS production
+FROM node:18 AS production
 
 WORKDIR /app
 
@@ -27,9 +27,6 @@ ENV NODE_ENV=production
 # Copy package files and install production dependencies
 COPY --from=builder /app/package*.json ./
 RUN npm ci --only=production --prefer-offline --no-audit --progress=false
-
-# Install additional required packages for production
-RUN npm install @azure/msal-node node-fetch
 
 # Copy built application
 COPY --from=builder /app/.output ./.output

@@ -25,8 +25,7 @@ export default defineEventHandler(async (event) => {
     }
     
     // Add the order total back to user's balance
-    user.balance = (parseFloat(user.balance) + order.total).toFixed(2);
-    await user.save();
+    await user.raise(order.total);
 
     // Revert product metrics for each product in the order
     for (const item of order.products) {

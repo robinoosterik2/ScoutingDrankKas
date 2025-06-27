@@ -37,8 +37,8 @@
         </div>
         <div class="flex items-end">
           <button
-            @click="fetchFinanceData"
             class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            @click="fetchFinanceData"
           >
             {{ $t('filters.apply') }}
           </button>
@@ -80,7 +80,7 @@
         {{ $t('finance.revenueOverTime') }}
       </h2>
       <div class="h-64">
-        <canvas id="revenueChart"></canvas>
+        <canvas id="revenueChart"/>
       </div>
     </div>
 

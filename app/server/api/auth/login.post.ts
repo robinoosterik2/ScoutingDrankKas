@@ -1,6 +1,5 @@
-import { defineEventHandler, readBody } from 'h3';
+import { defineEventHandler, readBody, createError  } from 'h3';
 import { User, isAdministrator } from '@/server/models/user';
-import { createError } from 'h3';
 
 interface CustomError {
 	statusCode?: number;

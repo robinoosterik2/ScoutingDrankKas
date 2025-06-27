@@ -7,20 +7,22 @@
       <div v-if="resetSuccess" class="text-center text-green-500">
         {{ $t('login.resetSuccess') }}
       </div>
-      <form @submit.prevent="handleLogin" class="space-y-2">
+      <form class="space-y-2" @submit.prevent="handleLogin">
         <div>
           <label for="username">{{ $t('login.username') }}</label>
-          <input id="username" v-model="username" name="username" type="text" required
+          <input
+id="username" v-model="username" name="username" type="text" required
                  class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                  :placeholder="$t('login.usernamePlaceholder')">
-          <div id="errorUsername" class="text-red-500 mt-1"></div>
+          <div id="errorUsername" class="text-red-500 mt-1"/>
         </div>
         <div>
           <label for="password">{{ $t('login.password') }}</label>
-          <input id="password" v-model="password" name="password" type="password" required
+          <input
+id="password" v-model="password" name="password" type="password" required
                  class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                  placeholder="••••••••••">
-          <div id="errorPassword" class="text-red-500 mt-1"></div>
+          <div id="errorPassword" class="text-red-500 mt-1"/>
         </div>
         <!-- Remember me -->
         <div class="flex items-center">
@@ -30,7 +32,8 @@
           </label>
         </div>
         <div class="pt-4">
-          <button type="submit"
+          <button
+type="submit"
                   class="group relative w-full flex justify-center py-1 px-4 border border-transparent font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             {{ $t('login.submit') }}
           </button>

@@ -9,8 +9,8 @@
       >
         <!-- Close Button -->
         <button
-          @click="$emit('close')"
           class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white"
+          @click="$emit('close')"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

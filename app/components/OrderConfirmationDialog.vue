@@ -14,11 +14,13 @@
           </div>
           
           <div v-else class="space-y-4">
-            <div v-for="product in selectedProducts" :key="product.id" 
+            <div
+v-for="product in selectedProducts" :key="product.id" 
                  class="flex items-center justify-between p-3 border dark:border-gray-700 rounded-lg">
               <div class="flex items-center space-x-3">
-                <img :src="product.imageUrl" :alt="product.name" 
-                     class="h-16 w-16 object-cover rounded" />
+                <img
+:src="product.imageUrl" :alt="product.name" 
+                     class="h-16 w-16 object-cover rounded" >
                 <div>
                   <h3 class="font-medium text-gray-800 dark:text-white">{{ product.name }}</h3>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -28,16 +30,18 @@
               </div>
               
               <div class="flex items-center space-x-2">
-                <button @click="decrementProduct(product)"
-                        class="bg-red-500 text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-red-600"
-                        :disabled="getProductCount(product) === 0">
+                <button
+class="bg-red-500 text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-red-600"
+                        :disabled="getProductCount(product) === 0"
+                        @click="decrementProduct(product)">
                   -
                 </button>
                 <span class="w-8 text-center text-gray-700 dark:text-gray-300">
                   {{ getProductCount(product) }}
                 </span>
-                <button @click="incrementProduct(product)"
-                        class="bg-green-500 text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-green-600">
+                <button
+class="bg-green-500 text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-green-600"
+                        @click="incrementProduct(product)">
                   +
                 </button>
               </div>
@@ -53,13 +57,15 @@
         </div>
         
         <div class="p-4 border-t dark:border-gray-700 flex justify-end space-x-3">
-          <button @click="$emit('close')"
-                  class="px-4 py-2 border dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+          <button
+class="px-4 py-2 border dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                  @click="$emit('close')">
             {{ $t("cancel") }}
           </button>
-          <button @click="confirmOrder"
-                  :disabled="selectedProducts.length === 0"
-                  class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed">
+          <button
+:disabled="selectedProducts.length === 0"
+                  class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  @click="confirmOrder">
             {{ $t("confirm") }}
           </button>
         </div>

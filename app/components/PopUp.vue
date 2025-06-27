@@ -6,8 +6,8 @@
 				<p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ message }}</p>
 				<div class="flex justify-end mt-4">
 					<button
-						@click="close"
 						class="px-4 py-1 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none"
+						@click="close"
 					>
 						{{ $t('OK') }}
 					</button>

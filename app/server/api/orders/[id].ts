@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   
   try {
     // Find order by id
-    let order = await Order.findById(id).populate('user', "firstName lastName").populate('bartender', "firstName lastName").populate('products.product');
+    const order = await Order.findById(id).populate('user', "firstName lastName").populate('bartender', "firstName lastName").populate('products.product');
     if (!order) {
       throw createError({ statusCode: 404, message: 'Order not found' });
     }

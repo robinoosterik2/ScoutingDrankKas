@@ -11,14 +11,14 @@
     <div class="mb-2">
       <BackLink
         to="/admin/categories"
-        :backPage="$t('categories.title')"
-      ></BackLink>
+        :back-page="$t('categories.title')"
+      />
     </div>
 
     <!-- Create/Edit Category Form -->
     <form
-      @submit.prevent="saveCategory"
       class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 max-w-xl mx-auto"
+      @submit.prevent="saveCategory"
     >
       <div class="mb-4">
         <label
@@ -28,13 +28,13 @@
           {{ $t("categories.name") }}
         </label>
         <input
+          id="categoryName"
           v-model="categoryForm.name"
           type="text"
-          id="categoryName"
           required
           class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-        />
-        <div id="errorCategoryName" class="text-red-500 text-sm mt-1"></div>
+        >
+        <div id="errorCategoryName" class="text-red-500 text-sm mt-1"/>
       </div>
 
       <div class="mb-4">
@@ -46,11 +46,11 @@
         </label>
         <div class="flex items-center space-x-3">
           <input
+            id="ageRestriction"
             v-model="categoryForm.ageRestriction"
             type="checkbox"
-            id="ageRestriction"
             class="form-checkbox h-6 w-6 text-indigo-600 border-gray-300 rounded-md focus:ring-indigo-500"
-          />
+          >
           <label
             for="ageRestriction"
             class="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
@@ -63,8 +63,8 @@
       <div class="mt-6 flex justify-end space-x-4">
         <button
           type="button"
-          @click="navigateTo('/admin/categories')"
           class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+          @click="navigateTo('/admin/categories')"
         >
           {{ $t("cancel") }}
         </button>

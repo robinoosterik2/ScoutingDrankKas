@@ -2,13 +2,13 @@
   <div class="container mx-auto px-4 py-2">
     <!-- Back to Users Button -->
     
-    <CTitle :text="userId ? $t('users.editUser') : $t('users.createUser')"></CTitle>
+    <CTitle :text="userId ? $t('users.editUser') : $t('users.createUser')"/>
     
-    <BackLink to="/admin/users" backPage="Users"></BackLink>
+    <BackLink to="/admin/users" back-page="Users"/>
     <!-- Edit User Form -->
     <form
-      @submit.prevent="saveUser"
       class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 max-w-xl mx-auto"
+      @submit.prevent="saveUser"
     >
       <div class="grid grid-cols-2 gap-4">
         <!-- First Name -->
@@ -20,12 +20,12 @@
             First Name
           </label>
           <input
+            id="firstName"
             v-model="formData.firstName"
             type="text"
-            id="firstName"
             required
             class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-          />
+          >
         </div>
 
         <!-- Last Name -->
@@ -37,12 +37,12 @@
             Last Name
           </label>
           <input
+            id="lastName"
             v-model="formData.lastName"
             type="text"
-            id="lastName"
             required
             class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-          />
+          >
         </div>
       </div>
 
@@ -55,12 +55,12 @@
           Username
         </label>
         <input
+          id="username"
           v-model="formData.username"
           type="text"
-          id="username"
           required
           class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-        />
+        >
       </div>
 
       <!-- Email -->
@@ -72,16 +72,16 @@
           Email
         </label>
         <input
+          id="email"
           v-model="formData.email"
           type="email"
-          id="email"
           required
           class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-        />
+        >
       </div>
 
       <!-- Password (only for new users or reset) -->
-      <div class="mt-4" v-if="!userId">
+      <div v-if="!userId" class="mt-4">
         <label
           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           for="password"
@@ -89,12 +89,12 @@
           Password
         </label>
         <input
+          id="password"
           v-model="formData.password"
           type="password"
-          id="password"
           required
           class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-        />
+        >
       </div>
 
       <!-- Role Selection -->
@@ -122,8 +122,8 @@
       <div class="mt-6 flex justify-end space-x-4">
         <button
           type="button"
-          @click="navigateTo('/admin/users')"
           class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+          @click="navigateTo('/admin/users')"
         >
           Cancel
         </button>

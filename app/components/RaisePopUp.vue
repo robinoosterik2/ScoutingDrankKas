@@ -9,8 +9,8 @@
 			>
 				<!-- Close Button -->
 				<button
-					@click="close"
 					class="absolute text-gray-500 top-4 right-4 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white"
+					@click="close"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -40,12 +40,12 @@
 					<!-- Amount Input -->
 					<div class="mt-4">
 						<input
-							type="number"
 							id="amount"
 							v-model="raiseAmount"
+							type="number"
 							class="w-full p-2 border-gray-300 rounded-md shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 							:placeholder="$t('raise.enterAmount')"
-						/>
+						>
 					</div>
 
 					<!-- Last 5 Raises -->
@@ -78,14 +78,14 @@
 					<!-- Buttons -->
 					<div class="mt-5 sm:flex sm:flex-row-reverse">
 						<button
-							@click="confirmRaise"
 							class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+							@click="confirmRaise"
 						>
 							{{ $t("raise.raiseBalance") }}
 						</button>
 						<button
-							@click="close"
 							class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+							@click="close"
 						>
 							{{ $t("cancel") }}
 						</button>
@@ -98,7 +98,6 @@
 
 <script>
 export default {
-	emits: ['balanceUpdated', 'close'],
 	props: {
 		isOpen: {
 			type: Boolean,
@@ -117,13 +116,21 @@ export default {
 			required: true,
 		},
 	},
+	emits: ['balanceUpdated', 'close'],
+	emits: ["close"],
 	data() {
 		return {
 			raiseAmount: null,
 			recentRaises: [],
 		};
 	},
-	emits: ["close"],
+	watch: {
+		isOpen(newVal) {
+			if (newVal) {
+				this.fetchRecentRaises();
+			}
+		},
+	},
 	methods: {
 		async fetchRecentRaises() {
 			try {
@@ -163,13 +170,6 @@ export default {
 		},
 		close() {
 			this.$emit("close");
-		},
-	},
-	watch: {
-		isOpen(newVal) {
-			if (newVal) {
-				this.fetchRecentRaises();
-			}
 		},
 	},
 };

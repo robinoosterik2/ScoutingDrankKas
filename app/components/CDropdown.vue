@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 
 // Define props with default values and type validation
 const props = defineProps({
@@ -80,8 +80,8 @@ onUnmounted(() => {
     <div>
       <button
         type="button"
-        @click="toggleDropdown"
         class="inline-flex items-center w-full px-2 py-1 text-xs text-gray-900 transition-colors bg-white rounded-md shadow-sm dark:bg-gray-800 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700"
+        @click="toggleDropdown"
       >
         <!-- Display selected item label or placeholder -->
         {{ selectedItem?.label || placeholder }}
@@ -118,10 +118,10 @@ onUnmounted(() => {
           <button
             v-for="item in items"
             :key="item.value"
-            @click="handleItemSelect(item)"
             class="text-gray-700 dark:text-gray-200 block px-1 py-1 text-xs w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors data-[active=true]:bg-gray-200 data-[active=true]:dark:bg-gray-600"
             :data-active="item.value === modelValue"
             role="menuitem"
+            @click="handleItemSelect(item)"
           >
             {{ item.label }}
           </button>

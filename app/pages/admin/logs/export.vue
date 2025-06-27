@@ -2,7 +2,7 @@
 	<CTitle :text="$t('logs.export')" />
 
 	<div class="flex justify-between items-center mb-4">
-		<BackLink to="/admin" :backPage="$t('admin.title')" />
+		<BackLink to="/admin" :back-page="$t('admin.title')" />
 	</div>
 
 	<div class="space-y-6">
@@ -13,16 +13,16 @@
 				<div>
 					<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('startDate') }}</label>
 					<input
-						type="date"
 						v-model="startDate"
+						type="date"
 						class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
 					>
 				</div>
 				<div>
 					<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ $t('endDate') }}</label>
 					<input
-						type="date"
 						v-model="endDate"
+						type="date"
 						class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
 					>
 				</div>
@@ -35,9 +35,9 @@
 			<div class="space-y-4">
 				<div class="flex items-center">
 					<input
-						type="radio"
 						id="allUsers"
 						v-model="userFilter"
+						type="radio"
 						value="all"
 						class="h-5 w-5 text-indigo-600 bg-white dark:bg-red-800 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-indigo-500"
 					>
@@ -48,9 +48,9 @@
 
 				<div class="flex items-center">
 					<input
-						type="radio"
 						id="selectedUsers"
 						v-model="userFilter"
+						type="radio"
 						value="selected"
 						class="h-5 w-5 text-indigo-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-indigo-500"
 					>
@@ -61,8 +61,8 @@
 
 				<div v-if="userFilter === 'selected'" class="pl-6 space-y-2">
 					<input
-						type="text"
 						v-model="userSearchQuery"
+						type="text"
 						:placeholder="$t('searchUsers')"
 						class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
 					>
@@ -77,9 +77,9 @@
 							class="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
 						>
 							<input
-								type="checkbox"
 								:id="'user-' + user._id"
 								v-model="selectedUsers"
+								type="checkbox"
 								:value="user._id"
 								class="h-5 w-5 text-indigo-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-indigo-500"
 							>
@@ -98,9 +98,9 @@
 			<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
 				<div v-for="action in availableActions" :key="action" class="flex items-center">
 					<input
-						type="checkbox"
 						:id="'action-' + action"
 						v-model="selectedActions"
+						type="checkbox"
 						:value="action"
 						class="h-5 w-5 text-indigo-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-indigo-500"
 					>
@@ -117,9 +117,9 @@
 			<div class="flex space-x-6">
 				<div class="flex items-center">
 					<input
-						type="radio"
 						id="formatCSV"
 						v-model="exportFormat"
+						type="radio"
 						value="csv"
 						class="h-5 w-5 text-indigo-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-indigo-500"
 					>
@@ -129,9 +129,9 @@
 				</div>
 				<div class="flex items-center">
 					<input
-						type="radio"
 						id="formatJSON"
 						v-model="exportFormat"
+						type="radio"
 						value="json"
 						class="h-5 w-5 text-indigo-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-indigo-500"
 					>
@@ -146,14 +146,15 @@
 		<div class="flex justify-end">
 			<button
 				type="submit"
-				@click.prevent="exportLogs"
 				class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
 				:disabled="isLoading"
+				@click.prevent="exportLogs"
 			>
 				<span v-if="isLoading" class="mr-2">
 					<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
 						<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-						<path class="opacity-75" fill="currentColor"
+						<path
+class="opacity-75" fill="currentColor"
 							d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
 					</svg>
 				</span>

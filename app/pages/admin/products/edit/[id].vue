@@ -2,18 +2,19 @@
   <div class="container px-4 py-2 mx-auto">
     <!-- Back to Products Button -->
     <CTitle :text="productId ? $t('products.editProduct') : $t('products.createProduct')" />
-    <BackLink to="/admin/products" backPage="Products"></BackLink>
+    <BackLink to="/admin/products" back-page="Products"/>
 
     <!-- Edit Product Form -->
-    <form @submit.prevent="saveProduct" class="max-w-xl p-6 mx-auto bg-white rounded-lg shadow-md dark:bg-gray-800">
+    <form class="max-w-xl p-6 mx-auto bg-white rounded-lg shadow-md dark:bg-gray-800" @submit.prevent="saveProduct">
       <div class="grid grid-cols-2 gap-4">
         <!-- Product Name -->
         <div>
           <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" for="productName">
             {{ $t("products.productName") }}
           </label>
-          <input v-model="formData.name" type="text" id="productName" required
-            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white" />
+          <input
+id="productName" v-model="formData.name" type="text" required
+            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white" >
         </div>
 
         <!-- Product Price -->
@@ -21,8 +22,9 @@
           <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" for="productPrice">
             {{ $t("products.productPrice") }}
           </label>
-          <input v-model="formData.price" type="number" id="productPrice" min="0" required
-            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white" />
+          <input
+id="productPrice" v-model="formData.price" type="number" min="0" required
+            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white" >
         </div>
       </div>
 
@@ -31,9 +33,10 @@
         <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" for="productDescription">
           {{ $t("products.productDescription") }}
         </label>
-        <textarea v-model="formData.description" id="productDescription" required
+        <textarea
+id="productDescription" v-model="formData.description" required
           class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-          rows="3"></textarea>
+          rows="3"/>
       </div>
 
       <!-- Product Stock -->
@@ -41,8 +44,9 @@
         <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" for="productStock">
           {{ $t("products.productStock") }}
         </label>
-        <input v-model="formData.stock" type="number" id="productStock" min="0" required
-          class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white" />
+        <input
+id="productStock" v-model="formData.stock" type="number" min="0" required
+          class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white" >
       </div>
 
       <!-- Product Categories -->
@@ -50,7 +54,8 @@
         <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
           {{ $t("products.categories") }}
         </label>
-        <select v-model="formData.categories" multiple
+        <select
+v-model="formData.categories" multiple
           class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white">
           <option v-for="category in availableCategories" :key="category._id" :value="category._id">
             {{ category.name }}
@@ -67,9 +72,9 @@
           id="productImage"
           type="file"
           accept="image/*"
-          @change="handleImageUpload"
           class="block w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 dark:file:bg-indigo-500 dark:hover:file:bg-indigo-600"
-        />
+          @change="handleImageUpload"
+        >
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $t("products.imageAspectRatioTip") }}</p>
         <!-- Image Preview -->
         <div v-if="formData.imageUrl" class="mt-2">

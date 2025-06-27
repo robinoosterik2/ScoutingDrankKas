@@ -6,7 +6,7 @@
 
   <!-- Back to Admin Button -->
   <div class="flex justify-between items-center mb-2">
-    <BackLink to="/admin" :backPage="$t('admin.title')"></BackLink>
+    <BackLink to="/admin" :back-page="$t('admin.title')"/>
     <div>
       <DashboardLink
         to="/admin/roles/create"
@@ -47,14 +47,14 @@
     <template #cell-actions="{ row: role }">
       <div class="flex justify-end space-x-2">
         <button
-          @click="editRole(role)"
           class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200 text-sm"
+          @click="editRole(role)"
         >
           {{ $t("edit") }}
         </button>
         <button
-          @click="openDeleteConfirmation(role)"
           class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200 text-sm"
+          @click="openDeleteConfirmation(role)"
         >
           {{ $t("delete") }}
         </button>
@@ -88,12 +88,12 @@
 
   <!-- Delete Confirmation Modal -->
   <ConfirmDelete
-    :isOpen="isDeleteModalOpen"
+    :is-open="isDeleteModalOpen"
     :title="$t('delete') + ' ' + $t('role')"
     :message="`${$t('roles.confirmDelete')} '${roleToDelete?.roleName}'? ${$t(
       'cannotBeUndone'
     )}`"
-    :confirmText="$t('delete')"
+    :confirm-text="$t('delete')"
     @confirm="confirmDelete"
     @close="closeDeleteConfirmation"
   />

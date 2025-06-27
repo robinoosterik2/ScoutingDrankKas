@@ -5,7 +5,7 @@ import { Category } from '@/server/models/category';
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     // make sure every field is present
-    let { id, name, price, description, stock, categories, imageUrl } = body;
+    const { id, name, price, description, stock, categories, imageUrl } = body;
     if (!name || !price || !description || !categories || (typeof stock !== 'number') || !imageUrl) {
         return {
             status: 400,
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
                 body: { message: 'Invalid category' }
             };
         } else {
-            let found = await Category.findById(categories[i]);
+            const found = await Category.findById(categories[i]);
             if (!found) {
                 return {
                     status: 400,
@@ -75,7 +75,7 @@ export default defineEventHandler(async (event) => {
         };
     }
     body.ageRestriction = ageRestriction;
-    let product = new Product(body);
+    const product = new Product(body);
     await product.save();
     return {
         status: 200,

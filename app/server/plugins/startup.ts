@@ -1,9 +1,24 @@
 import { connectDB } from "@/utils/mongoose";
+// import { MongoBackupService } from "./cron/backup";
 
 // Define a unique symbol for the flag
 const adminSetupDoneFlag = Symbol.for("nitro.adminSetupDone");
 
+// const backupConfig = {
+//   mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017',
+//   backupDir: '/backup',
+//   retentionDays: 3000,
+//   enableCompression: true
+// };
+
+// const backupService = new MongoBackupService(backupConfig);
+// const scheduler = new BackupScheduler(backupService);
+
 export default defineNitroPlugin(async (nitroApp) => {
+  // if (process.env.NODE_ENV !== "development") {
+  //   scheduler.start();
+  // }
+
   if (!process.env.MONGODB_URI) {
     console.error("Startup plugin: MONGODB_URI is not defined");
     return;

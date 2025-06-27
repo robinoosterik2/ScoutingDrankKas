@@ -1,5 +1,20 @@
 # Development stage
-FROM node:18-alpine
+FROM node:18
+
+RUN apt-get update && apt-get install -y wget gnupg curl
+
+# Install MongoDB Database Tools
+RUN wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-debian92-x86_64-100.3.1.deb && \
+	apt install -y ./mongodb-database-tools-*.deb && \
+	rm -f mongodb-database-tools-*.deb
+
+# Install mongosh
+RUN curl -fsSL https://pgp.mongodb.com/server-6.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg && \
+	echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/debian bullseye/mongodb-org/6.0 main" \
+		> /etc/apt/sources.list.d/mongodb-org-6.0.list && \
+	apt-get update && \
+	apt-get install -y mongodb-mongosh && \
+	rm -rf /var/lib/apt/lists/*
 
 # Set workdir
 WORKDIR /app

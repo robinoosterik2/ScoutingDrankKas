@@ -46,8 +46,7 @@ export const createFromRequestBody = async function(bodyData: { products: any[];
   if (!user) {
     throw new Error('User not found');
   }
-  user.balance -= bodyData.total;
-  await user.save();
+  await user.raise(-bodyData.total);
 
   const order = new Order({
     user: bodyData.userId,

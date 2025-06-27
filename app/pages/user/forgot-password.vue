@@ -7,7 +7,7 @@
 			<div v-if="emailSent" class="text-center text-green-500">
 				{{ $t('forgotPassword.emailSent') }}
 			</div>
-			<form v-else @submit.prevent="handleForgotPassword" class="space-y-2">
+			<form v-else class="space-y-2" @submit.prevent="handleForgotPassword">
 				<div>
 					<label for="email">{{ $t('forgotPassword.email') }}</label>
 					<input
@@ -19,7 +19,7 @@
 						class="relative block w-full px-3 py-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
 						:placeholder="$t('forgotPassword.emailPlaceholder')"
 					>
-					<div id="errorEmail" class="mt-1 text-red-500"></div>
+					<div id="errorEmail" class="mt-1 text-red-500"/>
 				</div>
 				<div class="pt-4">
 					<button

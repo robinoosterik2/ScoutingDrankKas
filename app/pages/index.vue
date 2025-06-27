@@ -1,5 +1,38 @@
 <template>
   <div class="container px-4 py-2 mx-auto">
+    <!-- Recent Orders (shown when no user is selected) -->
+    <div class="mb-8">
+      <h2 class="mb-4 text-2xl font-semibold text-gray-800 dark:text-white">
+        {{ selectedUser 
+          ? $t('orders.userRecentOrders', { name: users.find(u => u._id === selectedUser)?.name || '' }) 
+          : $t('orders.recentOrders') 
+        }}
+      </h2>
+      <div v-if="recentOrders.length > 0" class="grid gap-4 md:grid-cols-3">
+        <div v-for="order in recentOrders" :key="order._id" class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
+          <div class="flex justify-between mb-2">
+            <h3 class="font-medium text-gray-700 dark:text-gray-300">{{ order.user?.firstName }} {{ order.user?.lastName }}</h3>
+            <span class="text-sm ">{{ formatDate(order.createdAt) }}</span>
+          </div>
+          <ul class="mb-3 space-y-1">
+            <li v-for="item in order.products" :key="item.product._id" class="flex justify-between text-sm">
+              <span class="text-gray-600 dark:text-gray-400">{{ item.count }}x {{ item.product.name }}</span>
+              <span class="text-gray-800 dark:text-gray-200">€{{ (item.product.price * item.count).toFixed(2) }}</span>
+            </li>
+          </ul>
+          <button
+            class="w-full px-3 py-1 text-sm text-white bg-indigo-600 rounded hover:bg-indigo-700"
+            @click="reorderItems(order.products, order)"
+          >
+            {{ $t('orders.quickReorder') }}
+          </button>
+        </div>
+      </div>
+      <p v-else class="text-gray-500 dark:text-gray-400">
+        {{ $t('orders.noRecentOrders') }}
+      </p>
+    </div>
+
     <!-- Select User -->
     <div class="mb-2">
       <div class="flex items-center">
@@ -104,29 +137,85 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import { getDisplayableProductImageUrl } from "@/utils/imageUtils"; // Import the utility function
+import { ref, onMounted, computed, watch } from "vue";
+import { getDisplayableProductImageUrl } from "@/utils/imageUtils";
 
 const users = ref([]);
 const products = ref([]);
 const categories = ref([]);
+const recentOrders = ref([]);
 const selectedUser = ref(null);
+
+// Watch for changes in selected user
+watch(selectedUser, async () => {
+  await fetchRecentOrders();
+});
 const productCounts = ref({});
 const showConfirmation = ref(false);
 const searchQuery = ref("");
 const selectedCategory = ref("");
 
+const fetchRecentOrders = async () => {
+  try {
+    const response = await $fetch("/api/orders/recent", { 
+      method: "GET",
+      query: selectedUser.value ? { userId: selectedUser.value } : {}
+    });
+    console.log(response.orders)
+    recentOrders.value = response.orders || [];
+  } catch (error) {
+    console.error("Failed to fetch recent orders:", error);
+  }
+};
+
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
+const reorderItems = (items, order) => {
+  // Set the user who made the original order
+  if (order?.user?._id) {
+    selectedUser.value = order.user._id;
+  }
+  
+  // Reset current order
+  Object.keys(productCounts.value).forEach(key => {
+    productCounts.value[key] = 0;
+  });
+  
+  // Set new quantities from the selected order
+  items.forEach(item => {
+    if (item.product && item.product._id) {
+      productCounts.value[item.product._id] = item.count;
+    }
+  });
+  
+  // Show confirmation dialog if we have items to order
+  if (items.length > 0) {
+    showConfirmation.value = true;
+  }
+};
+
 onMounted(async () => {
   try {
-    users.value = await $fetch("/api/users/all", { method: "GET" });
-    products.value = await $fetch("/api/products/ordered", { method: "GET" });
-    categories.value = await $fetch("/api/categories/all", { method: "GET" });
+    const [usersResponse, productsResponse, categoriesResponse] = await Promise.all([
+      $fetch("/api/users/all", { method: "GET" }),
+      $fetch("/api/products/ordered", { method: "GET" }),
+      $fetch("/api/categories/all", { method: "GET" })
+    ]);
+
+    users.value = usersResponse;
+    products.value = productsResponse;
+    categories.value = categoriesResponse;
 
     products.value.forEach((product) => {
       productCounts.value[product.id] = 0;
     });
+
+    await fetchRecentOrders();
   } catch (error) {
-    console.error("Failed to fetch users, products, or categories:", error);
+    console.error("Failed to fetch data:", error);
     alert("Failed to fetch data. Please try again.");
   }
 });

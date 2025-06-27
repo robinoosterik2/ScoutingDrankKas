@@ -59,8 +59,8 @@
       <div class="flex items-center gap-4 mb-4 flex-wrap">
         <select
           v-model="selectedMonth"
-          @change="handleFilterChange"
           class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
+          @change="handleFilterChange"
         >
           <option value="">{{ $t('profile.selectMonth') }}</option>
           <option
@@ -74,8 +74,8 @@
 
         <select
           v-model="selectedYear"
-          @change="handleFilterChange"
           class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
+          @change="handleFilterChange"
         >
           <option value="">{{ $t('profile.selectYear') }}</option>
           <option
@@ -112,8 +112,8 @@
       >
         <template #cell-actions="{ row: order }">
           <button 
-            @click="openOrderPopup(order._id)" 
-            class="px-3 py-1 rounded bg-blue-500 text-white text-sm"
+            class="px-3 py-1 rounded bg-blue-500 text-white text-sm" 
+            @click="openOrderPopup(order._id)"
           >
             {{ $t('profile.viewOrder') }}
           </button>
@@ -221,7 +221,7 @@ const fetchOrders = () => {
 };
 
 const handleFilterChange = () => {
-  ordersPage = 1; // Reset to first page when filters change
+  ordersPage.value = 1; // Reset to first page when filters change
   fetchOrders();
 };
 
