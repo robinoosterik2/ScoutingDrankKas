@@ -383,11 +383,13 @@ const updateChart = () => {
     label = t('finance.dailyRevenue');
   } else {
     // Monthly view for the year
-    labels = months.map(m => m.label);
+    // Skip the first month (index 0) which is 'All Months' in our months array
+    labels = months.slice(1).map(m => m.label);
     data = Array(12).fill(0);
     
     // Fill in the actual data
     salesData.forEach(item => {
+      // getMonth() returns 0-11, which correctly maps to our data array indices
       const month = new Date(item.date).getMonth();
       data[month] = item.total;
     });
