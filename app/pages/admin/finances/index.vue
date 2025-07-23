@@ -15,26 +15,6 @@
           <label
             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
           >
-            {{ $t("filters.month") }}
-          </label>
-          <select
-            v-model="selectedMonth"
-            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1 px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          >
-            <option
-              v-for="month in months"
-              :key="month.value"
-              :value="month.value"
-              :disabled="!selectedYear && month.value !== null"
-            >
-              {{ month.label }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <label
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-          >
             {{ $t("filters.year") }}
           </label>
           <select
@@ -43,6 +23,26 @@
           >
             <option v-for="year in years" :key="year" :value="year">
               {{ year }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
+            {{ $t("filters.month") }}
+          </label>
+          <select
+            v-model="selectedMonth"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1 px-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          >
+            <option :value="null">{{ $t("filters.allMonths") }}</option>
+            <option
+              v-for="month in months"
+              :key="month.value"
+              :value="month.value"
+            >
+              {{ month.label }}
             </option>
           </select>
         </div>
@@ -319,7 +319,6 @@ const goToPage = (page) => {
 
 // Data
 const months = [
-  { value: null, label: t("filters.allMonths") },
   { value: 1, label: t("months.january") },
   { value: 2, label: t("months.february") },
   { value: 3, label: t("months.march") },
@@ -334,7 +333,7 @@ const months = [
   { value: 12, label: t("months.december") },
 ];
 const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
-const selectedMonth = ref(null); // Default to all months
+const selectedMonth = ref(null); // null means all months
 const selectedYear = ref(new Date().getFullYear());
 
 const summary = ref({
@@ -458,26 +457,24 @@ const updateChart = () => {
     ).getDate();
     labels = Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`);
     data = Array(daysInMonth).fill(0);
+    label = t("finance.dailyRevenue");
 
-    // Fill in the actual data
+    // Fill in the actual data for daily view
     salesData.forEach((item) => {
       const day = new Date(item.date).getDate();
       data[day - 1] = item.total;
     });
-
-    label = t("finance.dailyRevenue");
   } else {
-    // Monthly view for the year
+    // Monthly view for the selected year
     labels = months.map((m) => m.label);
     data = Array(12).fill(0);
+    label = t("finance.monthlyRevenue");
 
-    // Fill in the actual data
+    // Fill in the actual data for monthly view
     salesData.forEach((item) => {
       const month = new Date(item.date).getMonth();
-      data[month] = item.total;
+      data[month] = (data[month] || 0) + item.total;
     });
-
-    label = t("finance.monthlyRevenue");
   }
 
   // Register the datalabels plugin
