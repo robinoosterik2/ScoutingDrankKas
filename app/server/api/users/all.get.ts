@@ -1,16 +1,16 @@
 import { defineEventHandler } from "h3";
-import { User } from "@/server/models/user";
+import User from "@/server/models/user";
+import { centsToEuro } from "@/server/utils/moneyFormatter";
 
 export default defineEventHandler(async () => {
-  const users = await User.find({ active: true })
-    .populate("role");
+  const users = await User.find({ active: true }).populate("role");
   return users.map((user) => ({
-    _id: user._id,
+    id: user.id,
     username: user.username,
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
     role: user.role,
-    balance: user.balance,
+    balance: centsToEuro(user.balance),
   }));
 });

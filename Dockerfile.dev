@@ -2,6 +2,8 @@
 FROM node:18
 
 RUN apt-get update && apt-get install -y wget gnupg curl
+# Enable pnpm via corepack
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Install MongoDB Database Tools
 RUN wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-debian92-x86_64-100.3.1.deb && \
@@ -20,10 +22,10 @@ RUN curl -fsSL https://pgp.mongodb.com/server-6.0.asc | gpg --dearmor -o /usr/sh
 WORKDIR /app
 
 # Install dependencies first for better caching
-COPY app/package*.json ./
+COPY app/pnpm-lock.yaml app/package.json ./
 
 # Install dependencies with development tools
-RUN npm ci --prefer-offline --no-audit --progress=false
+RUN pnpm i --frozen-lockfile
 
 # Copy the rest of the app
 COPY app .
@@ -37,4 +39,4 @@ ENV PORT=3000
 EXPOSE 3000
 
 # Command to run the application
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "run", "dev"]

@@ -6,6 +6,9 @@ export default defineEventHandler(async () => {
     const products = await Product.find();
     return products;
   } catch (error) {
-    throw createError({ statusCode: 500, statusMessage: "Error while fetching custom roles"});
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Error while fetching custom roles",
+    });
   }
 });

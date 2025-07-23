@@ -1,22 +1,35 @@
-import mongoose, { Schema, model } from 'mongoose';
+import type { Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
+export interface ICustomRole extends Document {
+  roleName: string;
+  roleDescription: string;
+  rolePermissions: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-const CustomRoleSchema = new Schema({
+const CustomRoleSchema = new Schema<ICustomRole>(
+  {
     roleName: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: true,
+      unique: true,
     },
     roleDescription: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     rolePermissions: {
-        type: [String],
-        required: false,
+      type: [String],
+      required: false,
     },
-}, {
-    timestamps: true
-});
+  },
+  {
+    timestamps: true,
+  }
+);
 
-export const CustomRole = mongoose.models.CustomRole || mongoose.model('CustomRole', CustomRoleSchema);
+export const CustomRole =
+  mongoose.models.CustomRole ||
+  mongoose.model<ICustomRole>("CustomRole", CustomRoleSchema);

@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
-    "i18n:sort": "node scripts/sort-locales.js"
+    "i18n:sort": "node scripts/sort-locales.js",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "@faker-js/faker": "^9.3.0",
@@ -43,11 +44,13 @@
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.25.1",
+    "eslint-import-resolver-node": "^0.3.9",
     "happy-dom": "^17.4.4",
     "playwright-core": "^1.52.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2",
     "vitest": "^3.1.2"
-  }
+  },
+  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad"
 }

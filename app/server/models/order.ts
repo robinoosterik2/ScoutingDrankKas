@@ -1,50 +1,78 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import mongoose, { Schema } from 'mongoose';
-import { Log } from './log';
-import { User } from './user';
+import type { Model, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import Log from "./log";
+import User from "./user";
 
-const OrderProductSchema = new Schema({
+interface IOrderProduct {
+  product: mongoose.Types.ObjectId;
+  count: number;
+}
+
+interface IOrder extends Document {
+  user: mongoose.Types.ObjectId;
+  products: IOrderProduct[];
+  total: number;
+  bartender: mongoose.Types.ObjectId;
+}
+
+interface IOrderModel extends Model<IOrder> {
+  createFromRequestBody: (bodyData: {
+    products: IOrderProduct[];
+    userId: mongoose.Types.ObjectId;
+    total: number;
+    bartenderId: mongoose.Types.ObjectId;
+  }) => Promise<IOrder>;
+}
+
+const OrderProductSchema = new Schema<IOrderProduct>({
   product: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
-    required: true
+    ref: "Product",
+    required: true,
   },
   count: {
     type: Number,
     required: true,
-    min: 1
-  }
+    min: 1,
+  },
 });
 
-const OrderSchema = new Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+const OrderSchema = new Schema<IOrder>(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    products: [OrderProductSchema],
+    total: {
+      type: Number,
+      required: true,
+    },
+    bartender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
-  products: [OrderProductSchema],
-  total: {
-    type: Number,
-    required: true,
-  },
-  bartender: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+  {
+    timestamps: true,
   }
-}, {
-  timestamps: true
-});
+);
 
-// Static method to create order from API request body
-export const createFromRequestBody = async function(bodyData: { products: any[]; userId: any; total: number; bartenderId: any; }) {
-  const products = bodyData.products.map((item: { productId: any; count: any; }) => ({
-    product: item.productId,
-    count: item.count
+OrderSchema.statics.createFromRequestBody = async function (bodyData: {
+  products: IOrderProduct[];
+  userId: mongoose.Types.ObjectId;
+  total: number;
+  bartenderId: mongoose.Types.ObjectId;
+}) {
+  const products = bodyData.products.map((item: IOrderProduct) => ({
+    product: item.product,
+    count: item.count,
   }));
 
   const user = await User.findById(bodyData.userId);
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
   await user.raise(-bodyData.total);
 
@@ -52,16 +80,40 @@ export const createFromRequestBody = async function(bodyData: { products: any[];
     user: bodyData.userId,
     products: products,
     total: bodyData.total,
-    bartender: bodyData.bartenderId
+    bartender: bodyData.bartenderId,
   });
 
   const log = new Log({
     executor: bodyData.userId,
     action: "Buy",
-    objectType: "Order",
-    objectId: order._id,
-    newValue: JSON.stringify(order),
-    description: `User bought products worth ${bodyData.total}`
+    targetObject: {
+      type: "Order",
+      id: order._id,
+      snapshot: order.toObject(),
+    },
+    changes: [
+      {
+        field: "user",
+        oldValue: null,
+        newValue: order.user,
+      },
+      {
+        field: "products",
+        oldValue: null,
+        newValue: order.products,
+      },
+      {
+        field: "total",
+        oldValue: null,
+        newValue: order.total,
+      },
+      {
+        field: "bartender",
+        oldValue: null,
+        newValue: order.bartender,
+      },
+    ],
+    description: `User bought products worth ${bodyData.total}`,
   });
   await log.save();
 
@@ -69,10 +121,12 @@ export const createFromRequestBody = async function(bodyData: { products: any[];
 };
 
 // Populate helper method
-OrderSchema.methods.populateAll = function() {
-  return this.populate('user')
-            .populate('bartender')
-            .populate('products.product');
+OrderSchema.methods.populateAll = function () {
+  return this.populate("user")
+    .populate("bartender")
+    .populate("products.product");
 };
 
-export const Order = mongoose.models.Order || mongoose.model('Order', OrderSchema);
+export const Order =
+  (mongoose.models.Order as IOrderModel) ||
+  mongoose.model<IOrder, IOrderModel>("Order", OrderSchema);

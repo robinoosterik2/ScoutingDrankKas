@@ -1,4 +1,3 @@
-
 [ ] update to i18n V9 https://i18n.nuxtjs.org/docs/getting-started/usage
 [ ] Fix loading animation for at example /admin/users, /admin/roles
 [x] Fix frontend permissions, right now middleware is commented out
@@ -9,9 +8,8 @@
 [ ] Make lightmode look prettier
 [ ] Make responsive
 [x] Fix roles
-[x] Fix users filter on /admin/users
-    - email works
-[x] Make loading faster, (prob move it out of onMounted  see /admin/users)
+[x] Fix users filter on /admin/users - email works
+[x] Make loading faster, (prob move it out of onMounted see /admin/users)
 [x] When creating a session, remove password from user
 [x] Fix capital letters in translation
 [ ] Fix pluralization https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
@@ -32,10 +30,15 @@
 [\] Validate what cursor did with password reset
 [ ] validate what cursor did with session
 
+https://claude.ai/share/5b0d5e7c-b2b4-4397-ab2b-b5ad6aade9b9
+update the models to use interfaces
+
 ## License
+
 [x] Fix license
 
 ## Bugs
+
 [x] Middleware doesn't work correctly with logout
 [ ] Bug with that for example 5 beer that is 6 euro only 6 cents is taken
 

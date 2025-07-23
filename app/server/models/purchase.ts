@@ -1,15 +1,22 @@
+import mongoose, { Schema } from "mongoose";
 
-import mongoose, { Schema } from 'mongoose';
+interface IPurchase {
+  userId: mongoose.Types.ObjectId;
+  productId: mongoose.Types.ObjectId;
+  quantity: number;
+  price: number;
+  purchaseDate: Date;
+}
 
-const PurchaseSchema = new Schema({
+const PurchaseSchema = new Schema<IPurchase>({
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   productId: {
     type: Schema.Types.ObjectId,
-    ref: 'Product',
+    ref: "Product",
     required: true,
   },
   quantity: {
@@ -28,4 +35,6 @@ const PurchaseSchema = new Schema({
   },
 });
 
-export const Purchase = mongoose.models.Purchase || mongoose.model('Purchase', PurchaseSchema);
+export const Purchase =
+  mongoose.models.Purchase ||
+  mongoose.model<IPurchase>("Purchase", PurchaseSchema);

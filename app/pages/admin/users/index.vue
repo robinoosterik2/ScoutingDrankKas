@@ -46,7 +46,9 @@
   </div>
 
   <!-- Users Table -->
-  <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+  <div
+    class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+  >
     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
       <thead class="bg-gray-50 dark:bg-gray-700">
         <tr class="overflow-visible">
@@ -185,7 +187,7 @@
 
   <RaisePopUpModal
     :isOpen="isPopupOpen"
-    :userId="selectedUserId"
+    :user-id="selectedUserId"
     @close="closePopup"
     @balanceUpdated="handleBalanceUpdated"
   />
@@ -193,7 +195,7 @@
 
 <script setup>
 import DeleteConfirmationModal from "@/components/ConfirmDelete.vue";
-import RaisePopUpModal from '@/components/RaisePopUp'
+import RaisePopUpModal from "@/components/RaisePopUp";
 
 const roles = ref([]);
 const users = ref([]);
@@ -228,15 +230,17 @@ const filteredAndSortedUsers = computed(() => {
       const matchesSearch =
         user.username.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         user.email.toLowerCase().includes(searchQuery.value.toLowerCase());
-      
+
       // Only apply role filter if a role is selected
       if (selectedRole.value) {
         // If user has no role, don't show them when a role is selected
         if (!user.role) return false;
         // Check if user's role matches the selected role
-        return matchesSearch && user.role.roleName === selectedRole.value.roleName;
+        return (
+          matchesSearch && user.role.roleName === selectedRole.value.roleName
+        );
       }
-      
+
       // If no role is selected, only apply search filter
       return matchesSearch;
     })
@@ -282,7 +286,8 @@ const openDeleteConfirmation = (user) => {
 };
 
 const openRaisePopUp = (user) => {
-  selectedUserId.value = user._id; // Pass the selected user's ID
+  selectedUserId.value = user.id; // Pass the selected user's ID
+  console.log("selectedUserId", user);
   isPopupOpen.value = true;
 };
 
@@ -294,7 +299,7 @@ const closePopup = () => {
 // Handle balance updated event from RaisePopUp
 const handleBalanceUpdated = async ({ userId, newBalance }) => {
   // Update the user's balance in the local state
-  const userIndex = users.value.findIndex(user => user._id === userId);
+  const userIndex = users.value.findIndex((user) => user.id === userId);
   if (userIndex !== -1) {
     users.value[userIndex].balance = newBalance;
   }
@@ -318,7 +323,7 @@ const deleteUser = async (userId) => {
       method: "POST",
       body: JSON.stringify({ userId }),
     });
-    users.value = users.value.filter((user) => user._id !== userId);
+    users.value = users.value.filter((user) => user.id !== userId);
   } catch (error) {
     alert("Failed to delete user. Please try again.");
   }
@@ -327,7 +332,7 @@ const deleteUser = async (userId) => {
 // Confirm delete action
 const confirmDelete = () => {
   if (userToDelete.value) {
-    deleteUser(userToDelete.value._id);
+    deleteUser(userToDelete.value.id);
     closeDeleteConfirmation();
   }
 };

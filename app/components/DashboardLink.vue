@@ -1,6 +1,6 @@
 <template>
   <NuxtLink
-    :to=$localePath(to)
+    :to="$localePath(to)"
     :class="[
       'w-full block text-center p-2 rounded-md transition-colors',
       typeClasses,
@@ -25,9 +25,17 @@ const props = defineProps({
     type: String,
     default: "primary",
     validator: (value) =>
-      ["primary", "secondary", "system", "roles", "users", "products", "logs"].includes(
-        value
-      ),
+      [
+        "roles",
+        "users",
+        "products",
+        "categories",
+        "logs",
+        "finances",
+        "system",
+        "primary",
+        "secondary",
+      ].includes(value),
   },
 });
 
@@ -49,6 +57,8 @@ const typeClasses = computed(() => {
       return "text-xl bg-blue-600 text-white hover:bg-blue-700";
     case "secondary":
       return "text-xl border border-current text-current hover:bg-gray-600";
+    case "finances":
+      return "text-xl bg-yellow-600 text-white hover:bg-yellow-700";
     default:
       return "text-xl bg-blue-600 text-white hover:bg-blue-700";
   }

@@ -80,11 +80,13 @@
             </div>
 
             <!-- Divider -->
-            <hr class="border-gray-200 dark:border-gray-700">
+            <hr class="border-gray-200 dark:border-gray-700" />
 
             <!-- Products List -->
             <div>
-              <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+              <h4
+                class="text-lg font-semibold text-gray-900 dark:text-white mb-3"
+              >
                 {{ $t("Products") }}
               </h4>
               <ul class="space-y-3">
@@ -127,22 +129,19 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch } from "vue";
 
 const props = defineProps({
   isOpen: Boolean,
-  orderId: [String, Number]
+  orderId: [String, Number],
 });
 const order = ref(null);
 
 const fetchOrderDetails = async () => {
   try {
-    console.log(props.orderId);
     order.value = await $fetch(`/api/orders/${props.orderId}`);
-    console.log("TESTTEST2")
-    console.log(order.value);
   } catch (error) {
-    console.error('Failed to fetch order details', error);
+    console.error("Failed to fetch order details", error);
   }
 };
 

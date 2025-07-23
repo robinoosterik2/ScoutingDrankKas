@@ -1,5 +1,5 @@
-import { defineEventHandler, readBody } from "h3";
-import { User } from "@/server/models/user";
+import { defineEventHandler } from "h3";
+import User from "@/server/models/user";
 import { faker } from "@faker-js/faker";
 
 export default defineEventHandler(async (event) => {
@@ -8,11 +8,11 @@ export default defineEventHandler(async (event) => {
 
     const users = [];
     for (let i = 0; i < Number(total); i++) {
-      const firstName = faker.person.firstName()
-      const lastName = faker.person.lastName()
+      const firstName = faker.person.firstName();
+      const lastName = faker.person.lastName();
       const user = new User({
         email: faker.internet.email(),
-        username: firstName+lastName,
+        username: firstName + lastName,
         firstName: firstName,
         lastName: lastName,
         password: faker.internet.password({ length: 8 }), // Ensure password meets your requirements

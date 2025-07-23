@@ -1,7 +1,7 @@
 <template>
   <CTitle :text="$t('admin.title')" />
   <div class="mb-2">
-    <BackLink to="/" :back-page="$t('dashboard.title')"/>
+    <BackLink to="/" :back-page="$t('dashboard.title')" />
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">

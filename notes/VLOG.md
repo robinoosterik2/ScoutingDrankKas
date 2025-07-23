@@ -14,7 +14,7 @@ https://i18n.nuxtjs.org/docs/getting-started Says i need to install with npx nux
 
 Both give the error Nuxt module should be a function: @nuxtjs/i18n.
 
-The problem was my .nuxt folder was empty. When I tried to do npm install it said I missed permissions (this could have been bcs docker volume). I fixed the permissions with chmod and installed everything.
+The problem was my .nuxt folder was empty. When I tried to do pnpm install it said I missed permissions (this could have been bcs docker volume). I fixed the permissions with chmod and installed everything.
 
 After installing I added the module again with npx "nuxi@latest module add @nuxtjs/i18n@next"
 
