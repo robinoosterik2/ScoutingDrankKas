@@ -518,9 +518,7 @@ const updateChart = () => {
           intersect: false,
           callbacks: {
             label: function (context) {
-              return `${context.dataset.label}: €${context.parsed.y.toFixed(
-                2
-              )}`;
+              return `${context.dataset.label}: ${format(context.parsed.y)}`;
             },
           },
         },
@@ -540,7 +538,7 @@ const updateChart = () => {
         y: {
           beginAtZero: true,
           ticks: {
-            callback: (value) => `€${value}`,
+            callback: (value) => format(value),
           },
           // Add padding at the top of the y-axis
           afterFit: function (scale) {
