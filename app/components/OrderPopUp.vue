@@ -58,7 +58,11 @@
                   {{ $t("common.orderDate") }}
                 </p>
                 <p class="text-gray-900 dark:text-white">
-                  {{ new Date(order.createdAt).toLocaleString() }}
+                  {{
+                    new Date(order.createdAt).toLocaleString("nl-nl", {
+                      hour12: false,
+                    })
+                  }}
                 </p>
               </div>
               <div>
@@ -74,7 +78,7 @@
                   {{ $t("Total") }}
                 </p>
                 <p class="text-gray-900 dark:text-white font-semibold">
-                  €{{ order.total.toFixed(2) }}
+                  {{ format(order.total) }}
                 </p>
               </div>
             </div>
@@ -105,7 +109,7 @@
                       </p>
                     </div>
                     <p class="text-gray-900 dark:text-white">
-                      €{{ (item.product?.price * item.count).toFixed(2) }}
+                      {{ format(item.product?.price * item.count) }}
                     </p>
                   </div>
                 </li>
@@ -130,6 +134,7 @@
 
 <script setup>
 import { ref, watch } from "vue";
+const { format } = useMoney();
 
 const props = defineProps({
   isOpen: Boolean,

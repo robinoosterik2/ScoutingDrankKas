@@ -1,63 +1,107 @@
 <template>
   <div class="container px-4 py-2 mx-auto">
     <!-- Back to Products Button -->
-    <CTitle :text="productId ? $t('products.editProduct') : $t('products.createProduct')" />
-    <BackLink to="/admin/products" back-page="Products"/>
+    <CTitle
+      :text="
+        productId ? $t('products.editProduct') : $t('products.createProduct')
+      "
+    />
+    <BackLink to="/admin/products" back-page="Products" />
 
     <!-- Edit Product Form -->
-    <form class="max-w-xl p-6 mx-auto bg-white rounded-lg shadow-md dark:bg-gray-800" @submit.prevent="saveProduct">
+    <form
+      class="max-w-xl p-6 mx-auto bg-white rounded-lg shadow-md dark:bg-gray-800"
+      @submit.prevent="saveProduct"
+    >
       <div class="grid grid-cols-2 gap-4">
         <!-- Product Name -->
         <div>
-          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" for="productName">
+          <label
+            class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+            for="productName"
+          >
             {{ $t("products.productName") }}
           </label>
           <input
-id="productName" v-model="formData.name" type="text" required
-            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white" >
+            id="productName"
+            v-model="formData.name"
+            type="text"
+            required
+            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          />
         </div>
 
         <!-- Product Price -->
         <div>
-          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" for="productPrice">
+          <label
+            class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+            for="productPrice"
+          >
             {{ $t("products.productPrice") }}
           </label>
           <input
-id="productPrice" v-model="formData.price" type="number" min="0" required
-            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white" >
+            id="productPrice"
+            v-model="formData.price"
+            type="number"
+            min="0"
+            required
+            class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          />
         </div>
       </div>
 
       <!-- Product Description -->
       <div class="mt-4">
-        <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" for="productDescription">
+        <label
+          class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          for="productDescription"
+        >
           {{ $t("products.productDescription") }}
         </label>
         <textarea
-id="productDescription" v-model="formData.description" required
+          id="productDescription"
+          v-model="formData.description"
+          required
           class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-          rows="3"/>
+          rows="3"
+        />
       </div>
 
       <!-- Product Stock -->
       <div class="mt-4">
-        <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" for="productStock">
+        <label
+          class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          for="productStock"
+        >
           {{ $t("products.productStock") }}
         </label>
         <input
-id="productStock" v-model="formData.stock" type="number" min="0" required
-          class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white" >
+          id="productStock"
+          v-model="formData.stock"
+          type="number"
+          min="0"
+          required
+          class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+        />
       </div>
 
       <!-- Product Categories -->
       <div class="mt-4">
-        <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label
+          class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
           {{ $t("products.categories") }}
         </label>
         <select
-v-model="formData.categories" multiple
-          class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-          <option v-for="category in availableCategories" :key="category._id" :value="category._id">
+          v-model="formData.categories"
+          multiple
+          class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+        >
+          <option
+            v-for="category in availableCategories"
+            :key="category._id"
+            :value="category._id"
+          >
             {{ category.name }}
           </option>
         </select>
@@ -65,7 +109,10 @@ v-model="formData.categories" multiple
 
       <!-- Product Image -->
       <div class="mt-4">
-        <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300" for="productImage">
+        <label
+          class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          for="productImage"
+        >
           {{ $t("products.productImage") }}
         </label>
         <input
@@ -74,11 +121,17 @@ v-model="formData.categories" multiple
           accept="image/*"
           class="block w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 dark:file:bg-indigo-500 dark:hover:file:bg-indigo-600"
           @change="handleImageUpload"
-        >
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $t("products.imageAspectRatioTip") }}</p>
+        />
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {{ $t("products.imageAspectRatioTip") }}
+        </p>
         <!-- Image Preview -->
         <div v-if="formData.imageUrl" class="mt-2">
-          <img :src="formData.imageUrl" alt="Product Image Preview" class="object-cover w-32 rounded aspect-video">
+          <img
+            :src="formData.imageUrl"
+            alt="Product Image Preview"
+            class="object-cover w-32 rounded aspect-video"
+          />
         </div>
       </div>
 
@@ -104,6 +157,7 @@ v-model="formData.categories" multiple
 
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
+const { parse } = useMoney();
 
 // Get product ID from route
 const route = useRoute();
@@ -129,7 +183,9 @@ const originalImageUrl = ref("/images/placeholder.jpg"); // Store the initial/fe
 onMounted(async () => {
   try {
     // Fetch all available categories
-    availableCategories.value = await $fetch("/api/categories/all", { method: "GET" });
+    availableCategories.value = await $fetch("/api/categories/all", {
+      method: "GET",
+    });
 
     // Fetch product data if editing
     if (productId.value) {
@@ -141,7 +197,9 @@ onMounted(async () => {
         description: product.description,
         price: product.price,
         stock: product.stock,
-        categories: product.categories.map(cat => typeof cat === 'object' ? cat._id : cat), // Ensure categories are IDs
+        categories: product.categories.map((cat) =>
+          typeof cat === "object" ? cat._id : cat
+        ), // Ensure categories are IDs
         imageUrl: product.imageUrl || "/images/placeholder.jpg",
         imageFile: null, // Reset on load
       };
@@ -158,14 +216,14 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  if (formData.value.imageUrl && formData.value.imageUrl.startsWith('blob:')) {
+  if (formData.value.imageUrl && formData.value.imageUrl.startsWith("blob:")) {
     URL.revokeObjectURL(formData.value.imageUrl);
   }
 });
 
 const handleImageUpload = (event) => {
   // Revoke previous blob URL if it exists
-  if (formData.value.imageUrl && formData.value.imageUrl.startsWith('blob:')) {
+  if (formData.value.imageUrl && formData.value.imageUrl.startsWith("blob:")) {
     URL.revokeObjectURL(formData.value.imageUrl);
   }
 
@@ -184,12 +242,13 @@ const saveProduct = async () => {
   try {
     const finalProductData = { ...formData.value };
 
-    if (formData.value.imageFile) { // A new file is staged for upload
+    if (formData.value.imageFile) {
+      // A new file is staged for upload
       const imageFormData = new FormData();
-      imageFormData.append('image', formData.value.imageFile);
+      imageFormData.append("image", formData.value.imageFile);
 
-      const uploadResponse = await $fetch('/api/upload/image', {
-        method: 'POST',
+      const uploadResponse = await $fetch("/api/upload/image", {
+        method: "POST",
         body: imageFormData,
       });
       finalProductData.imageUrl = uploadResponse.imageUrl; // Update with the new server URL
@@ -198,11 +257,18 @@ const saveProduct = async () => {
 
     // Remove imageFile from payload as it's not part of the Product model schema for this endpoint
     delete finalProductData.imageFile;
-    
+
     // Ensure categories are an array of IDs
-    if (finalProductData.categories && Array.isArray(finalProductData.categories)) {
-      finalProductData.categories = finalProductData.categories.map(cat => typeof cat === 'object' && cat._id ? cat._id : cat);
+    if (
+      finalProductData.categories &&
+      Array.isArray(finalProductData.categories)
+    ) {
+      finalProductData.categories = finalProductData.categories.map((cat) =>
+        typeof cat === "object" && cat._id ? cat._id : cat
+      );
     }
+
+    finalProductData.price = parse(finalProductData.price);
 
     await $fetch("/api/admin/products/update", {
       method: "POST",
@@ -216,7 +282,11 @@ const saveProduct = async () => {
     navigateTo("/admin/products");
   } catch (error) {
     console.error("Failed to save product:", error);
-    const errorMessage = error.data?.body?.message || error.data?.message || error.message || "Failed to save product. Please try again.";
+    const errorMessage =
+      error.data?.body?.message ||
+      error.data?.message ||
+      error.message ||
+      "Failed to save product. Please try again.";
     alert(errorMessage);
   }
 };

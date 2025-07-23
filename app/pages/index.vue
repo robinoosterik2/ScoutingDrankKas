@@ -32,9 +32,9 @@
               <span class="text-gray-600 dark:text-gray-400"
                 >{{ item.count }}x {{ item.product.name }}</span
               >
-              <span class="text-gray-800 dark:text-gray-200"
-                >€{{ (item.product.price * item.count).toFixed(2) }}</span
-              >
+              <span class="text-gray-800 dark:text-gray-200">{{
+                format(item.product.price * item.count)
+              }}</span>
             </li>
           </ul>
           <button
@@ -118,7 +118,7 @@
               {{ product.name }}
             </h3>
             <p class="text-xl text-gray-500 dark:text-gray-400">
-              €{{ product.price }}
+              {{ format(product.price) }}
             </p>
           </div>
           <div class="flex items-center justify-between mt-2">
@@ -158,6 +158,8 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import { getDisplayableProductImageUrl } from "@/utils/imageUtils";
+
+const { format } = useMoney();
 
 const users = ref([]);
 const products = ref([]);

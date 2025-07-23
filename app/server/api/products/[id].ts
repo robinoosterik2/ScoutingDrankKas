@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
   const product = Product.findById(id);
   if (!product) {
-    throw createError({ statuscode: 400, statusMessage: "Product not found" });
+    throw createError({ statusCode: 400, statusMessage: "Product not found" });
   }
 
   return product;

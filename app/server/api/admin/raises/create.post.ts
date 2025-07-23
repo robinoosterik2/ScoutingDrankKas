@@ -1,6 +1,5 @@
 import { Raise } from "@/server/models/raise";
 import User from "@/server/models/user";
-import { euroToCents, centsToEuro } from "@/server/utils/moneyFormatter";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -39,7 +38,7 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const amount = euroToCents(body.amount);
+    const amount = body.amount;
 
     // Find user (no session needed)
     const user = await User.findById(userId);
@@ -61,7 +60,7 @@ export default defineEventHandler(async (event) => {
     // Update user balance
     const updatedUser = await user.raise(amount);
 
-    return { newBalance: centsToEuro(updatedUser.balance) };
+    return { newBalance: updatedUser.balance };
   } catch (error) {
     console.error("Operation error:", error);
 

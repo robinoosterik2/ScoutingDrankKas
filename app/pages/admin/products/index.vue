@@ -8,7 +8,7 @@
       <DashboardLink
         to="/admin/products/create"
         class="h-min"
-        :label='$t("products.createProduct")'
+        :label="$t('products.createProduct')"
       />
     </div>
   </div>
@@ -104,7 +104,7 @@
           </td>
           <td class="px-6 py-4">
             <div class="text-sm text-gray-900 dark:text-white">
-              €{{ product.price }}
+              {{ format(product.price) }}
             </div>
           </td>
           <td class="px-6 py-4">
@@ -175,6 +175,7 @@
 
 <script setup>
 import DeleteConfirmationModal from "@/components/ConfirmDelete.vue";
+const { format } = useMoney();
 
 const categories = ref([]);
 const products = ref([]);

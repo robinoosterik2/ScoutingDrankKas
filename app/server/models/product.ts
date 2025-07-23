@@ -1,7 +1,8 @@
 import type { Document, Model } from "mongoose";
 import mongoose, { Schema } from "mongoose";
 
-interface IProduct extends Document {
+// Define the base interface for the document properties
+interface IProductBase {
   name: string;
   description: string;
   price: number;
@@ -13,9 +14,18 @@ interface IProduct extends Document {
   totalQuantitySold: number;
   recentOrders: { date: Date; quantity: number }[];
   popularityScore: number;
-  calculatePopularityScore(): Promise<void>;
 }
 
+// Define the methods interface
+interface IProductMethods {
+  calculatePopularityScore(): void;
+  updateOrderMetrics(quantity: number): Promise<void>;
+}
+
+// Combine the base interface with methods and Document
+interface IProduct extends Document, IProductBase, IProductMethods {}
+
+// Define the static methods interface
 interface IProductModel extends Model<IProduct> {
   getPopularProducts(options: {
     limit?: number;
@@ -86,11 +96,13 @@ const ProductSchema = new Schema<IProduct>(
 
 ProductSchema.index({ popularityScore: -1 });
 
-ProductSchema.methods.updateOrderMetrics = async function (quantity: number) {
+// Fix the updateOrderMetrics method - make it async
+ProductSchema.methods.updateOrderMetrics = async function (
+  quantity: number
+): Promise<void> {
   this.totalOrders += 1;
   this.totalQuantitySold += quantity;
   this.stock -= quantity;
-
   this.recentOrders.push({
     date: new Date(),
     quantity: quantity,
@@ -103,11 +115,11 @@ ProductSchema.methods.updateOrderMetrics = async function (quantity: number) {
     (order: { date: Date }) => order.date >= thirtyDaysAgo
   );
 
-  await this.calculatePopularityScore();
-  await this.save();
+  this.calculatePopularityScore();
+  await this.save(); // Await the save operation
 };
 
-ProductSchema.methods.calculatePopularityScore = async function () {
+ProductSchema.methods.calculatePopularityScore = function (): void {
   const recentQuantity = this.recentOrders.reduce(
     (sum: number, order: { quantity: number }) => sum + order.quantity,
     0
@@ -125,9 +137,8 @@ ProductSchema.methods.calculatePopularityScore = async function () {
 
 ProductSchema.statics.getPopularProducts = async function (
   options: { limit?: number; category?: mongoose.Types.ObjectId } = {}
-) {
+): Promise<IProduct[]> {
   const { limit = 999, category } = options;
-
   const query: { categories?: { $in: mongoose.Types.ObjectId[] } } = {};
 
   if (category) {
@@ -143,8 +154,8 @@ if (process.env.NODE_ENV !== "test") {
   setInterval(async () => {
     const products = await mongoose.model("Product").find({});
     for (const product of products) {
-      await product.calculatePopularityScore();
-      await product.save();
+      product.calculatePopularityScore();
+      await product.save(); // Also await this save
     }
   }, 24 * 60 * 60 * 1000); // Run daily
 }

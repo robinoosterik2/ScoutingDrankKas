@@ -1,6 +1,5 @@
 import { defineEventHandler, getQuery } from "h3";
 import User from "@/server/models/user";
-import { centsToEuro } from "@/server/utils/moneyFormatter";
 
 export default defineEventHandler(async (event) => {
   const { userId } = getQuery(event);
@@ -19,6 +18,6 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
-    balance: centsToEuro(user.balance),
+    balance: user.balance,
   };
 });

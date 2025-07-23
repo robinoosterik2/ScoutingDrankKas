@@ -6,6 +6,7 @@ import { Product } from "@/server/models/product";
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
+    console.log(body);
     // Get the user session
     const session = await getUserSession(event);
 
@@ -34,15 +35,18 @@ export default defineEventHandler(async (event) => {
 
     // TODO figure out if session.user is really the user id
     console.log("session.user");
-    console.log(session.user);
+    console.log(session.user.id);
     console.log("session.user");
 
     // Use the bartender's user ID from the session
-    body.bartenderId = session.user;
+    console.log("before");
+    body.bartenderId = session.user.id;
+    console.log("after");
 
     let totalInCents = 0;
 
     for (const product of body.products) {
+      console.log(product);
       const productData = await Product.findById(product.productId);
       if (!productData) {
         throw createError({
@@ -50,15 +54,15 @@ export default defineEventHandler(async (event) => {
           statusMessage: "Product not found",
         });
       }
+      // statusMessage	"Error while creating new order ValidationError:
+      // products.0.product: Path `product` is required."
 
-      const priceInCents = Math.round(productData.price * 100);
-      totalInCents += priceInCents * product.count;
+      totalInCents += productData.price * product.count;
 
       await productData.updateOrderMetrics(product.count);
     }
 
-    const finalTotalDecimal = totalInCents / 100;
-    body.total = parseFloat(finalTotalDecimal.toFixed(2));
+    body.total = totalInCents;
     const order = await Order.createFromRequestBody(body);
     await order.save();
     return { message: "Order created successfully" };

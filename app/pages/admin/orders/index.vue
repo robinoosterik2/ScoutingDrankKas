@@ -12,12 +12,14 @@
       v-model="filterUser"
       type="text"
       placeholder="Filter by User"
-      class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white">
+      class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+    />
     <input
       v-model="filterBartender"
       type="text"
       placeholder="Filter by Bartender"
-      class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white">
+      class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+    />
   </div>
 
   <!-- Orders Table -->
@@ -26,29 +28,55 @@
       <thead class="bg-gray-50 dark:bg-gray-700">
         <tr>
           <!-- ...existing table columns... -->
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+          >
             {{ $t("date") }}
           </th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+          >
             {{ $t("customer") }}
           </th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+          >
             {{ $t("barkeeper") }}
           </th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+          >
             {{ $t("total") }}
           </th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+          <th
+            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+          >
             {{ $t("actions") }}
           </th>
         </tr>
       </thead>
-      <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-        <tr v-for="order in paginatedOrders" :key="order._id" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200">
-            <td class="px-6 py-2 whitespace-nowrap">{{ new Date(order.createdAt).toLocaleString('nl-nl', { hour12: false }) }}</td>
-          <td class="px-6 py-2 whitespace-nowrap">{{ order.user.firstName }} {{ order.user.lastName }}</td>
-          <td class="px-6 py-2 whitespace-nowrap">{{ order.bartender.firstName }} {{ order.bartender.lastName }}</td>
-          <td class="px-6 py-2 whitespace-nowrap">€{{ order.total }}</td>
+      <tbody
+        class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+      >
+        <tr
+          v-for="order in paginatedOrders"
+          :key="order._id"
+          class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200"
+        >
+          <td class="px-6 py-2 whitespace-nowrap">
+            {{
+              new Date(order.createdAt).toLocaleString("nl-nl", {
+                hour12: false,
+              })
+            }}
+          </td>
+          <td class="px-6 py-2 whitespace-nowrap">
+            {{ order.user.firstName }} {{ order.user.lastName }}
+          </td>
+          <td class="px-6 py-2 whitespace-nowrap">
+            {{ order.bartender.firstName }} {{ order.bartender.lastName }}
+          </td>
+          <td class="px-6 py-2 whitespace-nowrap">{{ format(order.total) }}</td>
           <td class="px-6 py-2 whitespace-nowrap text-right">
             <CDropdown
               :id="`order-${order._id}`"
@@ -62,70 +90,82 @@
         </tr>
       </tbody>
     </table>
-    
+
     <!-- Pagination -->
-    <div v-if="filteredOrders.length > 0" class="px-6 py-3 border-t border-gray-200 dark:border-gray-700">
+    <div
+      v-if="filteredOrders.length > 0"
+      class="px-6 py-3 border-t border-gray-200 dark:border-gray-700"
+    >
       <div class="flex items-center justify-between">
         <div class="text-sm text-gray-500 dark:text-gray-400">
-          {{ $t('pagination.showing') }} 
-          <span class="font-medium">{{ Math.min((currentPage - 1) * itemsPerPage + 1, filteredOrders.length) }}</span>
-          {{ $t('pagination.to') }} 
-          <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredOrders.length) }}</span>
-          {{ $t('pagination.of') }} 
+          {{ $t("pagination.showing") }}
+          <span class="font-medium">{{
+            Math.min(
+              (currentPage - 1) * itemsPerPage + 1,
+              filteredOrders.length
+            )
+          }}</span>
+          {{ $t("pagination.to") }}
+          <span class="font-medium">{{
+            Math.min(currentPage * itemsPerPage, filteredOrders.length)
+          }}</span>
+          {{ $t("pagination.of") }}
           <span class="font-medium">{{ filteredOrders.length }}</span>
-          {{ $t('pagination.entries') }}
+          {{ $t("pagination.entries") }}
         </div>
         <div class="flex space-x-1">
-          <button 
+          <button
             :disabled="currentPage === 1"
             class="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            @click="goToPage(1)" 
+            @click="goToPage(1)"
           >
             &laquo;
           </button>
-          <button 
+          <button
             :disabled="currentPage === 1"
             class="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            @click="goToPage(currentPage - 1)" 
+            @click="goToPage(currentPage - 1)"
           >
             &lsaquo;
           </button>
           <template v-for="page in Math.min(5, totalPages)" :key="page">
-            <button 
+            <button
               :class="{
                 'bg-indigo-600 text-white': currentPage === page,
-                'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600': currentPage !== page
+                'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600':
+                  currentPage !== page,
               }"
               class="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium"
-              @click="goToPage(page)" 
+              @click="goToPage(page)"
             >
               {{ page }}
             </button>
           </template>
           <template v-if="totalPages > 5">
             <span class="px-2 py-1">...</span>
-            <button 
+            <button
               :class="{
                 'bg-indigo-600 text-white': currentPage === totalPages,
-                'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600': currentPage !== totalPages
+                'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600':
+                  currentPage !== totalPages,
               }"
               class="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium"
-              @click="goToPage(totalPages)" 
+              @click="goToPage(totalPages)"
             >
               {{ totalPages }}
             </button>
           </template>
-          <button 
+          <button
             :disabled="currentPage === totalPages"
             class="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-            @click="goToPage(currentPage + 1)" 
+            @click="goToPage(currentPage + 1)"
           >
             &rsaquo;
           </button>
         </div>
       </div>
     </div>
-    
+
     <!-- Empty State -->
     <div
       v-if="filteredOrders.length === 0"
@@ -157,7 +197,9 @@
   <DeleteConfirmationModal
     :is-open="isDeleteModalOpen"
     :title="$t('delete') + ' ' + $t('Order')"
-    :message="`${$t('orders.confirmDelete')} '${orderToDelete?._id}'? ${$t('cannotBeUndone')}`"
+    :message="`${$t('orders.confirmDelete')} '${orderToDelete?._id}'? ${$t(
+      'cannotBeUndone'
+    )}`"
     :confirm-text="$t('delete')"
     :cancel-text="$t('cancel')"
     @close="closeDeleteConfirmation"
@@ -173,13 +215,14 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { ref, computed, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import DeleteConfirmationModal from "@/components/ConfirmDelete.vue";
 import OrderPopUp from "@/components/OrderPopUp.vue";
 import BackLink from "@/components/BackLink.vue";
 import CTitle from "@/components/CTitle.vue";
 
+const { format } = useMoney();
 const { t: _t } = useI18n();
 const orders = ref([]);
 const dropdownItems = ref([
@@ -194,11 +237,15 @@ const filterBartender = ref("");
 
 // Computed filtered orders based on user and bartender filters
 const filteredOrders = computed(() => {
-  return orders.value.filter(order => {
-    const customerName = `${order.user.firstName} ${order.user.lastName}`.toLowerCase();
-    const bartenderName = `${order.bartender.firstName} ${order.bartender.lastName}`.toLowerCase();
+  return orders.value.filter((order) => {
+    const customerName =
+      `${order.user.firstName} ${order.user.lastName}`.toLowerCase();
+    const bartenderName =
+      `${order.bartender.firstName} ${order.bartender.lastName}`.toLowerCase();
     const userMatch = customerName.includes(filterUser.value.toLowerCase());
-    const bartenderMatch = bartenderName.includes(filterBartender.value.toLowerCase());
+    const bartenderMatch = bartenderName.includes(
+      filterBartender.value.toLowerCase()
+    );
     return userMatch && bartenderMatch;
   });
 });
@@ -208,7 +255,9 @@ const currentPage = ref(1);
 const itemsPerPage = ref(10);
 
 // Computed properties for pagination
-const totalPages = computed(() => Math.ceil(filteredOrders.value.length / itemsPerPage.value));
+const totalPages = computed(() =>
+  Math.ceil(filteredOrders.value.length / itemsPerPage.value)
+);
 
 const paginatedOrders = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
@@ -269,7 +318,9 @@ const confirmDelete = async () => {
         method: "POST",
         body: JSON.stringify({ id: orderToDelete.value._id }),
       });
-      orders.value = orders.value.filter(o => o._id !== orderToDelete.value._id);
+      orders.value = orders.value.filter(
+        (o) => o._id !== orderToDelete.value._id
+      );
     } catch (error) {
       console.error("Failed to delete order:", error);
       // Show error message to user in production

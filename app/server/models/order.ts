@@ -2,9 +2,10 @@ import type { Model, Document } from "mongoose";
 import mongoose, { Schema } from "mongoose";
 import Log from "./log";
 import User from "./user";
+import { LOG_CATEGORIES, LOG_ACTIONS } from "./constants/log.constants";
 
 interface IOrderProduct {
-  product: mongoose.Types.ObjectId;
+  productId: mongoose.Types.ObjectId;
   count: number;
 }
 
@@ -66,7 +67,7 @@ OrderSchema.statics.createFromRequestBody = async function (bodyData: {
   bartenderId: mongoose.Types.ObjectId;
 }) {
   const products = bodyData.products.map((item: IOrderProduct) => ({
-    product: item.product,
+    product: item.productId,
     count: item.count,
   }));
 
@@ -85,7 +86,7 @@ OrderSchema.statics.createFromRequestBody = async function (bodyData: {
 
   const log = new Log({
     executor: bodyData.userId,
-    action: "Buy",
+    action: LOG_ACTIONS.ORDER_CREATED,
     targetObject: {
       type: "Order",
       id: order._id,
@@ -114,6 +115,7 @@ OrderSchema.statics.createFromRequestBody = async function (bodyData: {
       },
     ],
     description: `User bought products worth ${bodyData.total}`,
+    category: LOG_CATEGORIES.ORDER,
   });
   await log.save();
 

@@ -45,8 +45,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "AdminCard",
-};
+<script setup>
+defineProps({
+  name: {
+    type: String,
+    default: "AdminCard",
+  },
+});
 </script>

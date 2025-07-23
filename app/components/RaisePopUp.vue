@@ -42,7 +42,7 @@
             <input
               id="amount"
               v-model="raiseAmount"
-              type="number"
+              type="text"
               class="w-full p-2 border-gray-300 rounded-md shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               :placeholder="$t('raise.enterAmount')"
             />
@@ -60,9 +60,7 @@
                 class="p-3 bg-gray-100 rounded-lg shadow-sm dark:bg-gray-700"
               >
                 <p class="text-sm font-medium text-gray-800 dark:text-gray-200">
-                  {{ $t("Amount") }}: €<span class="font-bold">{{
-                    raise.amount
-                  }}</span>
+                  {{ $t("Amount") }}: {{ format(raise.amount) }}
                 </p>
                 <p class="text-xs text-gray-600 dark:text-gray-400">
                   {{ $t("By") }}:
@@ -73,7 +71,11 @@
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
                   {{ $t("On") }}:
-                  {{ new Date(raise.createdAt).toLocaleString() }}
+                  {{
+                    new Date(raise.createdAt).toLocaleString("nl-nl", {
+                      hour12: false,
+                    })
+                  }}
                 </p>
               </div>
             </div>
@@ -103,7 +105,12 @@
   </Teleport>
 </template>
 
+<script setup>
+const { format } = useMoney();
+</script>
+
 <script>
+const { parse } = useMoney();
 export default {
   props: {
     isOpen: {
@@ -153,18 +160,19 @@ export default {
       }
     },
     async confirmRaise() {
+      console.log(this.raiseAmount);
       if (!this.raiseAmount || this.raiseAmount <= 0) {
         alert("Please enter a valid amount.");
         return;
       }
 
       try {
-        console.log("userId", this.userId);
+        const amount = parse(this.raiseAmount);
         const response = await $fetch(`/api/admin/raises/create`, {
           method: "POST",
           body: {
             userId: this.userId,
-            amount: this.raiseAmount,
+            amount: amount,
           },
         });
         this.fetchRecentRaises();

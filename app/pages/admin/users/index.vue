@@ -2,14 +2,6 @@
   <CTitle :text="$t('users.title')" />
   <div class="flex items-center justify-between mb-2">
     <BackLink to="/admin" :backPage="$t('admin.title')"></BackLink>
-    <div>
-      <DashboardLink
-        to="/register"
-        class="px-4 py-2 font-bold text-white transition duration-300 ease-in-out bg-indigo-600 rounded-md hover:bg-indigo-700"
-      >
-        {{ $t("users.createUser") }}
-      </DashboardLink>
-    </div>
   </div>
 
   <!-- Filters and Sorting -->
@@ -127,20 +119,20 @@
                 'text-green-500 dark:text-green-300': user.balance >= 0,
               }"
             >
-              €{{ user.balance }}
+              {{ format(user.balance) }}
             </div>
           </td>
           <td
             class="px-6 py-2 overflow-visible text-sm font-medium text-right whitespace-nowrap"
           >
-            <!-- custom id for each user -->
+            <!-- Each dropdown gets its own unique model -->
             <CDropdown
-              v-model="selectedValue"
+              :model-value="null"
               :items="dropdownItems"
-              @update:model-value="handleAction(user)"
-              value="action"
+              @update:model-value="(value) => handleAction(user, value)"
               :placeholder="$t('Actions')"
-              :id="`user-${user._id}`"
+              :id="`user-dropdown-${user._id}`"
+              class="min-w-24"
             />
           </td>
         </tr>
@@ -196,6 +188,7 @@
 <script setup>
 import DeleteConfirmationModal from "@/components/ConfirmDelete.vue";
 import RaisePopUpModal from "@/components/RaisePopUp";
+const { format } = useMoney();
 
 const roles = ref([]);
 const users = ref([]);
@@ -213,9 +206,6 @@ const dropdownItems = ref([
   { label: t("delete"), value: "delete" },
   { label: t("Raise"), value: "raise" },
 ]);
-
-// Define the variable to hold the selected value
-const selectedValue = ref(null);
 
 try {
   roles.value = await $fetch("/api/roles/all", { method: "GET" });
@@ -251,7 +241,9 @@ const filteredAndSortedUsers = computed(() => {
       } else if (sortBy.value === "email") {
         return a.email.localeCompare(b.email) * direction;
       } else if (sortBy.value === "role") {
-        return a.role.roleName.localeCompare(b.role.roleName) * direction;
+        return (
+          a.role?.roleName.localeCompare(b.role?.roleName || "") * direction
+        );
       } else if (sortBy.value === "balance") {
         return (a.balance - b.balance) * direction;
       }
@@ -259,8 +251,10 @@ const filteredAndSortedUsers = computed(() => {
     });
 });
 
-const handleAction = (user) => {
-  let action = selectedValue.value;
+// Modified handleAction to accept the selected value directly
+const handleAction = (user, action) => {
+  console.log("Action triggered:", action, "for user:", user.username);
+
   if (action === "edit") {
     editUser(user);
   } else if (action === "delete") {
