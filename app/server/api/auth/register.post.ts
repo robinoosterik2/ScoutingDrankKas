@@ -1,5 +1,6 @@
 import { defineEventHandler, readBody } from "h3";
 import User from "@/server/models/user";
+import { Settings } from "@/server/models/settings";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -59,12 +60,19 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    const settings = new Settings({
+      language: "nl",
+      darkMode: true,
+      speedMode: false,
+    });
+    await settings.save();
     const user = new User({
       username: normalizedUsername,
       email: normalizedEmail,
       firstName: normalizedFirstName,
       lastName: normalizedLastName,
       password: password,
+      settings: settings._id,
     });
     await user.save();
     await setUserSession(event, { user, loggedInAt: Date.now() });

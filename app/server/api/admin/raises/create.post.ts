@@ -7,13 +7,6 @@ export default defineEventHandler(async (event) => {
     const session = await getUserSession(event);
     const admin_id = session.user;
 
-    if (!admin_id) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: "Unauthorized",
-      });
-    }
-
     const userId = body.userId;
 
     // Input validation

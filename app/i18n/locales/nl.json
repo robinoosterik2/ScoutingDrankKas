@@ -1,4 +1,7 @@
 {
+  "showing": "Toont",
+  "of": "van",
+  "today": "vandaag",
   "action": "Actie",
   "Actions": "Acties",
   "actions": "acties",
@@ -168,6 +171,30 @@
   "price": "prijs",
   "Product": "Product",
   "Products": "Producten",
+  "stock": {
+    "title": "Voorraadbeheer",
+    "description": "Beheer productvoorraden en houd inkooprondes bij",
+    "manageStock": "Beheer Voorraad",
+    "crates": "{count} krat | {count} kratten",
+    "units": "stuks",
+    "newStockPurchase": "Nieuwe Inkoop",
+    "recentPurchases": "Recente Inkopen",
+    "noPurchasesTitle": "Nog geen inkopen",
+    "noPurchases": "Inkopen worden hier weergegeven zodra ze zijn toegevoegd",
+    "packOf": "verpakking van {count}",
+    "quantity": "Hoeveelheid",
+    "price": "Prijs",
+    "notes": "Notities",
+    "optional": "(optioneel)",
+    "addPurchase": "Inkoop Toevoegen",
+    "purchaseAdded": "Inkoop succesvol toegevoegd!",
+    "errors": {
+      "invalidInput": "Vul alle verplichte velden correct in",
+      "invalidQuantity": "Hoeveelheid moet een veelvoud zijn van {packSize}",
+      "addFailed": "Toevoegen van inkoopronde mislukt. Probeer het opnieuw.",
+      "fetchPurchases": "Laden van inkopen mislukt"
+    }
+  },
   "products": {
     "categories": "Categorieën",
     "confirmDelete": "Weet u zeker dat u het product wilt verwijderen?",
@@ -287,7 +314,6 @@
   "selectedUsers": "Geselecteerde gebruikers",
   "sortBy": "Sorteer op",
   "startDate": "Startdatum",
-  "stock": "Voorraad",
   "timestamp": "Tijdstempel",
   "Total": "Totaal",
   "total": "Totaal",

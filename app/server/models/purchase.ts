@@ -6,6 +6,7 @@ interface IPurchase {
   quantity: number;
   price: number;
   purchaseDate: Date;
+  notes: string;
 }
 
 const PurchaseSchema = new Schema<IPurchase>({
@@ -32,6 +33,10 @@ const PurchaseSchema = new Schema<IPurchase>({
   purchaseDate: {
     type: Date,
     default: Date.now,
+  },
+  notes: {
+    type: String,
+    default: "",
   },
 });
 

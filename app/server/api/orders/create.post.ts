@@ -10,14 +10,6 @@ export default defineEventHandler(async (event) => {
     // Get the user session
     const session = await getUserSession(event);
 
-    // Ensure we have a valid session with a user ID
-    if (!session?.user) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: "Unauthorized - No active session",
-      });
-    }
-
     // Find the bartender user to ensure they exist
     const bartender = await User.findById(session.user);
     if (!bartender) {
@@ -35,12 +27,12 @@ export default defineEventHandler(async (event) => {
 
     // TODO figure out if session.user is really the user id
     console.log("session.user");
-    console.log(session.user.id);
+    console.log(session.user);
     console.log("session.user");
 
     // Use the bartender's user ID from the session
     console.log("before");
-    body.bartenderId = session.user.id;
+    body.bartenderId = session.user;
     console.log("after");
 
     let totalInCents = 0;

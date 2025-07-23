@@ -6,6 +6,7 @@ import {
 import type { Document, Model, PopulatedDoc } from "mongoose";
 import mongoose, { Schema } from "mongoose";
 import type { ICustomRole } from "./customRole";
+import type { ISettings } from "./settings";
 
 interface IUser extends Document {
   email: string;
@@ -17,6 +18,7 @@ interface IUser extends Document {
   active: boolean;
   balance: number;
   role: PopulatedDoc<ICustomRole> | mongoose.Types.ObjectId;
+  settings: PopulatedDoc<ISettings> | mongoose.Types.ObjectId;
   resetPasswordToken: string;
   resetPasswordExpires: Date;
   raise(amount: number): Promise<IUser>;
@@ -69,6 +71,10 @@ const UserSchema = new Schema<IUser>(
     role: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CustomRole", // Reference to the Role model
+    },
+    settings: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Settings", // Reference to the Settings model
     },
     resetPasswordToken: String,
     resetPasswordExpires: Date,

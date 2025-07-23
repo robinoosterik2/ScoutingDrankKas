@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
     const page = parseInt(query.page as string) || 1;
-    const limit = parseInt(query.limit as string) || 10;
+    const limit = parseInt(query.limit as string) || 5;
     const skip = (page - 1) * limit;
 
     // Get total count for pagination

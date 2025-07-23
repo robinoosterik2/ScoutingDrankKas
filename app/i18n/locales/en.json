@@ -1,6 +1,7 @@
 {
   "showing": "Showing",
   "of": "of",
+  "today": "today",
   "balance": "Balance",
   "orders": "Orders",
   "raises": "Raises",
@@ -21,7 +22,6 @@
     "monthlyRevenue": "Monthly Revenue"
   },
   "action": "Action",
-  "Actions": "Actions",
   "actions": "actions",
   "admin": {
     "defaultTitle": "Admin Dashboard",
@@ -66,7 +66,6 @@
   "backTo": "Back To",
   "Balance": "Balance",
   "barkeeper": "Bartender",
-  "Bartender": "Bartender",
   "By": "By",
   "cancel": "Cancel",
   "cannotBeUndone": "This action cannot be undone.",
@@ -175,6 +174,30 @@
   "price": "price",
   "Product": "Product",
   "Products": "Products",
+  "stock": {
+    "title": "Stock Management",
+    "description": "Manage product stock levels and track stock purchases",
+    "manageStock": "Manage Stock",
+    "crates": "{count} crate | {count} crates",
+    "units": "units",
+    "newStockPurchase": "New Stock Purchase",
+    "recentPurchases": "Recent Stock Purchases",
+    "noPurchasesTitle": "No stock purchases yet",
+    "noPurchases": "Stock purchases will appear here once added",
+    "packOf": "pack of {count}",
+    "quantity": "Quantity",
+    "price": "Price",
+    "notes": "Notes",
+    "optional": "(optional)",
+    "addPurchase": "Add Stock Purchase",
+    "purchaseAdded": "Stock purchase added successfully!",
+    "errors": {
+      "invalidInput": "Please fill in all required fields correctly",
+      "invalidQuantity": "Quantity must be a multiple of {packSize}",
+      "addFailed": "Failed to add stock purchase. Please try again.",
+      "fetchPurchases": "Failed to load stock purchases"
+    }
+  },
   "products": {
     "categories": "Categories",
     "confirmDelete": "Are you sure that you want to delete this product?",
@@ -311,7 +334,6 @@
   "selectedUsers": "Selected Users",
   "sortBy": "Sort By",
   "startDate": "Start Date",
-  "stock": "Stock",
   "timestamp": "Timestamp",
   "Total": "Total",
   "total": "Total",

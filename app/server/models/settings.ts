@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-interface ISettings {
+export interface ISettings {
   language: string;
   darkMode: boolean;
   speedMode: boolean;
@@ -11,7 +11,7 @@ const SettingsSchema = new Schema<ISettings>(
     language: {
       type: String,
       required: true,
-      default: "en",
+      default: "nl",
     },
     darkMode: {
       type: Boolean,
