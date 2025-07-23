@@ -33,7 +33,7 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Copy package files and install production dependencies
 COPY --from=builder /app/pnpm-lock.yaml /app/package.json ./
-RUN pnpm ci --only=production
+RUN pnpm install
 
 # Copy built application
 COPY --from=builder /app/.output ./.output
