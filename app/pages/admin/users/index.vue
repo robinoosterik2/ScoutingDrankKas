@@ -5,165 +5,136 @@
   </div>
 
   <!-- Filters and Sorting -->
-  <div class="flex mb-4 space-x-4">
+  <div class="flex w-full flex-wrap">
     <input
       v-model="searchQuery"
       :placeholder="$t('Search') + '...'"
-      class="flex-grow px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+      class="flex-grow px-3 py-2 mb-4 me-4 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
     />
     <select
       v-model="selectedRole"
-      class="px-3 py-2 text-sm border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+      class="px-3 py-2 mb-4 me-4 text-sm border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
     >
       <option value="">{{ $t("roles.roles") }}</option>
       <option v-for="role in roles" :key="role" :value="role">
         {{ role.roleName }}
       </option>
     </select>
-    <select
-      v-model="sortBy"
-      class="px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-    >
-      <option value="name">{{ $t("sortBy") }} {{ $t("names") }}</option>
-      <option value="email">{{ $t("sortBy") }} {{ $t("email") }}</option>
-      <option value="role">{{ $t("sortBy") }} {{ $t("roles.roles") }}</option>
-      <option value="balance">{{ $t("sortBy") }} {{ $t("Balance") }}</option>
-    </select>
-    <button
-      @click="toggleSortDirection"
-      class="px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-    >
-      {{ sortDirection === "asc" ? "▲" : "▼" }}
-    </button>
   </div>
 
-  <!-- Users Table -->
-  <div
-    class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+  <!-- Users DataTable -->
+  <DataTable
+    :columns="[
+      {
+        header: $t('username'),
+        field: 'username',
+        align: 'left',
+        sortable: true,
+      },
+      {
+        header: $t('email'),
+        field: 'email',
+        align: 'left',
+        sortable: true,
+      },
+      {
+        header: $t('role'),
+        field: 'role',
+        align: 'left',
+        sortable: true,
+      },
+      {
+        header: $t('Balance'),
+        field: 'balance',
+        align: 'left',
+        sortable: true,
+      },
+      { header: $t('actions'), field: 'actions', align: 'right' },
+    ]"
+    :data="
+      filteredAndSortedUsers.map((user) => ({
+        ...user,
+        actions: '',
+      }))
+    "
+    :sort-field="sortBy"
+    :sort-direction="sortDirection"
+    :no-data-text="$t('users.noUsers')"
+    @sort="handleSort"
   >
-    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-      <thead class="bg-gray-50 dark:bg-gray-700">
-        <tr class="overflow-visible">
-          <th
-            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300"
-          >
-            {{ $t("username") }}
-          </th>
-          <th
-            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300"
-          >
-            {{ $t("email") }}
-          </th>
-          <th
-            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300"
-          >
-            {{ $t("role") }}
-          </th>
-          <th
-            class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300"
-          >
-            {{ $t("Balance") }}
-          </th>
-          <th
-            class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase dark:text-gray-300"
-          >
-            {{ $t("actions") }}
-          </th>
-        </tr>
-      </thead>
-      <tbody
-        class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700"
+    <template #cell-role="{ row: user }">
+      <span
+        v-if="user.role"
+        class="px-2 py-1 text-xs font-medium rounded-full"
+        :class="{
+          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200':
+            user.role.roleName === 'Admin',
+          'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200':
+            user.role.roleName === 'Stam',
+          'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200':
+            user.role.roleName === 'Lid',
+        }"
       >
-        <tr
-          v-for="user in filteredAndSortedUsers"
-          :key="user.id"
-          class="relative overflow-visible transition duration-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-        >
-          <td class="px-6 py-2 whitespace-nowrap">
-            <div class="text-sm font-medium text-gray-900 dark:text-white">
-              {{ user.username }}
-            </div>
-          </td>
-          <td class="px-6 py-2">
-            <div class="text-sm text-gray-500 dark:text-gray-300">
-              {{ user.email }}
-            </div>
-          </td>
-          <td class="px-6 py-2">
-            <span
-              v-if="user.role"
-              class="px-2 py-1 text-xs font-medium rounded-full"
-              :class="{
-                'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200':
-                  user.role.roleName === 'Admin',
-                'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200':
-                  user.role.roleName === 'Stam',
-                'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200':
-                  user.role.roleName === 'Lid',
-              }"
-            >
-              {{ user.role.roleName }}
-            </span>
-            <span
-              v-else
-              class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full dark:bg-red-900 dark:text-red-200"
-            >
-              NoRole
-            </span>
-          </td>
-          <td>
-            <div
-              class="px-6 text-sm"
-              :class="{
-                'text-red-500 dark:text-red-300': user.balance < 0,
-                'text-green-500 dark:text-green-300': user.balance >= 0,
-              }"
-            >
-              {{ format(user.balance) }}
-            </div>
-          </td>
-          <td
-            class="px-6 py-2 overflow-visible text-sm font-medium text-right whitespace-nowrap"
-          >
-            <!-- Each dropdown gets its own unique model -->
-            <CDropdown
-              :model-value="null"
-              :items="dropdownItems"
-              @update:model-value="(value) => handleAction(user, value)"
-              :placeholder="$t('Actions')"
-              :id="`user-dropdown-${user._id}`"
-              class="min-w-24"
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <!-- Empty State -->
-    <div
-      v-if="filteredAndSortedUsers.length === 0"
-      class="px-4 py-12 text-center sm:px-6 lg:px-8"
-    >
-      <svg
-        class="w-12 h-12 mx-auto text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
+        {{ user.role.roleName }}
+      </span>
+      <span
+        v-else
+        class="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full dark:bg-red-900 dark:text-red-200"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+        NoRole
+      </span>
+    </template>
+
+    <template #cell-balance="{ row: user }">
+      <div
+        class="text-sm"
+        :class="{
+          'text-red-500 dark:text-red-300': user.balance < 0,
+          'text-green-500 dark:text-green-300': user.balance >= 0,
+        }"
+      >
+        {{ format(user.balance) }}
+      </div>
+    </template>
+
+    <template #cell-actions="{ row: user }">
+      <div class="flex justify-end">
+        <CDropdown
+          :model-value="null"
+          :items="dropdownItems"
+          @update:model-value="(value) => handleAction(user, value)"
+          :placeholder="$t('Actions')"
+          :id="`user-dropdown-${user._id}`"
+          class="min-w-24"
         />
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-        {{ $t("users.noUsers") }}
-      </h3>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        {{ $t("users.getStarted") }}
-      </p>
-    </div>
-  </div>
+      </div>
+    </template>
+
+    <template #empty>
+      <div class="text-center py-12 px-4 sm:px-6 lg:px-8">
+        <svg
+          class="w-12 h-12 mx-auto text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+          />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+          {{ $t("users.noUsers") }}
+        </h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {{ $t("users.getStarted") }}
+        </p>
+      </div>
+    </template>
+  </DataTable>
+
   <!-- Delete Confirmation Modal -->
   <DeleteConfirmationModal
     :isOpen="isDeleteModalOpen"
@@ -188,13 +159,15 @@
 <script setup>
 import DeleteConfirmationModal from "@/components/ConfirmDelete.vue";
 import RaisePopUpModal from "@/components/RaisePopUp";
+import DataTable from "~/components/DataTable.vue";
+
 const { format } = useMoney();
 
 const roles = ref([]);
 const users = ref([]);
 const searchQuery = ref("");
 const selectedRole = ref("");
-const sortBy = ref("name");
+const sortBy = ref("username"); // Changed from "name" to "username" to match the actual field
 const sortDirection = ref("asc");
 const isPopupOpen = ref(false);
 const selectedUserId = ref(null);
@@ -236,25 +209,29 @@ const filteredAndSortedUsers = computed(() => {
     })
     .sort((a, b) => {
       const direction = sortDirection.value === "asc" ? 1 : -1;
-      if (sortBy.value === "name") {
+      if (sortBy.value === "username") {
         return a.username.localeCompare(b.username) * direction;
       } else if (sortBy.value === "email") {
         return a.email.localeCompare(b.email) * direction;
       } else if (sortBy.value === "role") {
-        return (
-          a.role?.roleName.localeCompare(b.role?.roleName || "") * direction
-        );
+        const aRole = a.role?.roleName || "";
+        const bRole = b.role?.roleName || "";
+        return aRole.localeCompare(bRole) * -direction;
       } else if (sortBy.value === "balance") {
-        return (a.balance - b.balance) * direction;
+        return (a.balance - b.balance) * -direction;
       }
       return 0;
     });
 });
 
+// Handle sort event from DataTable
+const handleSort = ({ field, direction }) => {
+  sortBy.value = field;
+  sortDirection.value = direction;
+};
+
 // Modified handleAction to accept the selected value directly
 const handleAction = (user, action) => {
-  console.log("Action triggered:", action, "for user:", user.username);
-
   if (action === "edit") {
     editUser(user);
   } else if (action === "delete") {
@@ -266,7 +243,7 @@ const handleAction = (user, action) => {
 
 // Edit user method (navigate to edit page)
 const editUser = (user) => {
-  navigateTo(`/admin/users/edit/${user._id}`);
+  navigateTo(`/admin/users/edit/${user.id}`);
 };
 
 // Delete confirmation modal state
@@ -281,7 +258,6 @@ const openDeleteConfirmation = (user) => {
 
 const openRaisePopUp = (user) => {
   selectedUserId.value = user.id; // Pass the selected user's ID
-  console.log("selectedUserId", user);
   isPopupOpen.value = true;
 };
 

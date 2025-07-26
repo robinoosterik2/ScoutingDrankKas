@@ -6,7 +6,6 @@ import { Product } from "@/server/models/product";
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    console.log(body);
     // Get the user session
     const session = await getUserSession(event);
 
@@ -25,20 +24,12 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: "User not found" });
     }
 
-    // TODO figure out if session.user is really the user id
-    console.log("session.user");
-    console.log(session.user);
-    console.log("session.user");
-
     // Use the bartender's user ID from the session
-    console.log("before");
-    body.bartenderId = session.user;
-    console.log("after");
+    body.bartenderId = session.user._id;
 
     let totalInCents = 0;
 
     for (const product of body.products) {
-      console.log(product);
       const productData = await Product.findById(product.productId);
       if (!productData) {
         throw createError({

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 relative group">
     <div class="flex items-center">
       <div :class="`p-3 rounded-full bg-${color}-100 dark:bg-${color}-900`">
         <svg
@@ -78,10 +78,31 @@
           />
         </svg>
       </div>
-      <div class="ml-4">
-        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-          {{ title }}
-        </p>
+      <div class="ml-4 flex-1">
+        <div class="flex items-center space-x-1">
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+            {{ title }}
+          </p>
+          <div v-if="tooltip" class="relative inline-flex">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              class="h-4 w-4 text-gray-400 dark:text-gray-500" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+              />
+            </svg>
+            <div class="absolute z-10 hidden group-hover:block w-48 p-2 mt-2 -ml-4 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700">
+              {{ tooltip }}
+            </div>
+          </div>
+        </div>
         <p class="text-2xl font-semibold text-gray-900 dark:text-white">
           {{ formattedValue }}
         </p>
@@ -121,17 +142,19 @@ const props = defineProps({
     default: "currency", // 'currency' | 'number' | 'string'
     validator: (value) => ["currency", "number", "string"].includes(value),
   },
+  // Tooltip text to show on hover
+  tooltip: {
+    type: String,
+    default: "",
+  },
 });
 
 // Computed property to handle different value types
 const formattedValue = computed(() => {
-  console.log(`SummaryCard ${props.title}:`, {
-    value: props.value,
-    type: typeof props.value,
-    valueType: props.valueType,
-  });
+  const value = props.value;
+  const valueType = props.valueType;
 
-  if (props.valueType === "currency") {
+  if (valueType === "currency") {
     // For currency values in cents
     return format(Number(props.value));
   } else if (props.valueType === "number") {

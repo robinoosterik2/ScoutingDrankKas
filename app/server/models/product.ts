@@ -9,6 +9,7 @@ interface IProductBase {
   categories: mongoose.Types.ObjectId[];
   ageRestriction: boolean;
   stock: number;
+  packSize?: number; // Number of items in a pack/crate (e.g., 24 for a crate of beer)
   imageUrl: string;
   totalOrders: number;
   totalQuantitySold: number;
@@ -62,6 +63,12 @@ const ProductSchema = new Schema<IProduct>(
       type: Number,
       required: true,
       default: 0,
+    },
+    packSize: {
+      type: Number,
+      required: false,
+      min: 1,
+      default: null,
     },
     imageUrl: {
       type: String,

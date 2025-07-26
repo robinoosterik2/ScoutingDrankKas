@@ -1,51 +1,110 @@
 <template>
   <div class="w-full relative">
     <!-- Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+    <div
+      class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+    >
       <div class="overflow-x-auto">
         <div class="relative">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <table
+            class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+          >
             <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0 z-10">
               <tr>
-                <th 
-                  v-for="(column, index) in columns" 
+                <th
+                  v-for="(column, index) in columns"
                   :key="index"
                   :class="[
                     'px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider',
                     column.align === 'right' ? 'text-right' : 'text-left',
+                    column.sortable
+                      ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600'
+                      : '',
                   ]"
+                  @click="column.sortable ? sortColumn(column.field) : null"
                 >
-                  {{ column.header }}
+                  <div class="flex items-center justify-between">
+                    <span>{{ column.header }}</span>
+                    <span
+                      v-if="column.sortable"
+                      class="ml-1 flex flex-col text-xs opacity-60"
+                    >
+                      <span
+                        :class="[
+                          'transition-opacity',
+                          currentSortField === column.field &&
+                          currentSortDirection === 'desc'
+                            ? 'opacity-100 text-blue-500'
+                            : 'opacity-40',
+                        ]"
+                        >▲</span
+                      >
+                      <span
+                        :class="[
+                          'transition-opacity -mt-1',
+                          currentSortField === column.field &&
+                          currentSortDirection === 'asc'
+                            ? 'opacity-100 text-blue-500'
+                            : 'opacity-40',
+                        ]"
+                        >▼</span
+                      >
+                    </span>
+                  </div>
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              <tr 
-                v-for="(row, rowIndex) in data" 
+            <tbody
+              class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+            >
+              <tr
+                v-for="(row, rowIndex) in data"
                 :key="rowIndex"
                 class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200"
               >
-                <td 
-                  v-for="(column, colIndex) in columns" 
+                <td
+                  v-for="(column, colIndex) in columns"
                   :key="colIndex"
                   :class="[
                     'px-6 py-2 whitespace-nowrap',
                     column.align === 'right' ? 'text-right' : 'text-left',
                     column.class,
-                    // Add special styling for cells that might contain dropdowns
-                    column.field === 'actions' ? 'relative z-20' : ''
+                    // Special handling for action columns that may contain dropdowns
+                    column.field === 'actions' ? 'relative' : '',
                   ]"
+                  :style="
+                    column.field === 'actions' ? 'overflow: visible;' : ''
+                  "
                 >
-                  <div class="relative">
-                    <slot :name="`cell-${column.field}`" :row="row" :value="row[column.field]">
+                  <!-- Wrapper for dropdown overflow -->
+                  <div
+                    :class="[
+                      column.field === 'actions' ? 'relative' : '',
+                      // Ensure the dropdown container extends beyond table bounds
+                      column.field === 'actions' ? 'z-[100]' : '',
+                    ]"
+                    :style="
+                      column.field === 'actions' ? 'overflow: visible;' : ''
+                    "
+                  >
+                    <slot
+                      :name="`cell-${column.field}`"
+                      :row="row"
+                      :value="row[column.field]"
+                    >
                       {{ row[column.field] }}
                     </slot>
                   </div>
                 </td>
               </tr>
               <tr v-if="!data || data.length === 0">
-                <td :colspan="columns.length" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                  {{ noDataText || 'No data available' }}
+                <td
+                  :colspan="columns.length"
+                  class="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
+                >
+                  <slot name="empty">
+                    {{ noDataText || "No data available" }}
+                  </slot>
                 </td>
               </tr>
             </tbody>
@@ -54,29 +113,45 @@
       </div>
 
       <!-- Pagination -->
-      <div v-if="pagination" class="flex justify-between items-center px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+      <div
+        v-if="pagination"
+        class="flex justify-between items-center px-4 py-3 border-t border-gray-200 dark:border-gray-700"
+      >
         <div class="text-sm text-gray-500 dark:text-gray-400">
-          {{ $t('showing') }} {{ (pagination.page - 1) * pagination.pageSize + 1 }} - 
-          {{ Math.min(pagination.page * pagination.pageSize, pagination.total) }} 
-          {{ $t('of') }} {{ pagination.total }}
+          {{ $t("showing") }}
+          {{ (pagination.page - 1) * pagination.pageSize + 1 }} -
+          {{
+            Math.min(pagination.page * pagination.pageSize, pagination.total)
+          }}
+          {{ $t("of") }} {{ pagination.total }}
         </div>
         <div class="flex items-center gap-1">
-          <CButton 
+          <CButton
             :type="pagination.page > 1 ? 'primary' : 'secondary'"
-            :disabled="pagination.page === 1" 
+            :disabled="pagination.page === 1"
             class="px-2 h-6 text-sm"
             @click="$emit('update:page', pagination.page - 1)"
           >
-            {{ $t('prev') }}
+            {{ $t("prev") }}
           </CButton>
-          <span class="px-2 text-sm">{{ pagination.page }}/{{ Math.ceil(pagination.total / pagination.pageSize) }}</span>
-          <CButton 
-            :type="pagination.page * pagination.pageSize < pagination.total ? 'primary' : 'secondary'"
-            :disabled="pagination.page * pagination.pageSize >= pagination.total" 
+          <span class="px-2 text-sm"
+            >{{ pagination.page }}/{{
+              Math.ceil(pagination.total / pagination.pageSize)
+            }}</span
+          >
+          <CButton
+            :type="
+              pagination.page * pagination.pageSize < pagination.total
+                ? 'primary'
+                : 'secondary'
+            "
+            :disabled="
+              pagination.page * pagination.pageSize >= pagination.total
+            "
             class="px-2 h-6 text-sm"
             @click="$emit('update:page', pagination.page + 1)"
           >
-            {{ $t('next') }}
+            {{ $t("next") }}
           </CButton>
         </div>
       </div>
@@ -85,34 +160,75 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-import CButton from '~/components/CButton.vue';
+import { defineEmits, computed } from "vue";
+import CButton from "~/components/CButton.vue";
+const { t } = useI18n();
 
 const props = defineProps({
   columns: {
     type: Array,
     required: true,
     validator: (value) => {
-      return value.every(col => col.header && col.field);
-    }
+      return value.every((col) => col.header && col.field);
+    },
   },
   data: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   pagination: {
     type: Object,
     default: null,
     validator: (value) => {
       if (!value) return true;
-      return 'page' in value && 'pageSize' in value && 'total' in value;
-    }
+      return "page" in value && "pageSize" in value && "total" in value;
+    },
   },
   noDataText: {
     type: String,
-    default: ''
-  }
+    default: "",
+  },
+  sortField: {
+    type: String,
+    default: "",
+  },
+  sortDirection: {
+    type: String,
+    default: "asc",
+    validator: (value) => ["asc", "desc"].includes(value),
+  },
 });
 
-const emit = defineEmits(['update:page']);
+const emit = defineEmits(["update:page", "sort"]);
+
+const currentSortField = computed(() => props.sortField);
+const currentSortDirection = computed(() => props.sortDirection);
+
+const sortColumn = (field) => {
+  let newDirection = "asc";
+
+  // If clicking the same field, toggle direction
+  if (currentSortField.value === field) {
+    newDirection = currentSortDirection.value === "asc" ? "desc" : "asc";
+  }
+
+  emit("sort", { field, direction: newDirection });
+};
 </script>
+
+<style scoped>
+/* Ensure table doesn't clip dropdowns */
+.overflow-x-auto {
+  overflow-y: visible !important;
+}
+
+/* Additional styling to ensure dropdowns aren't clipped */
+table {
+  overflow: visible;
+}
+
+/* Make sure action cells can overflow */
+td[style*="overflow: visible"] {
+  overflow: visible !important;
+}
+</style>

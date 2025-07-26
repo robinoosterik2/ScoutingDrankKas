@@ -3,6 +3,8 @@ import mongoose, { Schema } from "mongoose";
 import Log from "./log";
 import User from "./user";
 import { LOG_CATEGORIES, LOG_ACTIONS } from "./constants/log.constants";
+import { useMoney } from "~/composables/useMoney";
+const { format } = useMoney();
 
 interface IOrderProduct {
   productId: mongoose.Types.ObjectId;
@@ -114,7 +116,7 @@ OrderSchema.statics.createFromRequestBody = async function (bodyData: {
         newValue: order.bartender,
       },
     ],
-    description: `User bought products worth ${bodyData.total}`,
+    description: `User bought products worth ${format(bodyData.total)}`,
     category: LOG_CATEGORIES.ORDER,
   });
   await log.save();

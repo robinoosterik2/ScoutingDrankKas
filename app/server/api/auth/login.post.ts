@@ -80,7 +80,6 @@ export default defineEventHandler(async (event) => {
         { maxAge: 60 * 10 }
       );
     }
-
     return {
       statusCode: 200,
       message: "Login successful",

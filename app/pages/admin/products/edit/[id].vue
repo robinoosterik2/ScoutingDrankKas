@@ -85,6 +85,27 @@
         />
       </div>
 
+      <!-- Pack Size (Optional) -->
+      <div class="mt-4">
+        <label
+          class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          for="productPackSize"
+        >
+          {{ $t("products.packSize") }} ({{ $t("common.optional") }})
+        </label>
+        <input
+          id="productPackSize"
+          v-model.number="formData.packSize"
+          type="number"
+          min="1"
+          class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          :placeholder="$t('products.packSizePlaceholder')"
+        />
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {{ $t("products.packSizeHelp") }}
+        </p>
+      </div>
+
       <!-- Product Categories -->
       <div class="mt-4">
         <label
@@ -172,6 +193,7 @@ const formData = ref({
   description: "",
   price: null,
   stock: 0,
+  packSize: null, // Optional pack size (e.g., 24 for a crate of beer)
   categories: [],
   imageUrl: "/images/placeholder.jpg", // Default for display
   imageFile: null, // To store the actual File object for new uploads

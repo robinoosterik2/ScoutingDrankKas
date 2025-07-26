@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
 
     const amount = body.amount;
 
-    // Find user (no session needed)
+    // Find user to raise
     const user = await User.findById(userId);
     if (!user) {
       throw createError({
@@ -43,10 +43,21 @@ export default defineEventHandler(async (event) => {
     }
 
     // Create and save raise record
+    const paymentMethod = body.paymentMethod || "cash";
+
+    // Input validation for payment method
+    if (!["cash", "pin"].includes(paymentMethod)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Invalid payment method. Must be 'cash' or 'pin'.",
+      });
+    }
+
     const raise = new Raise({
       user: userId,
       amount: amount,
       raiser: admin_id,
+      paymentMethod: paymentMethod,
     });
     await raise.save();
 
@@ -58,10 +69,12 @@ export default defineEventHandler(async (event) => {
     console.error("Operation error:", error);
 
     // Re-throw createError instances
-    if (error?.statusCode) {
-      throw error;
+    if (error instanceof Error) {
+      return createError({
+        statusCode: 500,
+        statusMessage: error.message,
+      });
     }
-
     throw createError({
       statusCode: 500,
       statusMessage: "Internal Server Error",

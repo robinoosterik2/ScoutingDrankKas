@@ -21,7 +21,7 @@
               name="roleName"
               type="text"
               required
-              class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               :placeholder="$t('roles.enterRoleName')"
             >
             <div id="errorRoleName" class="text-red-500 text-sm mt-1"/>
@@ -36,7 +36,7 @@
               v-model="roleForm.roleDescription"
               name="roleDescription"
               required
-              class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               :placeholder="$t('roles.enterRoleDescription')"
               rows="3"
             />
@@ -59,7 +59,7 @@
                 :id="permission"
                 type="checkbox"
                 :checked="roleForm.rolePermissions.includes(permission)"
-                class="form-checkbox h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800"
                 @change="togglePermission(permission)"
               >
               <label

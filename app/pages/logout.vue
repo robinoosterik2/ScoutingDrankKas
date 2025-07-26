@@ -1,4 +1,8 @@
-<template></template>
+<template>
+  <div v-if="loading" class="loading">
+    <p>Loading...</p>
+  </div>
+</template>
 
 <script setup>
 import { useRouter } from "vue-router";

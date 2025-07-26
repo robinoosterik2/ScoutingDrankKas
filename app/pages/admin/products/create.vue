@@ -84,6 +84,27 @@
         />
       </div>
 
+      <!-- Pack Size (Optional) -->
+      <div class="mt-4">
+        <label
+          class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          for="productPackSize"
+        >
+          {{ $t("products.packSize") }} ({{ $t("common.optional") }})
+        </label>
+        <input
+          id="productPackSize"
+          v-model.number="formData.packSize"
+          type="number"
+          min="1"
+          class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          :placeholder="$t('products.packSizePlaceholder')"
+        />
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {{ $t("products.packSizeHelp") }}
+        </p>
+      </div>
+
       <!-- Product Categories -->
       <div class="mt-4">
         <label
@@ -91,19 +112,14 @@
         >
           {{ $t("categories.categories") }}
         </label>
-        <select
+        <CMultiSelect
           v-model="formData.categories"
-          multiple
-          class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-        >
-          <option
-            v-for="category in availableCategories"
-            :key="category._id"
-            :value="category._id"
-          >
-            {{ category.name }}
-          </option>
-        </select>
+          :items="availableCategories"
+          :placeholder="$t('categories.selectCategories')"
+          item-text="name"
+          item-value="_id"
+          class="w-full"
+        />
       </div>
 
       <!-- Product Image -->
@@ -114,13 +130,24 @@
         >
           {{ $t("products.productImage") }}
         </label>
-        <input
-          id="productImage"
-          type="file"
-          accept="image/*"
-          class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-          @change="handleImageUpload"
-        />
+        <div class="relative">
+          <label 
+            for="productImage"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600 cursor-pointer transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Choose Image
+          </label>
+          <input
+            id="productImage"
+            type="file"
+            accept="image/*"
+            class="hidden"
+            @change="handleImageUpload"
+          />
+        </div>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {{ $t("products.imageAspectRatioTip") }}
         </p>
@@ -171,6 +198,7 @@ const formData = ref({
   description: "",
   price: null,
   stock: 0,
+  packSize: null, // Optional pack size (e.g., 24 for a crate of beer)
   categories: [],
   imageUrl: "/images/placeholder.jpg", // Default for display
   imageFile: null, // To store the actual File object for new uploads

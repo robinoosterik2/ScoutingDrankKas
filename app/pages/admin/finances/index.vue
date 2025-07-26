@@ -58,7 +58,7 @@
     </div>
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
       <SummaryCard
         :key="`revenue-${summary.totalRevenue}`"
         :title="$t('finance.totalRevenue')"
@@ -66,6 +66,7 @@
         icon="currency-euro"
         color="indigo"
         value-type="currency"
+        :tooltip="$t('finance.totalRevenueTooltip')"
       />
       <SummaryCard
         :key="`orders-${summary.totalOrders}`"
@@ -74,6 +75,7 @@
         icon="shopping-bag"
         color="green"
         value-type="number"
+        :tooltip="$t('finance.totalOrdersTooltip')"
       />
       <SummaryCard
         :key="`raised-${summary.totalRaised}`"
@@ -82,14 +84,25 @@
         icon="hand-holding-usd"
         color="yellow"
         value-type="currency"
+        :tooltip="$t('finance.totalRaisedTooltip')"
       />
       <SummaryCard
-        :key="`average-${summary.averageOrderValue}`"
-        :title="$t('finance.averageOrderValue')"
-        :value="summary.averageOrderValue"
-        icon="chart-bar"
+        :key="`purchases-${summary.totalPurchases}`"
+        :title="$t('finance.totalPurchases')"
+        :value="summary.totalPurchases"
+        icon="shopping-cart"
+        color="red"
+        value-type="currency"
+        :tooltip="$t('finance.totalPurchasesTooltip')"
+      />
+      <SummaryCard
+        :key="`net-${summary.netRevenue}`"
+        :title="$t('finance.netRevenue')"
+        :value="summary.netRevenue"
+        icon="chart-line"
         color="purple"
         value-type="currency"
+        :tooltip="$t('finance.netRevenueTooltip')"
       />
     </div>
 
@@ -124,7 +137,6 @@
               >
                 {{ $t("finance.type") }}
               </th>
-
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
               >
@@ -160,7 +172,6 @@
               >
                 {{ transaction.type }}
               </td>
-
               <td
                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"
               >
@@ -181,7 +192,7 @@
             </tr>
             <tr v-if="transactions.length === 0">
               <td
-                colspan="4"
+                colspan="5"
                 class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400"
               >
                 {{ $t("finance.noTransactions") }}
@@ -340,6 +351,8 @@ const summary = ref({
   totalRevenue: 0,
   totalOrders: 0,
   totalRaised: 0,
+  totalPurchases: 0,
+  netRevenue: 0,
   averageOrderValue: 0,
 });
 
@@ -365,6 +378,9 @@ const fetchFinanceData = async () => {
     const response = await $fetch(
       `/api/admin/finances/get?${params.toString()}`
     );
+
+    console.log("API Response:", response);
+
     // Process orders
     orders.value = (response.orders || []).map((order) => ({
       ...order,
@@ -372,9 +388,6 @@ const fetchFinanceData = async () => {
       displayAmount: order.total,
       affectedUser: order.affectedUser,
     }));
-    const totalSales = response.totalSales || 0;
-
-    const salesPerDay = response.salesPerDay;
 
     // Process raises
     raises.value = (response.raises || []).map((raise) => ({
@@ -383,20 +396,20 @@ const fetchFinanceData = async () => {
       displayAmount: raise.amount,
       affectedUser: raise.affectedUser,
     }));
-    const totalRaised = response.totalRaised || 0;
 
-    console.log(totalSales);
-    // Update summary
+    // Update summary with data from backend
     summary.value = {
-      totalRevenue: totalSales,
-      totalOrders: orders.value.length,
-      totalRaised: totalRaised,
-      averageOrderValue:
-        orders.value.length > 0
-          ? Math.round(totalSales / orders.value.length) // Keep in cents
-          : 0,
-      salesPerDay: salesPerDay,
+      totalRevenue: response.summary?.totalRevenue || 0,
+      totalOrders: response.summary?.totalOrders || 0,
+      totalRaised: response.summary?.totalRaised || 0,
+      totalPurchases: response.summary?.totalPurchases || 0,
+      netRevenue: response.summary?.netRevenue || 0,
+      averageOrderValue: response.summary?.averageOrderValue || 0,
+      salesPerDay: response.salesPerDay || [],
+      raisesPerDay: response.raisesPerDay || [],
+      purchasesPerDay: response.purchasesPerDay || [],
     };
+    console.log("Summary data:", summary.value);
 
     // Combine orders and raises for transactions list
     const orderTransactions = orders.value.map((order) => ({
@@ -418,12 +431,7 @@ const fetchFinanceData = async () => {
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
     );
 
-    console.log("Summary data:", {
-      totalSales,
-      totalRaised,
-      ordersLength: orders.value.length,
-      summary: summary.value,
-    });
+    console.log("Summary data:", summary.value);
 
     updateChart();
   } catch (error) {
@@ -442,11 +450,13 @@ const updateChart = () => {
     revenueChart.destroy();
   }
 
-  // Get sales data from the response
+  // Get data from the response
   const salesData = summary.value.salesPerDay || [];
+  const raisesData = summary.value.raisesPerDay || [];
+  const purchasesData = summary.value.purchasesPerDay || [];
 
   // Prepare labels and data based on whether we're viewing a month or all months
-  let labels, data, label;
+  let labels, salesChartData, raisesChartData, purchasesChartData;
 
   if (selectedMonth.value) {
     // Daily view for a specific month
@@ -456,24 +466,46 @@ const updateChart = () => {
       0
     ).getDate();
     labels = Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`);
-    data = Array(daysInMonth).fill(0);
-    label = t("finance.dailyRevenue");
+    salesChartData = Array(daysInMonth).fill(0);
+    raisesChartData = Array(daysInMonth).fill(0);
+    purchasesChartData = Array(daysInMonth).fill(0);
 
     // Fill in the actual data for daily view
     salesData.forEach((item) => {
       const day = new Date(item.date).getDate();
-      data[day - 1] = item.total;
+      salesChartData[day - 1] = item.total;
+    });
+
+    raisesData.forEach((item) => {
+      const day = new Date(item.date).getDate();
+      raisesChartData[day - 1] = item.total;
+    });
+
+    purchasesData.forEach((item) => {
+      const day = new Date(item.date).getDate();
+      purchasesChartData[day - 1] = item.total;
     });
   } else {
     // Monthly view for the selected year
     labels = months.map((m) => m.label);
-    data = Array(12).fill(0);
-    label = t("finance.monthlyRevenue");
+    salesChartData = Array(12).fill(0);
+    raisesChartData = Array(12).fill(0);
+    purchasesChartData = Array(12).fill(0);
 
     // Fill in the actual data for monthly view
     salesData.forEach((item) => {
       const month = new Date(item.date).getMonth();
-      data[month] = (data[month] || 0) + item.total;
+      salesChartData[month] = (salesChartData[month] || 0) + item.total;
+    });
+
+    raisesData.forEach((item) => {
+      const month = new Date(item.date).getMonth();
+      raisesChartData[month] = (raisesChartData[month] || 0) + item.total;
+    });
+
+    purchasesData.forEach((item) => {
+      const month = new Date(item.date).getMonth();
+      purchasesChartData[month] = (purchasesChartData[month] || 0) + item.total;
     });
   }
 
@@ -486,16 +518,48 @@ const updateChart = () => {
       labels,
       datasets: [
         {
-          label,
-          data,
-          borderColor: "rgb(99, 102, 241)",
-          backgroundColor: "rgba(99, 102, 241, 0.1)",
+          label: t("finance.sales") || "Sales",
+          data: salesChartData,
+          borderColor: "rgb(79, 70, 229)",
+          backgroundColor: "rgba(79, 70, 229, 0.1)",
           tension: 0.4,
           fill: true,
-          pointBackgroundColor: "rgb(99, 102, 241)",
+          pointBackgroundColor: "rgb(79, 70, 229)",
           pointBorderColor: "#fff",
           pointHoverRadius: 5,
-          pointHoverBackgroundColor: "rgb(99, 102, 241)",
+          pointHoverBackgroundColor: "rgb(79, 70, 229)",
+          pointHoverBorderColor: "#fff",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          pointRadius: 4,
+        },
+        {
+          label: t("finance.raises") || "Raises",
+          data: raisesChartData,
+          borderColor: "rgb(245, 158, 11)",
+          backgroundColor: "rgba(245, 158, 11, 0.1)",
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: "rgb(245, 158, 11)",
+          pointBorderColor: "#fff",
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgb(245, 158, 11)",
+          pointHoverBorderColor: "#fff",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          pointRadius: 4,
+        },
+        {
+          label: t("finance.purchases") || "Purchases",
+          data: purchasesChartData,
+          borderColor: "rgb(239, 68, 68)",
+          backgroundColor: "rgba(239, 68, 68, 0.1)",
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: "rgb(239, 68, 68)",
+          pointBorderColor: "#fff",
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgb(239, 68, 68)",
           pointHoverBorderColor: "#fff",
           pointHitRadius: 10,
           pointBorderWidth: 2,
@@ -508,7 +572,8 @@ const updateChart = () => {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false,
+          display: true,
+          position: "top",
         },
         tooltip: {
           mode: "index",
@@ -529,6 +594,9 @@ const updateChart = () => {
           align: "top",
           offset: 8,
           formatter: (value) => format(value),
+          font: {
+            size: 10,
+          },
         },
       },
       scales: {
@@ -543,8 +611,12 @@ const updateChart = () => {
           },
           // Add a buffer to the max value to ensure labels fit
           afterDataLimits: function (scale) {
-            const max = scale.max;
-            scale.max = max * 1.1; // Add 10% buffer to the max value
+            const max = Math.max(
+              ...salesChartData,
+              ...raisesChartData,
+              ...purchasesChartData
+            );
+            scale.max = max * 1.15; // Add 15% buffer to the max value
           },
         },
       },
@@ -564,7 +636,3 @@ watch([selectedMonth, selectedYear], () => {
   fetchFinanceData();
 });
 </script>
-
-<style scoped>
-/* Add any custom styles here */
-</style>

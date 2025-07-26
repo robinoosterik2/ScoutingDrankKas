@@ -7,6 +7,8 @@ interface IPurchase {
   price: number;
   purchaseDate: Date;
   notes: string;
+  packSize?: number;
+  packQuantity?: number;
 }
 
 const PurchaseSchema = new Schema<IPurchase>({
@@ -37,6 +39,18 @@ const PurchaseSchema = new Schema<IPurchase>({
   notes: {
     type: String,
     default: "",
+  },
+  packSize: {
+    type: Number,
+    required: false,
+    min: 1,
+    default: null,
+  },
+  packQuantity: {
+    type: Number,
+    required: false,
+    min: 1,
+    default: null,
   },
 });
 

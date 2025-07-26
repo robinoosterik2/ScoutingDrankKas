@@ -74,6 +74,10 @@ export default defineEventHandler(async (event) => {
     found.description = description;
     found.stock = stock;
     found.ageRestriction = ageRestriction;
+    // Handle packSize - it can be null or a positive number
+    if (body.packSize !== undefined) {
+      found.packSize = body.packSize > 0 ? body.packSize : null;
+    }
     await found.save();
     return {
       status: 200,
@@ -89,6 +93,10 @@ export default defineEventHandler(async (event) => {
     };
   }
   body.ageRestriction = ageRestriction;
+  // Ensure packSize is valid (null or positive number)
+  if (body.packSize !== undefined) {
+    body.packSize = body.packSize > 0 ? body.packSize : null;
+  }
   const product = new Product(body);
   await product.save();
   return {

@@ -7,11 +7,16 @@ import {
   LOG_TARGET_OBJECTS,
 } from "./constants/log.constants";
 
+export enum PaymentMethod {
+  CASH = 'cash',
+  PIN = 'pin'
+}
+
 interface IRaise {
   user: mongoose.Types.ObjectId;
   amount: number;
   raiser: mongoose.Types.ObjectId;
-  cash: boolean;
+  paymentMethod: PaymentMethod;
 }
 
 const RaiseSchema = new Schema<IRaise>(
@@ -28,9 +33,11 @@ const RaiseSchema = new Schema<IRaise>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    cash: {
-      type: Boolean,
-      default: false,
+    paymentMethod: {
+      type: String,
+      enum: Object.values(PaymentMethod),
+      default: PaymentMethod.CASH,
+      required: true,
     },
   },
   {
@@ -47,7 +54,7 @@ RaiseSchema.pre("save", async function (next) {
       }
       await user.raise(this.amount);
 
-      const description = this.cash ? "Cash raise" : "Bank raise";
+      const description = this.paymentMethod === PaymentMethod.CASH ? "Cash raise" : "Bank raise (PIN)";
 
       const log = new Log({
         executor: this.raiser,
@@ -71,7 +78,6 @@ RaiseSchema.pre("save", async function (next) {
 
       next();
     } catch (error) {
-      console.log(error);
       next(error as Error);
     }
   } else {

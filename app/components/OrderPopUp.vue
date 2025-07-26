@@ -119,7 +119,7 @@
             <!-- Bartender Info -->
             <div v-if="order.bartender" class="mt-4">
               <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                {{ $t("Bartender") }}
+                {{ $t("barkeeper") }}
               </p>
               <p class="text-gray-900 dark:text-white">
                 {{ order.bartender.firstName }} {{ order.bartender.lastName }}

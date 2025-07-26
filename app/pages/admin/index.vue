@@ -166,11 +166,6 @@
           type="secondary"
           :label="$t('admin.viewAllFinances')"
         />
-        <DashboardLink
-          to="/admin/finances/create"
-          type="finances"
-          :label="$t('admin.createTransaction')"
-        />
       </template>
     </AdminCard>
 
@@ -240,7 +235,7 @@
       </template>
     </AdminCard>
 
-    <!-- Stock Management -->
+    <!-- Purchases Management -->
     <AdminCard>
       <template #icon>
         <svg
@@ -258,13 +253,13 @@
           />
         </svg>
       </template>
-      <template #title>{{ $t("stock.title") }}</template>
-      <template #description>{{ $t("stock.description") }}</template>
+      <template #title>{{ $t("purchases.title") }}</template>
+      <template #description>{{ $t("purchases.description") }}</template>
       <template #links>
         <DashboardLink
-          to="/admin/stock"
+          to="/admin/purchases"
           type="secondary"
-          :label="$t('stock.manageStock')"
+          :label="$t('purchases.managePurchases')"
         />
       </template>
     </AdminCard>

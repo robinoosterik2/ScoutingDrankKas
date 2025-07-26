@@ -5,10 +5,10 @@ export default defineEventHandler(async (event) => {
   try {
     const logs = await Log.find()
       .populate("executor", "username")
-      .populate("objectId", "name");
+      .populate("targetObject.id", "name");
     return logs;
   } catch (error) {
     event.res.statusCode = 500;
-    return { error: "Failed to fetch logs" };
+    return { error: "Failed to fetch logs: " + error };
   }
 });

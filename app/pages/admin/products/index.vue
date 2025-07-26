@@ -14,17 +14,16 @@
   </div>
 
   <!-- Filters and Sorting -->
-  <div class="mb-4 flex space-x-4">
-    <!-- Search Input -->
+  <div class="flex w-full flex-wrap">
     <input
       v-model="searchQuery"
       :placeholder="$t('Search') + '...'"
-      class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
+      class="flex-grow px-3 py-2 mb-4 me-4 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
     />
 
     <select
       v-model="selectedCategory"
-      class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
+      class="px-3 py-2 mb-4 me-4 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white text-sm"
     >
       <option value="">{{ $t("categories.allCategories") }}</option>
       <option
@@ -35,130 +34,101 @@
         {{ category.name }}
       </option>
     </select>
-
-    <select
-      v-model="sortBy"
-      class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-    >
-      <option value="name">{{ $t("sortBy") }} {{ $t("name") }}</option>
-      <option value="price">{{ $t("sortBy") }} {{ $t("price") }}</option>
-      <option value="stock">{{ $t("sortBy") }} {{ $t("stock") }}</option>
-    </select>
-
-    <button
-      @click="toggleSortDirection"
-      class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-    >
-      {{ sortDirection === "asc" ? "▲" : "▼" }}
-    </button>
   </div>
+
   <!-- Products Table -->
-  <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
-    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-      <thead class="bg-gray-50 dark:bg-gray-700">
-        <tr>
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-          >
-            {{ $t("Name") }}
-          </th>
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-          >
-            {{ $t("Description") }}
-          </th>
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-          >
-            {{ $t("price") }}
-          </th>
-          <th
-            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-          >
-            {{ $t("stock") }}
-          </th>
-          <th
-            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-          >
-            {{ $t("actions") }}
-          </th>
-        </tr>
-      </thead>
-      <tbody
-        class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
-      >
-        <tr
-          v-for="product in filteredAndSortedProducts"
-          :key="product._id"
-          class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200"
+  <DataTable
+    :columns="[
+      {
+        header: $t('Name'),
+        field: 'name',
+        align: 'left',
+        sortable: true,
+      },
+      {
+        header: $t('Description'),
+        field: 'description',
+        align: 'left',
+        sortable: false,
+      },
+      {
+        header: $t('price'),
+        field: 'price',
+        align: 'left',
+        sortable: true,
+      },
+      {
+        header: $t('stock'),
+        field: 'stock',
+        align: 'left',
+        sortable: true,
+      },
+      {
+        header: $t('actions'),
+        field: 'actions',
+        align: 'right',
+        sortable: false,
+      },
+    ]"
+    :data="
+      filteredAndSortedProducts.map((product) => ({
+        ...product,
+        price: format(product.price),
+        actions: '',
+      }))
+    "
+    :sort-field="sortBy"
+    :sort-direction="sortDirection"
+    :no-data-text="$t('products.noProducts')"
+    @sort="handleSort"
+  >
+    <template #cell-description="{ row: product }">
+      <div class="text-sm text-gray-500 dark:text-gray-300">
+        {{ product.description }}
+      </div>
+    </template>
+
+    <template #cell-actions="{ row: product }">
+      <div class="flex justify-end space-x-2">
+        <button
+          @click="editProduct(product)"
+          class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
         >
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-sm font-medium text-gray-900 dark:text-white">
-              {{ product.name }}
-            </div>
-          </td>
-          <td class="px-6 py-4">
-            <div class="text-sm text-gray-500 dark:text-gray-300">
-              {{ product.description }}
-            </div>
-          </td>
-          <td class="px-6 py-4">
-            <div class="text-sm text-gray-900 dark:text-white">
-              {{ format(product.price) }}
-            </div>
-          </td>
-          <td class="px-6 py-4">
-            <div class="text-sm text-gray-500 dark:text-gray-300">
-              {{ product.stock }}
-            </div>
-          </td>
-          <td
-            class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-          >
-            <div class="flex justify-end space-x-2">
-              <button
-                @click="editProduct(product)"
-                class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
-              >
-                {{ $t("edit") }}
-              </button>
-              <button
-                @click="openDeleteConfirmation(product)"
-                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200"
-              >
-                {{ $t("delete") }}
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <!-- Empty State -->
-    <div
-      v-if="filteredAndSortedProducts.length === 0"
-      class="text-center py-12 px-4 sm:px-6 lg:px-8"
-    >
-      <svg
-        class="mx-auto h-12 w-12 text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-        />
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-        {{ $t("products.noProducts") }}
-      </h3>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        {{ $t("products.getStarted") }}
-      </p>
-    </div>
-  </div>
+          {{ $t("edit") }}
+        </button>
+        <button
+          @click="openDeleteConfirmation(product)"
+          class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200"
+        >
+          {{ $t("delete") }}
+        </button>
+      </div>
+    </template>
+
+    <template #empty>
+      <div class="text-center py-12 px-4 sm:px-6 lg:px-8">
+        <svg
+          class="mx-auto h-12 w-12 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+          />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+          {{ $t("products.noProducts") }}
+        </h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {{ $t("products.getStarted") }}
+        </p>
+      </div>
+    </template>
+  </DataTable>
   <!-- Delete Confirmation Modal -->
   <DeleteConfirmationModal
     :isOpen="isDeleteModalOpen"
@@ -175,6 +145,8 @@
 
 <script setup>
 import DeleteConfirmationModal from "@/components/ConfirmDelete.vue";
+import DataTable from "~/components/DataTable.vue";
+
 const { format } = useMoney();
 
 const categories = ref([]);
@@ -244,9 +216,10 @@ const closeDeleteConfirmation = () => {
   productToDelete.value = null;
 };
 
-// Toggle sort direction
-const toggleSortDirection = () => {
-  sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
+// Handle sort event from DataTable
+const handleSort = ({ field, direction }) => {
+  sortBy.value = field;
+  sortDirection.value = direction;
 };
 
 const deleteProduct = async (productId) => {

@@ -31,6 +31,12 @@
 [ ] validate what cursor did with session
 [ ] Make it easily visable who is logged in at the moment
 [ ] Remove code imports that are automatically imported by nuxt
+[ ] Rate limit login
+[ ] Better error handling
+[ ] Delete / revert raises and orders
+[ ] when deleting product make sure to remove image as well
+[ ] editing buttons show create instead of edit.
+[ ] Finance page should include purchases as well.
 
 https://claude.ai/share/5b0d5e7c-b2b4-4397-ab2b-b5ad6aade9b9
 update the models to use interfaces

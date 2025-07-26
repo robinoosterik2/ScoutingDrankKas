@@ -12,19 +12,19 @@
         v-model="searchTerm"
         type="text"
         class="bg-transparent outline-none w-full cursor-pointer"
-        :class="{ 'text-transparent': selectedUser && !isOpen }"
-        :placeholder="selectedUser ? '' : placeholder"
+        :class="{ 'text-transparent': selectedItem && !isOpen }"
+        :placeholder="selectedItem ? '' : placeholder"
         @click.stop
         @input="onSearch"
         @focus="openDropdown"
       />
 
-      <!-- Display selected user when not searching -->
+      <!-- Display selected item when not searching -->
       <div
-        v-if="selectedUser && !isOpen"
+        v-if="selectedItem && !isOpen"
         class="absolute left-3 right-8 truncate"
       >
-        {{ selectedUserDisplay }}
+        {{ selectedItemDisplay }}
       </div>
 
       <!-- Dropdown icon -->
@@ -49,19 +49,19 @@
       class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
     >
       <div
-        v-if="filteredUsers.length === 0"
+        v-if="filteredItems.length === 0"
         class="px-3 py-2 text-gray-500 dark:text-gray-400"
       >
         {{ $t("common.noResults") }}
       </div>
       <div
-        v-for="user in filteredUsers"
-        :key="user.id"
+        v-for="item in filteredItems"
+        :key="item.id"
         class="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-        :class="{ 'bg-gray-100 dark:bg-gray-700': user.id === modelValue }"
-        @click="selectUser(user)"
+        :class="{ 'bg-gray-100 dark:bg-gray-700': item.id === modelValue }"
+        @click="selectItem(item)"
       >
-        {{ formatName(user) }}
+        {{ formatItem(item) }}
       </div>
     </div>
   </div>
@@ -75,16 +75,24 @@ import { ref, computed, watch, nextTick } from "vue";
 
 const props = defineProps({
   modelValue: {
-    type: String,
+    type: [String, Object],
     default: "",
   },
-  users: {
+  items: {
     type: Array,
     default: () => [],
   },
+  itemText: {
+    type: String,
+    default: 'name',
+  },
   placeholder: {
     type: String,
-    default: "Select a user",
+    default: "Select an item",
+  },
+  searchKeys: {
+    type: Array,
+    default: () => ['name', 'firstName', 'lastName', 'email'],
   },
 });
 
@@ -94,43 +102,48 @@ const isOpen = ref(false);
 const searchTerm = ref("");
 const inputRef = ref(null);
 
-// Format user name and username
-const formatName = (user) => {
-  if (!user) return "";
-  const firstName = user.firstName
-    ? user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1)
-    : "";
-  const lastName = user.lastName
-    ? user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)
-    : "";
-  return `${firstName} ${lastName} ${
-    user.username ? `- ${user.username}` : ""
-  }`.trim();
+// Format item display text
+const formatItem = (item) => {
+  if (!item) return "";
+  
+  // If item has firstName and lastName, format as name
+  if (item.firstName || item.lastName) {
+    const firstName = item.firstName || '';
+    const lastName = item.lastName || '';
+    const username = item.username ? `(${item.username})` : '';
+    return `${firstName} ${lastName} ${username}`.trim();
+  }
+  
+  // Otherwise try to use the specified text property or default to 'name'
+  return item[props.itemText] || item.name || item.id || '';
 };
 
-const selectedUser = computed(() => {
-  return props.users.find((user) => user.id === props.modelValue);
+const selectedItem = computed(() => {
+  if (!props.modelValue) return null;
+  
+  // Handle both string IDs and object values
+  const id = typeof props.modelValue === 'string' || typeof props.modelValue === 'number'
+    ? props.modelValue 
+    : props.modelValue?.id;
+    
+  return props.items.find((item) => item.id === id) || null;
 });
 
-const selectedUserDisplay = computed(() => {
-  if (!selectedUser.value) return "";
-  return formatName(selectedUser.value);
+const selectedItemDisplay = computed(() => {
+  if (!selectedItem.value) return '';
+  return formatItem(selectedItem.value);
 });
 
-// Filter users based on search term
-const filteredUsers = computed(() => {
-  if (!searchTerm.value) return props.users;
-
-  const search = searchTerm.value.toLowerCase();
-  return props.users.filter((user) => {
-    if (!user) return false;
-    const fullName = formatName(user).toLowerCase();
-    return (
-      fullName.includes(search) ||
-      (user.username && user.username.toLowerCase().includes(search)) ||
-      (user.firstName && user.firstName.toLowerCase().includes(search)) ||
-      (user.lastName && user.lastName.toLowerCase().includes(search))
-    );
+const filteredItems = computed(() => {
+  if (!searchTerm.value) return props.items;
+  
+  const term = searchTerm.value.toLowerCase();
+  return props.items.filter(item => {
+    // Check each search key for a match
+    return props.searchKeys.some(key => {
+      const value = item[key];
+      return value && typeof value === 'string' && value.toLowerCase().includes(term);
+    });
   });
 });
 
@@ -163,11 +176,13 @@ const handleContainerClick = () => {
   }
 };
 
-const selectUser = (user) => {
-  if (!user) return;
-  emit("update:modelValue", user.id);
-  isOpen.value = false;
+const selectItem = (item) => {
+  if (!item) return;
+  
+  // Always emit just the ID to keep it simple and consistent
+  emit("update:modelValue", item.id);
   searchTerm.value = "";
+  isOpen.value = false;
 };
 
 const handleBackdropClick = () => {

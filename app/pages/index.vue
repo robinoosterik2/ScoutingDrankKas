@@ -56,8 +56,13 @@
         <div class="flex-1">
           <CSelect
             v-model="selectedUser"
-            :users="users"
+            :items="users"
             :placeholder="$t('orders.selectUser')"
+            item-text="username"
+            :search-keys="['username', 'firstName', 'lastName', 'email']"
+            @update:model-value="(val) => {
+              selectedUser = val || null;
+            }"
           />
         </div>
         <!-- Order Button -->
@@ -103,43 +108,14 @@
       <div
         class="grid grid-cols-2 gap-2 md:grid-cols-2 lg:grid-cols-4 md:gap-4 xl:grid-cols-5"
       >
-        <div
+        <ProductCard
           v-for="product in filteredProducts"
           :key="product.id"
-          class="relative flex flex-col justify-between p-4 transition-shadow bg-white border rounded-lg cursor-pointer dark:bg-gray-800 hover:shadow-md"
-        >
-          <img
-            :src="getDisplayableProductImageUrl(product.imageUrl)"
-            :alt="product.name"
-            class="object-cover w-full rounded aspect-video"
-          />
-          <div class="flex items-center justify-between mt-4 align-middle">
-            <h3 class="text-2xl text-gray-700 dark:text-gray-300">
-              {{ product.name }}
-            </h3>
-            <p class="text-xl text-gray-500 dark:text-gray-400">
-              {{ format(product.price) }}
-            </p>
-          </div>
-          <div class="flex items-center justify-between mt-2">
-            <button
-              class="flex items-center justify-center w-24 h-10 text-white bg-red-500 rounded-full"
-              :disabled="getProductCount(product) === 0"
-              @click="decrementProduct(product)"
-            >
-              <div class="text-2xl">-</div>
-            </button>
-            <span class="text-2xl text-gray-700 dark:text-gray-300">
-              {{ getProductCount(product) }}
-            </span>
-            <button
-              class="flex items-center justify-center w-24 h-10 text-white bg-green-500 rounded-full"
-              @click="incrementProduct(product)"
-            >
-              <div class="text-2xl">+</div>
-            </button>
-          </div>
-        </div>
+          :product="product"
+          :count="getProductCount(product)"
+          @increment="incrementProduct"
+          @decrement="decrementProduct"
+        />
       </div>
     </div>
     <OrderConfirmationDialog
@@ -157,7 +133,7 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
-import { getDisplayableProductImageUrl } from "@/utils/imageUtils";
+import ProductCard from "@/components/ProductCard.vue";
 
 const { format } = useMoney();
 

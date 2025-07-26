@@ -48,6 +48,41 @@
             />
           </div>
 
+          <!-- Payment Method Selection -->
+          <div class="mt-4">
+            <label
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
+              {{ $t("raise.paymentMethod") }}
+            </label>
+            <div class="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                :class="[
+                  'py-2 px-4 border rounded-md text-sm font-medium',
+                  paymentMethod === 'cash'
+                    ? 'bg-indigo-100 text-indigo-700 border-indigo-300 dark:bg-indigo-900 dark:text-indigo-100 dark:border-indigo-700'
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600',
+                ]"
+                @click="paymentMethod = 'cash'"
+              >
+                {{ $t("raise.cash") }}
+              </button>
+              <button
+                type="button"
+                :class="[
+                  'py-2 px-4 border rounded-md text-sm font-medium',
+                  paymentMethod === 'pin'
+                    ? 'bg-indigo-100 text-indigo-700 border-indigo-300 dark:bg-indigo-900 dark:text-indigo-100 dark:border-indigo-700'
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600',
+                ]"
+                @click="paymentMethod = 'pin'"
+              >
+                {{ $t("raise.pin") }}
+              </button>
+            </div>
+          </div>
+
           <!-- Last 5 Raises -->
           <div class="mt-5">
             <h4 class="mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -135,6 +170,7 @@ export default {
   data() {
     return {
       raiseAmount: null,
+      paymentMethod: "cash", // Default to cash
       recentRaises: [],
     };
   },
@@ -160,7 +196,6 @@ export default {
       }
     },
     async confirmRaise() {
-      console.log(this.raiseAmount);
       if (!this.raiseAmount || this.raiseAmount <= 0) {
         alert("Please enter a valid amount.");
         return;
@@ -173,10 +208,12 @@ export default {
           body: {
             userId: this.userId,
             amount: amount,
+            paymentMethod: this.paymentMethod,
           },
         });
         this.fetchRecentRaises();
         this.raiseAmount = null;
+        this.paymentMethod = "cash"; // Reset to default
         // Emit event with the updated balance
         this.$emit("balanceUpdated", {
           userId: this.userId,

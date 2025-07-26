@@ -1,10 +1,10 @@
 <template>
   <div class="container mx-auto px-4 py-2">
     <!-- Back to Users Button -->
-    
-    <CTitle :text="userId ? $t('users.editUser') : $t('users.createUser')"/>
-    
-    <BackLink to="/admin/users" back-page="Users"/>
+
+    <CTitle :text="userId ? $t('users.editUser') : $t('users.createUser')" />
+
+    <BackLink to="/admin/users" back-page="Users" />
     <!-- Edit User Form -->
     <form
       class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 max-w-xl mx-auto"
@@ -25,7 +25,7 @@
             type="text"
             required
             class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-          >
+          />
         </div>
 
         <!-- Last Name -->
@@ -42,7 +42,7 @@
             type="text"
             required
             class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-          >
+          />
         </div>
       </div>
 
@@ -60,7 +60,7 @@
           type="text"
           required
           class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-        >
+        />
       </div>
 
       <!-- Email -->
@@ -77,7 +77,7 @@
           type="email"
           required
           class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-        >
+        />
       </div>
 
       <!-- Password (only for new users or reset) -->
@@ -94,7 +94,7 @@
           type="password"
           required
           class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-        >
+        />
       </div>
 
       <!-- Role Selection -->
