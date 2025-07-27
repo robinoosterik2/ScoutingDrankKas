@@ -162,7 +162,6 @@
 <script setup>
 import { defineEmits, computed } from "vue";
 import CButton from "~/components/CButton.vue";
-const { t } = useI18n();
 
 const props = defineProps({
   columns: {

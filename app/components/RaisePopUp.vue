@@ -45,7 +45,7 @@
               type="text"
               class="w-full p-2 border-gray-300 rounded-md shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               :placeholder="$t('raise.enterAmount')"
-            />
+            >
           </div>
 
           <!-- Payment Method Selection -->

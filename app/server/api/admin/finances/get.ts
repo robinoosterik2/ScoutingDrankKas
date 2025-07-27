@@ -38,11 +38,11 @@ export default defineEventHandler(async (event) => {
         from: "users",
         localField: "user",
         foreignField: "_id",
-        as: "affectedUser",
+        as: "user",
       },
     },
     {
-      $unwind: "$affectedUser",
+      $unwind: "$user",
     },
     {
       $lookup: {
@@ -123,11 +123,11 @@ export default defineEventHandler(async (event) => {
         from: "users",
         localField: "user",
         foreignField: "_id",
-        as: "affectedUser",
+        as: "user",
       },
     },
     {
-      $unwind: "$affectedUser",
+      $unwind: "$user",
     },
     {
       $lookup: {

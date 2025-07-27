@@ -40,7 +40,7 @@
         @click.stop
         @input="onSearch"
         @focus="openDropdown"
-      />
+      >
 
       <!-- Dropdown icon -->
       <svg
@@ -81,7 +81,7 @@
           :checked="isSelected(item)"
           class="h-4 w-4 text-indigo-600 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-indigo-500"
           @click.stop
-        />
+        >
         <span class="ml-2">{{ item.name }}</span>
       </div>
     </div>

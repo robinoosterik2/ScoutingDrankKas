@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
+import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
 
 const props = defineProps({
   items: {
@@ -110,14 +110,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="dropdownRef" :id="id" class="relative inline-block" :class="class">
+  <div :id="id" ref="dropdownRef" class="relative inline-block" :class="class">
     <!-- Dropdown Trigger -->
     <button
       type="button"
       class="inline-flex items-center w-full px-2 py-1 text-xs text-gray-900 transition-colors bg-white rounded-md shadow-sm dark:bg-gray-800 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
-      @click="toggleDropdown"
       :aria-expanded="isDropdownOpen"
       :aria-haspopup="true"
+      @click="toggleDropdown"
     >
       <span class="truncate">
         {{ selectedItem?.label || placeholder }}
@@ -139,7 +139,7 @@ onUnmounted(() => {
 
     <!-- Portal Menu - rendered at body level -->
     <Teleport to="body">
-      <transition
+      <Transition
         enter-active-class="transition duration-100 ease-out"
         enter-from-class="transform scale-95 opacity-0"
         enter-to-class="transform scale-100 opacity-100"
@@ -178,7 +178,7 @@ onUnmounted(() => {
             </button>
           </div>
         </div>
-      </transition>
+      </Transition>
     </Teleport>
   </div>
 </template>

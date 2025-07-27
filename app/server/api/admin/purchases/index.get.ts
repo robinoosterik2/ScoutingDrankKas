@@ -30,15 +30,15 @@ export default defineEventHandler(async (event) => {
 
     // Date range filter
     if (dateFrom || dateTo) {
-      filter.purchaseDate = {};
+      filter.dayOfOrder = {};
       if (dateFrom) {
-        filter.purchaseDate.$gte = new Date(dateFrom);
+        filter.dayOfOrder.$gte = new Date(dateFrom);
       }
       if (dateTo) {
         // Add 1 day to include the entire "to" date
         const toDate = new Date(dateTo);
         toDate.setDate(toDate.getDate() + 1);
-        filter.purchaseDate.$lt = toDate;
+        filter.dayOfOrder.$lt = toDate;
       }
     }
 
@@ -77,8 +77,8 @@ export default defineEventHandler(async (event) => {
       },
       { $unwind: { path: "$product" } },
 
-      // Sort by purchase date (newest first)
-      { $sort: { purchaseDate: -1 } },
+      // Sort by day of order (newest first)
+      { $sort: { dayOfOrder: -1 } },
     ];
 
     // Get total count with filters applied
@@ -102,7 +102,7 @@ export default defineEventHandler(async (event) => {
           quantity: 1,
           price: 1,
           notes: 1,
-          purchaseDate: 1,
+          dayOfOrder: 1,
           productId: {
             id: "$product._id",
             name: "$product.name",

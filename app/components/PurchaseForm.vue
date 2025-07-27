@@ -17,7 +17,7 @@
           <div
             class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
             aria-hidden="true"
-          ></div>
+          />
 
           <!-- Modal panel -->
           <div
@@ -46,8 +46,8 @@
                   {{ $t("purchases.newStockPurchase") }}
                 </h3>
                 <button
-                  @click="closeModal"
                   class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
+                  @click="closeModal"
                 >
                   <svg
                     class="w-6 h-6"
@@ -142,7 +142,7 @@
                           v-model="usePackSize"
                           type="checkbox"
                           class="w-5 h-5 rounded-md border-2 border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 focus:ring-offset-2 dark:bg-gray-700 dark:border-gray-600 transition-all duration-200"
-                        />
+                        >
                         <span
                           class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
                         >
@@ -225,7 +225,7 @@
                             type="number"
                             min="1"
                             class="w-20 px-3 py-2 text-center text-lg font-semibold border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
-                          />
+                          >
                           <button
                             type="button"
                             class="w-10 h-10 rounded-lg bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all duration-200 flex items-center justify-center group"
@@ -288,8 +288,8 @@
                         <div class="flex items-center space-x-3">
                           <button
                             type="button"
-                            @click="quantity = Math.max(1, quantity - 1)"
                             class="w-10 h-10 rounded-lg bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 flex items-center justify-center group"
+                            @click="quantity = Math.max(1, quantity - 1)"
                           >
                             <svg
                               class="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200"
@@ -310,11 +310,11 @@
                             type="number"
                             min="1"
                             class="w-20 px-3 py-2 text-center text-lg font-semibold border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
-                          />
+                          >
                           <button
                             type="button"
-                            @click="quantity += 1"
                             class="w-10 h-10 rounded-lg bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 flex items-center justify-center group"
+                            @click="quantity += 1"
                           >
                             <svg
                               class="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200"
@@ -361,8 +361,22 @@
                       class="w-full pl-12 pr-5 py-4 text-lg border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:ring-3 focus:ring-indigo-200 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-500 shadow-sm hover:shadow-md [appearance:textfield]"
                       placeholder="0.00"
                       required
-                    />
+                    >
                   </div>
+                </div>
+
+                <!-- Purchase Date & Time -->
+                <div class="space-y-3">
+                  <label class="block text-sm font-semibold text-gray-800 dark:text-gray-200">
+                    {{ $t("purchases.purchaseDateTime") }}
+                    <span class="text-red-500">*</span>
+                  </label>
+                  <input
+                    v-model="purchaseDate"
+                    type="datetime-local"
+                    required
+                    class="w-full px-5 py-4 text-base border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:ring-3 focus:ring-indigo-200 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-500 shadow-sm hover:shadow-md"
+                  >
                 </div>
 
                 <!-- Notes -->
@@ -373,7 +387,7 @@
                     {{ $t("purchases.notes") }}
                   </label>
                   <textarea
-                    v-model="formData.notes"
+                    v-model="notes"
                     rows="4"
                     class="w-full px-5 py-4 text-base border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:ring-3 focus:ring-indigo-200 focus:border-indigo-500 dark:bg-gray-700 dark:text-white resize-none transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-500 shadow-sm hover:shadow-md"
                     :placeholder="$t('purchases.notesPlaceholder')"
@@ -386,8 +400,8 @@
                 >
                   <button
                     type="button"
-                    @click="closeModal"
                     class="px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
+                    @click="closeModal"
                   >
                     {{ $t("common.cancel") }}
                   </button>
@@ -471,6 +485,9 @@ const selectedProduct = ref(null);
 const packQuantity = ref(1);
 const quantity = ref(1);
 const usePackSize = ref(false);
+const price = ref(0);
+const notes = ref("");
+const purchaseDate = ref(new Date().toISOString().slice(0, 16));
 const isSubmitting = ref(false);
 const modalPanel = ref(null);
 
@@ -536,9 +553,12 @@ const handleOverlayClick = (event) => {
 
 const resetForm = () => {
   selectedProduct.value = null;
-  packQuantity.value = 1;
+  price.value = 0;
   quantity.value = 1;
+  packQuantity.value = 1;
   usePackSize.value = false;
+  notes.value = "";
+  purchaseDate.value = new Date().toISOString().slice(0, 16);
   formData.value = {
     productId: "",
     quantity: 1,
@@ -555,16 +575,20 @@ const submitStockPurchase = async () => {
       ? packQuantity.value * selectedProductPackSize.value
       : quantity.value;
 
+    const formattedDate = new Date(purchaseDate.value);
+
     const purchaseData = {
       productId: selectedProduct.value.id,
       quantity: totalQuantity,
-      price: formData.value.price,
-      notes: formData.value.notes,
-      packSize: usePackSize.value ? selectedProductPackSize.value : null,
-      packQuantity: usePackSize.value ? packQuantity.value : null,
+      price: parseFloat(price.value),
+      notes: notes.value,
+      packSize: usePackSize.value ? selectedProductPackSize.value : undefined,
+      packQuantity: usePackSize.value ? packQuantity.value : undefined,
+      dayOfOrder: formattedDate.toISOString(),
     };
 
     emit("submit", purchaseData);
+    resetForm();
   } catch (error) {
     console.error("Error submitting purchase:", error);
   } finally {

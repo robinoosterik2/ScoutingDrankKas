@@ -13,10 +13,10 @@
 [x] When creating a session, remove password from user
 [x] Fix capital letters in translation
 [ ] Fix pluralization https://vue-i18n.intlify.dev/guide/essentials/pluralization.html
-[ ] Fix images on products etc
+[x] Fix images on products etc
 [x] Middleware auth is broken as in there is no request to the server when going from page to page
 [x] Create logging
-[ ] Profile page
+[x] Profile page
 [x] Admins can raise users
 [ ] Fix api routes to remove create if not needed for example
 [x] Password reset
@@ -28,7 +28,7 @@
 [ ] Add dev, staging and production branches
 [ ] Add create superuser cli command
 [\] Validate what cursor did with password reset
-[ ] validate what cursor did with session
+[x] validate what cursor did with session
 [ ] Make it easily visable who is logged in at the moment
 [ ] Remove code imports that are automatically imported by nuxt
 [ ] Rate limit login
@@ -37,6 +37,7 @@
 [ ] when deleting product make sure to remove image as well
 [ ] editing buttons show create instead of edit.
 [ ] Finance page should include purchases as well.
+[ ] Often like at order.products it get productId instead of product - could be this is more often
 
 https://claude.ai/share/5b0d5e7c-b2b4-4397-ab2b-b5ad6aade9b9
 update the models to use interfaces

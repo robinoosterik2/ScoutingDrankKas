@@ -6,7 +6,7 @@
       :src="getDisplayableProductImageUrl(product.imageUrl)"
       :alt="product.name"
       class="object-cover w-full rounded aspect-video"
-    />
+    >
     <div class="flex items-center justify-between mt-4 align-middle">
       <h3 class="text-2xl text-gray-700 dark:text-gray-300">
         {{ product.name }}

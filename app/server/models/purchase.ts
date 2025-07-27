@@ -5,10 +5,10 @@ interface IPurchase {
   productId: mongoose.Types.ObjectId;
   quantity: number;
   price: number;
-  purchaseDate: Date;
   notes: string;
   packSize?: number;
   packQuantity?: number;
+  dayOfOrder: Date; // The actual day the purchase was made (without time)
 }
 
 const PurchaseSchema = new Schema<IPurchase>({
@@ -32,10 +32,6 @@ const PurchaseSchema = new Schema<IPurchase>({
     required: true,
     min: 0,
   },
-  purchaseDate: {
-    type: Date,
-    default: Date.now,
-  },
   notes: {
     type: String,
     default: "",
@@ -51,6 +47,14 @@ const PurchaseSchema = new Schema<IPurchase>({
     required: false,
     min: 1,
     default: null,
+  },
+  dayOfOrder: {
+    type: Date,
+    required: true,
+    default: () => {
+      const now = new Date();
+      return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    },
   },
 });
 

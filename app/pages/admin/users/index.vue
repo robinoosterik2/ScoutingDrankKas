@@ -1,7 +1,7 @@
 <template>
   <CTitle :text="$t('users.title')" />
   <div class="flex items-center justify-between mb-2">
-    <BackLink to="/admin" :backPage="$t('admin.title')"></BackLink>
+    <BackLink to="/admin" :back-page="$t('admin.title')"/>
   </div>
 
   <!-- Filters and Sorting -->
@@ -10,7 +10,7 @@
       v-model="searchQuery"
       :placeholder="$t('Search') + '...'"
       class="flex-grow px-3 py-2 mb-4 me-4 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-    />
+    >
     <select
       v-model="selectedRole"
       class="px-3 py-2 mb-4 me-4 text-sm border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
@@ -100,12 +100,12 @@
     <template #cell-actions="{ row: user }">
       <div class="flex justify-end">
         <CDropdown
+          :id="`user-dropdown-${user._id}`"
           :model-value="null"
           :items="dropdownItems"
-          @update:model-value="(value) => handleAction(user, value)"
           :placeholder="$t('Actions')"
-          :id="`user-dropdown-${user._id}`"
           class="min-w-24"
+          @update:model-value="(value) => handleAction(user, value)"
         />
       </div>
     </template>
@@ -137,22 +137,22 @@
 
   <!-- Delete Confirmation Modal -->
   <DeleteConfirmationModal
-    :isOpen="isDeleteModalOpen"
+    :is-open="isDeleteModalOpen"
     :title="$t('delete') + ' ' + $t('User')"
     :message="`${$t('users.confirmDelete')} '${userToDelete?.username}'? ${$t(
       'cannotBeUndone'
     )}`"
-    :confirmText="$t('delete')"
-    :cancelText="$t('cancel')"
+    :confirm-text="$t('delete')"
+    :cancel-text="$t('cancel')"
     @close="closeDeleteConfirmation"
     @confirm="confirmDelete"
   />
 
   <RaisePopUpModal
-    :isOpen="isPopupOpen"
+    :is-open="isPopupOpen"
     :user-id="selectedUserId"
     @close="closePopup"
-    @balanceUpdated="handleBalanceUpdated"
+    @balance-updated="handleBalanceUpdated"
   />
 </template>
 

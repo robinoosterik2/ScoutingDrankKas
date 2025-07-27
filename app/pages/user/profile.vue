@@ -6,6 +6,7 @@
       :order-id="selectedOrderId"
       @close="closeOrderPopup"
     />
+
     <h1 class="text-3xl font-bold mb-6">{{ $t("profile.title") }}</h1>
 
     <!-- User Info -->
@@ -19,9 +20,9 @@
         <span class="font-medium">{{ $t("email") }}:</span>
         <span>{{ user?.email }}</span>
         <span class="font-medium">{{ $t("balance") }}:</span>
-        <span :class="balance >= 0 ? 'text-green-600' : 'text-red-600'">{{
-          format(balance)
-        }}</span>
+        <span :class="balance >= 0 ? 'text-green-600' : 'text-red-600'">
+          {{ format(balance) }}
+        </span>
       </div>
     </div>
 
@@ -30,37 +31,18 @@
       <div class="border-b border-gray-200 dark:border-gray-700">
         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
           <button
+            v-for="tab in tabs"
+            :key="tab.key"
             class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
-            :class="
-              activeTab === 'orders'
-                ? 'border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200'
-            "
-            @click="activeTab = 'orders'"
+            :class="getTabClasses(tab.key)"
+            @click="activeTab = tab.key"
           >
-            {{ $t("orders") }}
+            {{ $t(tab.label) }}
             <span
-              v-if="activeTab === 'orders'"
+              v-if="activeTab === tab.key"
               class="hidden md:inline-block ml-2 py-0.5 px-2 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium"
             >
-              {{ monthlyOrders.length }}
-            </span>
-          </button>
-          <button
-            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200"
-            :class="
-              activeTab === 'raises'
-                ? 'border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200'
-            "
-            @click="activeTab = 'raises'"
-          >
-            {{ $t("raises") }}
-            <span
-              v-if="activeTab === 'raises'"
-              class="hidden md:inline-block ml-2 py-0.5 px-2 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs font-medium"
-            >
-              {{ raises.length }}
+              {{ tab.key === "orders" ? ordersTotal : raises.length }}
             </span>
           </button>
         </nav>
@@ -77,9 +59,9 @@
         <select
           v-model="selectedMonth"
           class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
-          @change="handleFilterChange"
+          @change="searchOrders"
         >
-          <option value="">{{ $t("profile.selectMonth") }}</option>
+          <option value="">{{ $t("profile.anyMonth") }}</option>
           <option
             v-for="month in monthOptions"
             :key="month.value"
@@ -92,11 +74,10 @@
         <select
           v-model="selectedYear"
           class="px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white text-sm"
-          @change="handleFilterChange"
+          @change="searchOrders"
         >
-          <option value="">{{ $t("profile.selectYear") }}</option>
           <option
-            v-for="year in yearOptions"
+            v-for="year in availableYears"
             :key="year.value"
             :value="year.value"
           >
@@ -106,37 +87,15 @@
       </div>
 
       <DataTable
-        :columns="[
-          { header: $t('date'), field: 'createdAt', align: 'left' },
-          { header: $t('barkeeper'), field: 'bartender', align: 'left' },
-          { header: $t('total'), field: 'total', align: 'left' },
-          { header: $t('actions'), field: 'actions', align: 'right' },
-        ]"
-        :data="
-          monthlyOrders.map((order) => ({
-            ...order,
-            bartender: order.bartender.username,
-            total: `€${order.total}`,
-            createdAt: formatDate(order.createdAt),
-            actions: '',
-          }))
-        "
-        :pagination="{
-          page: ordersPage,
-          pageSize: ordersPageSize,
-          total: ordersTotal,
-        }"
+        :columns="orderColumns"
+        :data="formattedOrders"
+        :pagination="ordersPagination"
         :no-data-text="$t('profile.noOrders')"
-        @update:page="
-          (page) => {
-            ordersPage = page;
-            fetchOrders();
-          }
-        "
+        @update:page="updateOrdersPage"
       >
         <template #cell-actions="{ row: order }">
           <button
-            class="px-3 py-1 rounded bg-blue-500 text-white text-sm"
+            class="px-3 py-1 rounded bg-blue-500 text-white text-sm hover:bg-blue-600 transition-colors"
             @click="openOrderPopup(order._id)"
           >
             {{ $t("profile.viewOrder") }}
@@ -153,95 +112,166 @@
       <h2 class="text-xl font-semibold mb-4">{{ $t("profile.raises") }}</h2>
 
       <DataTable
-        :columns="[
-          { header: $t('date'), field: 'createdAt', align: 'left' },
-          { header: $t('raisedBy'), field: 'raiser', align: 'left' },
-          { header: $t('Amount'), field: 'amount', align: 'right' },
-        ]"
-        :data="
-          raises.map((raise) => ({
-            ...raise,
-            raiser: `${raise.raiser.firstName} ${raise.raiser.lastName}`,
-            amount: `€${raise.amount.toFixed(2)}`,
-            createdAt: formatDate(raise.createdAt),
-          }))
-        "
-        :pagination="{
-          page: raisesPage,
-          pageSize: raisesPageSize,
-          total: raisesTotal,
-        }"
+        :columns="raisesColumns"
+        :data="formattedRaises"
+        :pagination="raisesPagination"
         :no-data-text="$t('profile.noRaisesFound')"
-        @update:page="
-          (page) => {
-            raisesPage = page;
-            fetchRaises();
-          }
-        "
+        @update:page="updateRaisesPage"
       />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import DataTable from "~/components/DataTable.vue";
 
 const { format } = useMoney();
-
+const { t } = useI18n();
 const { user } = useUserSession();
 
+// State
 const activeTab = ref("orders");
-const monthlyOrders = ref([]);
-const orderHistory = ref([]);
+const orders = ref([]);
 const raises = ref([]);
-
-// Pagination state for Orders
-const ordersPage = ref(1);
-const ordersPageSize = ref(10);
-const ordersTotal = ref(0);
-
-// Pagination state for Raises
-const raisesPage = ref(1);
-const raisesPageSize = ref(10);
-const raisesTotal = ref(0);
 const balance = ref(0);
 const selectedOrderId = ref(null);
 const isOrderPopupOpen = ref(false);
 
+// Pagination state
+const ordersPage = ref(1);
+const ordersPageSize = ref(10);
+const ordersTotal = ref(0);
+const raisesPage = ref(1);
+const raisesPageSize = ref(10);
+const raisesTotal = ref(0);
+
+// Filter state
+const selectedMonth = ref("");
+const selectedYear = ref(new Date().getFullYear().toString());
+
+// Constants
+const tabs = [
+  { key: "orders", label: "orders" },
+  { key: "raises", label: "raises" },
+];
+
 const monthOptions = computed(() => {
-  return Array.from({ length: 12 }, (_, i) => ({
-    value: i + 1,
-    label: i + 1,
-  }));
-});
-
-const yearOptions = computed(() => {
-  const years = orderHistory.value.map((h) => h.year);
-  return [...new Set(years)]
-    .sort((a, b) => b - a)
-    .map((y) => ({
-      value: y,
-      label: y,
-    }));
-});
-
-const selectedMonth = ref(new Date().getMonth() + 1);
-const selectedYear = ref(new Date().getFullYear());
-
-// Auto-filter when month or year changes
-watch([selectedMonth, selectedYear], () => {
-  fetchOrders();
-});
-
-// Fetch raises when tab changes
-watch(activeTab, async (newTab) => {
-  if (newTab === "raises" && user?.value?._id) {
-    await fetchRaises();
+  const months = [];
+  for (let i = 1; i <= 12; i++) {
+    const date = new Date(2024, i - 1, 1);
+    months.push({
+      value: i.toString(),
+      label: date.toLocaleDateString(undefined, { month: "long" }),
+    });
   }
+  return months;
 });
 
-// Fetch user's raises
+const availableYears = computed(() => {
+  if (!user.value?.createdAt) return [];
+
+  const userCreatedYear = new Date(user.value.createdAt).getFullYear();
+  const currentYear = new Date().getFullYear();
+  const years = [];
+
+  for (let year = currentYear; year >= userCreatedYear; year--) {
+    years.push({
+      value: year.toString(),
+      label: year.toString(),
+    });
+  }
+
+  return years;
+});
+
+// Table configurations
+const orderColumns = computed(() => [
+  { header: t("date"), field: "createdAt", align: "left" },
+  { header: t("barkeeper"), field: "bartender", align: "left" },
+  { header: t("total"), field: "total", align: "left" },
+  { header: t("actions"), field: "actions", align: "right" },
+]);
+
+const raisesColumns = computed(() => [
+  { header: t("date"), field: "createdAt", align: "left" },
+  { header: t("raisedBy"), field: "raiser", align: "left" },
+  { header: t("Amount"), field: "amount", align: "right" },
+]);
+
+// Formatted data
+const formattedOrders = computed(() =>
+  orders.value.map((order) => ({
+    ...order,
+    bartender: order.bartender.username,
+    total: format(order.total),
+    createdAt: formatDate(order.createdAt),
+    actions: "",
+  }))
+);
+
+const formattedRaises = computed(() =>
+  raises.value.map((raise) => ({
+    ...raise,
+    raiser: `${raise.raiser.firstName} ${raise.raiser.lastName}`,
+    amount: format(raise.amount),
+    createdAt: formatDate(raise.createdAt),
+  }))
+);
+
+// Pagination objects
+const ordersPagination = computed(() => ({
+  page: ordersPage.value,
+  pageSize: ordersPageSize.value,
+  total: ordersTotal.value,
+}));
+
+const raisesPagination = computed(() => ({
+  page: raisesPage.value,
+  pageSize: raisesPageSize.value,
+  total: raisesTotal.value,
+}));
+
+// Methods
+const getTabClasses = (tabKey) => {
+  return activeTab.value === tabKey
+    ? "border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400"
+    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200";
+};
+
+const updateOrdersPage = (page) => {
+  ordersPage.value = page;
+  searchOrders();
+};
+
+const updateRaisesPage = (page) => {
+  raisesPage.value = page;
+  fetchRaises();
+};
+
+const searchOrders = async () => {
+  try {
+    const params = new URLSearchParams({
+      userId: user.value._id,
+      page: ordersPage.value.toString(),
+      limit: ordersPageSize.value.toString(),
+    });
+
+    if (selectedMonth.value) {
+      params.append("month", selectedMonth.value);
+    }
+    if (selectedYear.value) {
+      params.append("year", selectedYear.value);
+    }
+
+    const data = await $fetch(`/api/users/orders?${params.toString()}`);
+    orders.value = data.orders || [];
+    ordersTotal.value = data.total || 0;
+  } catch (error) {
+    console.error("Error loading orders:", error);
+  }
+};
+
 const fetchRaises = async () => {
   try {
     const data = await $fetch(
@@ -251,24 +281,14 @@ const fetchRaises = async () => {
     raisesTotal.value = data.total || 0;
   } catch (error) {
     console.error("Error fetching raises:", error);
-    // You might want to show an error message to the user here
   }
 };
 
-const fetchOrders = () => {
-  loadOrders(selectedMonth.value, selectedYear.value);
+const loadProfileData = async () => {
+  const userId = user.value._id;
+  const balanceData = await $fetch(`/api/users/balance?userId=${userId}`);
+  balance.value = balanceData.balance;
 };
-
-const handleFilterChange = () => {
-  ordersPage.value = 1; // Reset to first page when filters change
-  fetchOrders();
-};
-
-// Auto-filter on page mount
-onMounted(() => {
-  loadProfileData();
-  fetchOrders();
-});
 
 const openOrderPopup = (orderId) => {
   selectedOrderId.value = orderId;
@@ -277,18 +297,9 @@ const openOrderPopup = (orderId) => {
 
 const closeOrderPopup = () => {
   isOrderPopupOpen.value = false;
-  // Small delay before clearing the order ID to allow for smooth animation
   setTimeout(() => {
     selectedOrderId.value = null;
   }, 200);
-};
-
-const loadOrders = async (month, year) => {
-  const data = await $fetch(
-    `/api/users/orders/month?userId=${user.value._id}&month=${month}&year=${year}&page=${ordersPage.value}&limit=${ordersPageSize.value}`
-  );
-  monthlyOrders.value = data.orders || [];
-  ordersTotal.value = data.total || 0;
 };
 
 const formatDate = (dateString) => {
@@ -304,13 +315,16 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
-const loadProfileData = async () => {
-  const userId = user.value._id;
-  const [balanceData, history] = await Promise.all([
-    $fetch(`/api/users/balance?userId=${userId}`),
-    $fetch(`/api/users/orders/history?userId=${userId}`),
-  ]);
-  balance.value = balanceData.balance;
-  orderHistory.value = history;
-};
+// Watchers
+watch(activeTab, async (newTab) => {
+  if (newTab === "raises" && user?.value?._id) {
+    await fetchRaises();
+  }
+});
+
+// Lifecycle
+onMounted(async () => {
+  await loadProfileData();
+  await searchOrders();
+});
 </script>

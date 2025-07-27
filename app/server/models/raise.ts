@@ -17,6 +17,7 @@ interface IRaise {
   amount: number;
   raiser: mongoose.Types.ObjectId;
   paymentMethod: PaymentMethod;
+  dayOfOrder: Date; // The actual day the raise was processed (without time)
 }
 
 const RaiseSchema = new Schema<IRaise>(
@@ -38,6 +39,14 @@ const RaiseSchema = new Schema<IRaise>(
       enum: Object.values(PaymentMethod),
       default: PaymentMethod.CASH,
       required: true,
+    },
+    dayOfOrder: {
+      type: Date,
+      required: true,
+      default: () => {
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      },
     },
   },
   {

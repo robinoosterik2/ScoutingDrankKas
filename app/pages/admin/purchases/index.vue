@@ -2,12 +2,12 @@
   <div>
     <CTitle :text="$t('purchases.title')" />
     <div class="flex justify-between items-center mb-6">
-      <BackLink to="/admin" :backPage="$t('admin.title')" />
+      <BackLink to="/admin" :back-page="$t('admin.title')" />
 
       <!-- Add Purchase Button -->
       <button
-        @click="openPurchaseModal"
         class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 active:scale-95"
+        @click="openPurchaseModal"
       >
         <svg
           class="w-5 h-5 mr-2"
@@ -28,7 +28,7 @@
 
     <!-- Purchase Form Modal -->
     <PurchaseForm
-      :isOpen="isModalOpen"
+      :is-open="isModalOpen"
       :products="products"
       @close="closePurchaseModal"
       @submit="handlePurchaseSubmit"
@@ -310,7 +310,7 @@
                 <!-- Date Cell -->
                 <template #cell-date="{ row }">
                   <span class="text-sm text-gray-600 dark:text-gray-400">
-                    {{ formatDate(row.purchaseDate) }}
+                    {{ formatDate(row.dayOfOrder) }}
                   </span>
                 </template>
 

@@ -98,7 +98,7 @@ watch(
 </script>
 
 <template>
-  <div class="relative w-full" ref="containerRef">
+  <div ref="containerRef" class="relative w-full">
     <div class="relative">
       <!-- Visible text input -->
       <input
@@ -113,7 +113,7 @@ watch(
           'border-gray-300 dark:border-gray-600': !error
         }"
         @click="toggleInputType"
-      />
+      >
       <!-- Native date input (hidden until clicked) -->
       <input
         v-else
@@ -122,10 +122,10 @@ watch(
         :value="modelValue"
         :min="min"
         :max="max"
+        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         @change="handleDateChange"
         @blur="showDateInput = false"
-        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-      />
+      >
       <div
         class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
       >
@@ -171,7 +171,7 @@ watch(
           }"
           class="w-full px-3 py-2 border-0 focus:ring-2 focus:ring-indigo-500 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           @change="selectDate"
-        />
+        >
       </div>
     </transition>
 

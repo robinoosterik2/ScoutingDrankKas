@@ -4,7 +4,6 @@
     :class="[
       'w-full block text-center p-2 rounded-md transition-colors',
       typeClasses,
-      hoverClasses,
     ]"
   >
     <slot>{{ label }}</slot>
@@ -63,6 +62,4 @@ const typeClasses = computed(() => {
       return "text-xl bg-blue-600 text-white hover:bg-blue-700";
   }
 });
-
-const hoverClasses = computed(() => {});
 </script>

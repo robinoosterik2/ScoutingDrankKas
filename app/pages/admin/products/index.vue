@@ -2,7 +2,7 @@
   <!-- Page Title and Create Button -->
   <CTitle :text="$t('products.title')" />
   <div class="flex justify-between items-center mb-2">
-    <BackLink to="/admin" :backPage="$t('admin.title')"></BackLink>
+    <BackLink to="/admin" :back-page="$t('admin.title')"/>
 
     <div class="">
       <DashboardLink
@@ -19,7 +19,7 @@
       v-model="searchQuery"
       :placeholder="$t('Search') + '...'"
       class="flex-grow px-3 py-2 mb-4 me-4 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-    />
+    >
 
     <select
       v-model="selectedCategory"
@@ -91,14 +91,14 @@
     <template #cell-actions="{ row: product }">
       <div class="flex justify-end space-x-2">
         <button
-          @click="editProduct(product)"
           class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
+          @click="editProduct(product)"
         >
           {{ $t("edit") }}
         </button>
         <button
-          @click="openDeleteConfirmation(product)"
           class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200"
+          @click="openDeleteConfirmation(product)"
         >
           {{ $t("delete") }}
         </button>
@@ -131,13 +131,13 @@
   </DataTable>
   <!-- Delete Confirmation Modal -->
   <DeleteConfirmationModal
-    :isOpen="isDeleteModalOpen"
+    :is-open="isDeleteModalOpen"
     :title="$t('delete') + ' ' + $t('Product')"
     :message="`${$t('products.confirmDelete')} '${productToDelete?.name}'? ${$t(
       'cannotBeUndone'
     )}`"
-    :confirmText="$t('delete')"
-    :cancelText="$t('cancel')"
+    :confirm-text="$t('delete')"
+    :cancel-text="$t('cancel')"
     @close="closeDeleteConfirmation"
     @confirm="confirmDelete"
   />

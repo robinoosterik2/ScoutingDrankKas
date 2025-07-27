@@ -17,7 +17,7 @@
         @click.stop
         @input="onSearch"
         @focus="openDropdown"
-      />
+      >
 
       <!-- Display selected item when not searching -->
       <div

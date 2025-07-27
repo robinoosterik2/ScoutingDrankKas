@@ -26,13 +26,21 @@ export default defineEventHandler(async (event) => {
     const session = await getUserSession(event);
 
     // Create new purchase
+    const purchaseDate = body.dayOfOrder
+      ? new Date(body.dayOfOrder)
+      : new Date();
+    const dayOfOrder = purchaseDate;
+
     const purchase = new Purchase({
       userId: session.user,
       productId: body.productId,
       quantity: body.quantity,
       price: body.price,
       notes: body.notes || "",
-      purchaseDate: new Date(),
+      dayOfOrder: dayOfOrder,
+      packSize: body.packSize,
+      packQuantity: body.packQuantity,
+      purchaseDate: purchaseDate,
     });
 
     // Save purchase

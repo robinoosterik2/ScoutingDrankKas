@@ -1,5 +1,11 @@
 <template>
   <div class="container px-4 py-2 mx-auto">
+    <!-- User Info Display -->
+    <div v-if="user" class="mb-4 text-right">
+      <p class="text-sm text-gray-500 dark:text-gray-400">
+        {{ $t("auth.loggedInAs") }}: {{ user.firstName }} {{ user.lastName }}
+      </p>
+    </div>
     <!-- Recent Orders (shown when no user is selected) -->
     <div class="mb-8">
       <h2 class="mb-4 text-2xl font-semibold text-gray-800 dark:text-white">
@@ -26,14 +32,14 @@
           <ul class="mb-3 space-y-1">
             <li
               v-for="item in order.products"
-              :key="item.product._id"
+              :key="item.productId"
               class="flex justify-between text-sm"
             >
               <span class="text-gray-600 dark:text-gray-400"
-                >{{ item.count }}x {{ item.product.name }}</span
+                >{{ item.count }}x {{ item.productId.name }}</span
               >
               <span class="text-gray-800 dark:text-gray-200">{{
-                format(item.product.price * item.count)
+                format(item.productId.price * item.count)
               }}</span>
             </li>
           </ul>
@@ -60,9 +66,11 @@
             :placeholder="$t('orders.selectUser')"
             item-text="username"
             :search-keys="['username', 'firstName', 'lastName', 'email']"
-            @update:model-value="(val) => {
-              selectedUser = val || null;
-            }"
+            @update:model-value="
+              (val) => {
+                selectedUser = val || null;
+              }
+            "
           />
         </div>
         <!-- Order Button -->
@@ -86,7 +94,7 @@
         type="text"
         :placeholder="$t('orders.searchProducts')"
         class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-      />
+      >
       <!-- Category Filter -->
       <select
         v-model="selectedCategory"
@@ -135,22 +143,24 @@
 import { ref, onMounted, computed, watch } from "vue";
 import ProductCard from "@/components/ProductCard.vue";
 
+const { user } = useUserSession();
 const { format } = useMoney();
 
+// Reactive state
 const users = ref([]);
 const products = ref([]);
 const categories = ref([]);
 const recentOrders = ref([]);
 const selectedUser = ref(null);
+const showConfirmation = ref(false);
+const searchQuery = ref("");
+const selectedCategory = ref("");
+const productCounts = ref({});
 
 // Watch for changes in selected user
 watch(selectedUser, async () => {
   await fetchRecentOrders();
 });
-const productCounts = ref({});
-const showConfirmation = ref(false);
-const searchQuery = ref("");
-const selectedCategory = ref("");
 
 const fetchRecentOrders = async () => {
   try {
@@ -188,8 +198,8 @@ const reorderItems = (items, order) => {
 
   // Set new quantities from the selected order
   items.forEach((item) => {
-    if (item.product && item.product._id) {
-      productCounts.value[item.product._id] = item.count;
+    if (item.productId && item.productId._id) {
+      productCounts.value[item.productId._id] = item.count;
     }
   });
 

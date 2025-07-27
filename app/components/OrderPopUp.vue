@@ -84,7 +84,7 @@
             </div>
 
             <!-- Divider -->
-            <hr class="border-gray-200 dark:border-gray-700" />
+            <hr class="border-gray-200 dark:border-gray-700" >
 
             <!-- Products List -->
             <div>
@@ -102,14 +102,14 @@
                   <div class="flex justify-between items-center">
                     <div>
                       <p class="font-medium text-gray-900 dark:text-white">
-                        {{ item.product?.name || item.product }}
+                        {{ item.productId?.name || item.productId }}
                       </p>
                       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         {{ $t("Quantity") }}: {{ item.count }}
                       </p>
                     </div>
                     <p class="text-gray-900 dark:text-white">
-                      {{ format(item.product?.price * item.count) }}
+                      {{ format(item.productId?.price * item.count) }}
                     </p>
                   </div>
                 </li>

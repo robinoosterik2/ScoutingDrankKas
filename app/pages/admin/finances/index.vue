@@ -367,77 +367,98 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
+// Track loading and error states
+const loadingStates = ref({
+  summary: false,
+  sales: false,
+  raises: false,
+  purchases: false,
+  transactions: false,
+});
+
+const errorStates = ref({
+  summary: null,
+  sales: null,
+  raises: null,
+  purchases: null,
+  transactions: null,
+});
+
 const fetchFinanceData = async () => {
   try {
+    // Reset states
     isLoading.value = true;
-    // Build query parameters object
+    Object.keys(loadingStates.value).forEach((key) => {
+      loadingStates.value[key] = true;
+      errorStates.value[key] = null;
+    });
+
+    // Build base query
     const params = new URLSearchParams();
     if (selectedMonth.value) params.append("month", selectedMonth.value);
     if (selectedYear.value) params.append("year", selectedYear.value);
+    const queryString = params.toString();
 
-    const response = await $fetch(
-      `/api/admin/finances/get?${params.toString()}`
-    );
+    // Make parallel requests
+    const [summaryRes, salesRes, raisesRes, purchasesRes, transactionsRes] =
+      await Promise.allSettled([
+        $fetch(`/api/admin/finances/summary?${queryString}`),
+        $fetch(`/api/admin/finances/chart/sales?${queryString}`),
+        $fetch(`/api/admin/finances/chart/raises?${queryString}`),
+        $fetch(`/api/admin/finances/chart/purchases?${queryString}`),
+        $fetch(
+          `/api/admin/finances/transactions?${queryString}&page=1&limit=20`
+        ),
+      ]);
 
-    console.log("API Response:", response);
+    console.log(salesRes.value);
+    console.log(raisesRes.value);
+    console.log(purchasesRes.value);
 
-    // Process orders
-    orders.value = (response.orders || []).map((order) => ({
-      ...order,
-      type: "order",
-      displayAmount: order.total,
-      affectedUser: order.affectedUser,
-    }));
+    // Process responses
+    if (summaryRes.status === "fulfilled") {
+      summary.value = {
+        ...summaryRes.value,
+        salesPerDay: [],
+        raisesPerDay: [],
+        purchasesPerDay: [],
+      };
+    } else {
+      errorStates.value.summary = "Failed to load summary";
+    }
 
-    // Process raises
-    raises.value = (response.raises || []).map((raise) => ({
-      ...raise,
-      type: "raise",
-      displayAmount: raise.amount,
-      affectedUser: raise.affectedUser,
-    }));
+    if (salesRes.status === "fulfilled") {
+      summary.value.salesPerDay = salesRes.value.data || [];
+    } else {
+      errorStates.value.sales = "Failed to load sales data";
+    }
 
-    // Update summary with data from backend
-    summary.value = {
-      totalRevenue: response.summary?.totalRevenue || 0,
-      totalOrders: response.summary?.totalOrders || 0,
-      totalRaised: response.summary?.totalRaised || 0,
-      totalPurchases: response.summary?.totalPurchases || 0,
-      netRevenue: response.summary?.netRevenue || 0,
-      averageOrderValue: response.summary?.averageOrderValue || 0,
-      salesPerDay: response.salesPerDay || [],
-      raisesPerDay: response.raisesPerDay || [],
-      purchasesPerDay: response.purchasesPerDay || [],
-    };
-    console.log("Summary data:", summary.value);
+    if (raisesRes.status === "fulfilled") {
+      summary.value.raisesPerDay = raisesRes.value.data || [];
+    } else {
+      errorStates.value.raises = "Failed to load raises data";
+    }
 
-    // Combine orders and raises for transactions list
-    const orderTransactions = orders.value.map((order) => ({
-      ...order,
-      type: "order",
-      displayAmount: order.total,
-      user: order.user,
-    }));
+    if (purchasesRes.status === "fulfilled") {
+      summary.value.purchasesPerDay = purchasesRes.value.data || [];
+    } else {
+      errorStates.value.purchases = "Failed to load purchases data";
+    }
 
-    const raiseTransactions = raises.value.map((raise) => ({
-      ...raise,
-      type: "raise",
-      displayAmount: raise.amount,
-      user: raise.user,
-    }));
-
-    // Sort transactions by date
-    transactions.value = [...orderTransactions, ...raiseTransactions].sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-
-    console.log("Summary data:", summary.value);
+    if (transactionsRes.status === "fulfilled") {
+      transactions.value = transactionsRes.value.data || [];
+    } else {
+      errorStates.value.transactions = "Failed to load transactions";
+    }
 
     updateChart();
   } catch (error) {
-    console.error("Error fetching finance data:", error);
+    console.error("Error in fetchFinanceData:", error);
   } finally {
     isLoading.value = false;
+    Object.keys(loadingStates.value).forEach((key) => {
+      loadingStates.value[key] = false;
+    });
   }
 };
 
@@ -616,7 +637,8 @@ const updateChart = () => {
               ...raisesChartData,
               ...purchasesChartData
             );
-            scale.max = max * 1.15; // Add 15% buffer to the max value
+            // If all values are zero, set a default max of 10 to show the line at the bottom
+            scale.max = max > 0 ? max * 1.15 : 10; // Add 15% buffer to the max value or use 10 as default
           },
         },
       },

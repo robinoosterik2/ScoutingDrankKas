@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
     const order = await Order.findById(id)
       .populate("user", "firstName lastName")
       .populate("bartender", "firstName lastName")
-      .populate("products.product");
+      .populate("products.productId", "name price");
     if (!order) {
       throw createError({ statusCode: 404, message: "Order not found" });
     }

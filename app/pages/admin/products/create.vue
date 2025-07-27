@@ -28,7 +28,7 @@
             type="text"
             required
             class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-          />
+          >
         </div>
 
         <!-- Product Price -->
@@ -45,7 +45,7 @@
             type="text"
             required
             class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-          />
+          >
         </div>
       </div>
 
@@ -81,7 +81,7 @@
           min="0"
           required
           class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-        />
+        >
       </div>
 
       <!-- Pack Size (Optional) -->
@@ -99,7 +99,7 @@
           min="1"
           class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
           :placeholder="$t('products.packSizePlaceholder')"
-        />
+        >
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {{ $t("products.packSizeHelp") }}
         </p>
@@ -146,7 +146,7 @@
             accept="image/*"
             class="hidden"
             @change="handleImageUpload"
-          />
+          >
         </div>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {{ $t("products.imageAspectRatioTip") }}
@@ -157,7 +157,7 @@
             :src="formData.imageUrl"
             alt="Product Image Preview"
             class="object-cover w-32 rounded aspect-video"
-          />
+          >
         </div>
       </div>
 

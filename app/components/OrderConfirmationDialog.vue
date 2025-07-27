@@ -31,7 +31,7 @@
                 :src="product.imageUrl"
                 :alt="product.name"
                 class="h-16 w-16 object-cover rounded"
-              />
+              >
               <div>
                 <h3 class="font-medium text-gray-800 dark:text-white">
                   {{ product.name }}

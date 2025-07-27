@@ -13,13 +13,13 @@
       type="text"
       placeholder="Filter by User"
       class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-    />
+    >
     <input
       v-model="filterBartender"
       type="text"
       placeholder="Filter by Bartender"
       class="flex-grow px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-    />
+    >
   </div>
 
   <!-- Orders Table -->

@@ -16,6 +16,7 @@ interface IOrder extends Document {
   products: IOrderProduct[];
   total: number;
   bartender: mongoose.Types.ObjectId;
+  dayOfOrder: Date; // The actual day the order was placed (without time)
 }
 
 interface IOrderModel extends Model<IOrder> {
@@ -28,7 +29,7 @@ interface IOrderModel extends Model<IOrder> {
 }
 
 const OrderProductSchema = new Schema<IOrderProduct>({
-  product: {
+  productId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
     required: true,
@@ -56,11 +57,32 @@ const OrderSchema = new Schema<IOrder>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    dayOfOrder: {
+      type: Date,
+      required: true,
+      default: () => {
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      },
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Apply 8 AM rule: if time is before 8 AM, set to previous day
+const adjustFor8AMRule = (date: Date): Date => {
+  const amsterdamTime = new Date(
+    date.toLocaleString("en-US", { timeZone: "Europe/Amsterdam" })
+  );
+  if (amsterdamTime.getHours() < 8) {
+    const adjustedDate = new Date(amsterdamTime);
+    adjustedDate.setDate(adjustedDate.getDate() - 1);
+    return adjustedDate;
+  }
+  return amsterdamTime;
+};
 
 OrderSchema.statics.createFromRequestBody = async function (bodyData: {
   products: IOrderProduct[];
@@ -69,7 +91,7 @@ OrderSchema.statics.createFromRequestBody = async function (bodyData: {
   bartenderId: mongoose.Types.ObjectId;
 }) {
   const products = bodyData.products.map((item: IOrderProduct) => ({
-    product: item.productId,
+    productId: item.productId,
     count: item.count,
   }));
 
@@ -79,11 +101,20 @@ OrderSchema.statics.createFromRequestBody = async function (bodyData: {
   }
   await user.raise(-bodyData.total);
 
+  // Get current date and apply 8 AM rule
+  const now = new Date();
+  const dayOfOrder = adjustFor8AMRule(now);
+
   const order = new Order({
     user: bodyData.userId,
     products: products,
     total: bodyData.total,
     bartender: bodyData.bartenderId,
+    dayOfOrder: new Date(
+      dayOfOrder.getFullYear(),
+      dayOfOrder.getMonth(),
+      dayOfOrder.getDate()
+    ),
   });
 
   const log = new Log({
@@ -128,7 +159,7 @@ OrderSchema.statics.createFromRequestBody = async function (bodyData: {
 OrderSchema.methods.populateAll = function () {
   return this.populate("user")
     .populate("bartender")
-    .populate("products.product");
+    .populate("products.productId");
 };
 
 export const Order =
