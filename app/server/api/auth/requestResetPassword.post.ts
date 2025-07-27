@@ -32,6 +32,9 @@ export default defineEventHandler(async (event) => {
   const baseUrl = process.env.BASE_URL || "http://localhost";
   const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
+  console.log(process.env.GMAIL_USER);
+  console.log(process.env.GMAIL_PASS);
+
   // Configure email transporter
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -53,6 +56,9 @@ export default defineEventHandler(async (event) => {
     await transporter.sendMail(mailOptions);
     return { success: true, message: "Reset email sent" };
   } catch (error: any) {
-    throw createError({ statusCode: 500, message: "Error sending email" });
+    throw createError({
+      statusCode: 500,
+      message: "Error sending email" + error,
+    });
   }
 });

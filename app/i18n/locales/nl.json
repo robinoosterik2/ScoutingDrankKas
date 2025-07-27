@@ -38,7 +38,7 @@
   "allUsers": "Alle gebruikers",
   "Amount": "Hoeveelheid",
   "backTo": "Terug naar",
-  "Balance": "Balance",
+  "balance": "Saldo",
   "barkeeper": "Barmedewerker",
   "By": "Bij",
   "cancel": "Annuleren",
@@ -60,7 +60,9 @@
     "noResults": "Geen resultaten gevonden",
     "orderDate": "Besteldatum",
     "orderedBy": "Besteld door",
-    "orderId": "Bestelnummer"
+    "orderId": "Bestelnummer",
+    "cancel": "Annuleren",
+    "optional": "(Optioneel)"
   },
   "confirm": "Bevestigen",
   "customer": "Klant",
@@ -83,7 +85,8 @@
     "apply": "Filters Toepassen",
     "month": "Maand",
     "title": "Filters",
-    "year": "Jaar"
+    "year": "Jaar",
+    "allMonths": "Alle maanden"
   },
   "forgotPassword": {
     "backToLogin": "Terug naar inloggen",
@@ -97,6 +100,7 @@
     "submit": "Verstuur reset link",
     "title": "Wachtwoord vergeten"
   },
+  "loading": "Laden...",
   "loadingOrderDetails": "Bestelgegevens laden...",
   "login": {
     "errors": {
@@ -112,7 +116,8 @@
     "submit": "Inloggen",
     "title": "Inloggen op je account",
     "username": "Gebruikersnaam",
-    "usernamePlaceholder": "Voer je gebruikersnaam in"
+    "usernamePlaceholder": "Voer je gebruikersnaam in",
+    "rememberMe": "Onthoud mij"
   },
   "logs": {
     "export": "Exporteren",
@@ -158,34 +163,80 @@
     "selectUser": "Selecteer Gebruiker",
     "title": "Bestellingen"
   },
+  "pagination": {
+    "showing": "Toon",
+    "to": "tot",
+    "of": "van",
+    "entries": "vermeldingen"
+  },
   "prev": "Vorige",
-  "price": "prijs",
+  "price": "Prijs",
   "Product": "Product",
   "Products": "Producten",
   "products": {
-    "categories": "Categorieën",
-    "confirmDelete": "Weet u zeker dat u het product wilt verwijderen?",
+    "title": "Producten",
     "createProduct": "Product maken",
     "editProduct": "Product bewerken",
-    "getStarted": "Ga aan de slag door een nieuw product te maken.",
-    "imageAspectRatioTip": "Upload voor het beste resultaat een afbeelding met een beeldverhouding van 16:9.",
+    "confirmDelete": "Weet u zeker dat u dit product wilt verwijderen?",
     "noProducts": "Geen producten gevonden",
-    "productDescription": "Product beschrijving",
+    "productDescription": "Productomschrijving",
+    "packSizeHelp": "Aantal stuks per verpakking",
     "productImage": "Productafbeelding",
-    "productName": "Product naam",
-    "productPrice": "Product prijs",
+    "imageAspectRatioTip": "Aanbevolen beeldverhouding: 1:1",
+    "productName": "Productnaam",
+    "productPrice": "Productprijs",
+    "packSize": "Verpakkingsgrootte",
+    "packSizePlaceholder": "Aantal stuks per verpakking",
     "productStock": "Productvoorraad",
-    "title": "Productenbeheer"
+    "categories": "Categorieën",
+    "getStarted": "Begin met het toevoegen van producten"
   },
+  "purchases": {
+    "title": "Aankopen",
+    "description": "Beheer je aankopen en bekijk de aankoopgeschiedenis",
+    "newPurchase": "Nieuwe aankoop",
+    "newStockPurchase": "Nieuwe voorraadaankoop",
+    "recentPurchases": "Recente aankopen",
+    "selectProduct": "Selecteer product",
+    "quantity": "Hoeveelheid",
+    "buyInPacks": "In verpakkingen kopen",
+    "pack": "Verpakking",
+    "packs": "Verpakkingen",
+    "items": "Stuks",
+    "totalPrice": "Totaalbedrag",
+    "purchaseDateTime": "Aankoopdatum & Tijd",
+    "notes": "Notities",
+    "notesPlaceholder": "Voeg eventuele aanvullende notities toe",
+    "submitting": "Bezig met opslaan...",
+    "managePurchases": "Beheer aankopen",
+    "entries": "Vermeldingen",
+    "searchUser": "Zoek gebruiker",
+    "searchProduct": "Zoek product",
+    "dateFrom": "Datum vanaf",
+    "dateTo": "Datum tot",
+    "clearFilters": "Filters wissen",
+    "noFilteredResults": "Geen aankopen gevonden met deze filters",
+    "noPurchasesTitle": "Nog geen aankopen",
+    "unit": "Stuk",
+    "units": "Stuks",
+    "tryDifferentFilters": "Pas je filters aan of voeg een nieuwe aankoop toe",
+    "noPurchases": "Geen aankopen gevonden",
+    "purchaseAdded": "Aankoop succesvol toegevoegd",
+    "errors": {
+      "addFailed": "Toevoegen van aankoop mislukt. Probeer het opnieuw.",
+      "fetchPurchases": "Laden van aankopen mislukt. Probeer het opnieuw.",
+      "fetchUsersAndProducts": "Laden van gebruikers en producten mislukt. Probeer het opnieuw."
+    }
+  },
+  "stock": "Voorraad",
   "profile": {
     "accountInfo": "Account Info",
     "noOrders": "Geen bestellingen gevonden",
     "noRaisesFound": "Geen verhogingen gevonden",
     "raises": "Verhogingen",
-    "selectMonth": "Selecteer Maand",
-    "selectYear": "Selecteer Jaar",
     "title": "Profiel",
-    "viewOrder": "Bestelling bekijken"
+    "viewOrder": "Bestelling bekijken",
+    "anyMonth": "Elke maand"
   },
   "Quantity": "Aantal",
   "Raise": "Ophogen",
@@ -193,7 +244,10 @@
     "enterAmount": "Voer het bedrag in om het saldo voor de gebruiker te verhogen.",
     "last5Raises": "Laatste 5 verhogingen",
     "noRaisesFound": "Geen verhogingen gevonden",
-    "raiseBalance": "Verhoog balance"
+    "raiseBalance": "Verhoog saldo",
+    "paymentMethod": "Betalingswijze",
+    "cash": "Contant",
+    "pin": "PIN"
   },
   "raisedBy": "Verhoogd door",
   "register": {
@@ -270,5 +324,32 @@
     "title": "Gebruikersbeheer"
   },
   "userSelection": "Gebruikersselectie",
-  "yes": "Ja"
+  "yes": "Ja",
+  "finance": {
+    "totalRevenue": "Totale omzet",
+    "totalRevenueTooltip": "Totaalbedrag aan verkopen",
+    "totalOrders": "Totaal bestellingen",
+    "totalOrdersTooltip": "Totaal aantal geplaatste bestellingen",
+    "totalRaised": "Totaal opgewaardeerd",
+    "totalRaisedTooltip": "Totaalbedrag aan saldo-opwaarderingen",
+    "totalPurchases": "Totaal aankopen",
+    "totalPurchasesTooltip": "Totaal aantal aankopen",
+    "netRevenue": "Nettowinst",
+    "netRevenueTooltip": "Totale omzet min kosten",
+    "revenueOverTime": "Omzet over tijd",
+    "recentTransactions": "Recente transacties",
+    "date": "Datum",
+    "type": "Type",
+    "actionBy": "Uitgevoerd door",
+    "affectedUser": "Betrokken gebruiker",
+    "amount": "Bedrag",
+    "noTransactions": "Geen transacties gevonden",
+    "sales": "Verkopen",
+    "raises": "Opwaarderingen",
+    "purchases": "Aankopen"
+  },
+  "Balance": "Saldo",
+  "auth": {
+    "loggedInAs": "Ingelogd als"
+  }
 }

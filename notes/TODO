@@ -26,7 +26,6 @@
 [ ] Create a roadmap
 [ ] Add proper version control
 [ ] Add dev, staging and production branches
-[ ] Add create superuser cli command
 [\] Validate what cursor did with password reset
 [x] validate what cursor did with session
 [ ] Make it easily visable who is logged in at the moment
