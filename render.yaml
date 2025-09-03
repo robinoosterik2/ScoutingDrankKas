@@ -27,4 +27,4 @@ services:
 
     # Auto-deploy and branch settings
     autoDeploy: true
-    branch: main # or your main branch name
+    branch: master # or your master branch name
