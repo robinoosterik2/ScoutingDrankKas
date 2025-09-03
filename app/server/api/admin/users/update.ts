@@ -1,6 +1,5 @@
 import { defineEventHandler, readBody } from "h3";
-import User from "@/server/models/user";
-import { CustomRole } from "~/server/models/customRole";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -12,7 +11,7 @@ export default defineEventHandler(async (event) => {
       throw new Error("User ID is required");
     }
 
-    const user = await User.findById(id);
+    const user = await prisma.user.findUnique({ where: { id: Number(id) } });
 
     if (!user) {
       throw new Error("User not found");
@@ -20,49 +19,40 @@ export default defineEventHandler(async (event) => {
 
     // check if unique email, username (first and last name are not unique)
     if (user.email !== email) {
-      const existingUserByEmail = await User.findOne({ email });
+      const existingUserByEmail = await prisma.user.findFirst({ where: { email } });
       if (existingUserByEmail) {
         throw new Error("User with this email already exists");
       }
     }
     if (user.username !== username) {
-      const existingUserByUsername = await User.findOne({ username });
+      const existingUserByUsername = await prisma.user.findFirst({ where: { username } });
       if (existingUserByUsername) {
         throw new Error("User with this username already exists");
       }
     }
-
-    if (role) {
-      // check if roles are valid
-      const validRole = await CustomRole.findOne({ _id: role });
-      if (!validRole) {
-        throw createError("Error updating user, invalid role");
-      }
-    }
-
-    const roleObject = await CustomRole.findOne({ _id: role });
-
-    if (!roleObject) {
+    const roleObject = role ? await prisma.customRole.findUnique({ where: { id: Number(role) } }) : null;
+    if (role && !roleObject) {
       throw createError("Error updating user, invalid role");
     }
 
     if (user.firstName !== firstName || user.lastName !== lastName) {
-      const existingUserByFirstAndLastName = await User.findOne({
-        firstName: firstName,
-        lastName: lastName,
+      const existingUserByFirstAndLastName = await prisma.user.findFirst({
+        where: { firstName, lastName },
       });
       if (existingUserByFirstAndLastName) {
         throw new Error("User with this first and last name already exists");
       }
     }
-
-    user.email = email || user.email;
-    user.username = username || user.username;
-    user.firstName = firstName || user.firstName;
-    user.lastName = lastName || user.lastName;
-    user.role = roleObject._id || user.role;
-
-    await user.save();
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        email: email || user.email,
+        username: username || user.username,
+        firstName: firstName || user.firstName,
+        lastName: lastName || user.lastName,
+        roleId: roleObject ? roleObject.id : user.roleId,
+      },
+    });
 
     return { message: "User updated successfully" };
   } catch (error) {

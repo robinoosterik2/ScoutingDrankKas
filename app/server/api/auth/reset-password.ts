@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import User from "~/server/models/user";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   // Parse request body
@@ -19,9 +19,11 @@ export default defineEventHandler(async (event) => {
   const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
   // Find the user with matching token and check expiration
-  const user = await User.findOne({
-    resetPasswordToken: tokenHash,
-    resetPasswordExpires: { $gt: new Date() },
+  const user = await prisma.user.findFirst({
+    where: {
+      resetPasswordToken: tokenHash,
+      resetPasswordExpires: { gt: new Date() },
+    },
   });
 
   if (!user) {
@@ -29,10 +31,11 @@ export default defineEventHandler(async (event) => {
   }
 
   // Update the password and clear reset token
-  user.password = await hashPassword(newPassword);
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
-  await user.save();
+  const hashed = await hashPassword(newPassword);
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { password: hashed, resetPasswordToken: null, resetPasswordExpires: null },
+  });
 
   return { success: true, message: "Password reset successful" };
 });

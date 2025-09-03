@@ -1,19 +1,7 @@
 import { defineEventHandler, getQuery } from "h3";
-import Log from "@/server/models/log";
-import mongoose from "mongoose";
+import prisma from "~/server/utils/prisma";
 
-interface LogQuery {
-  createdAt?: {
-    $gte?: Date;
-    $lte?: Date;
-  };
-  executor?: {
-    $in: mongoose.Types.ObjectId[];
-  };
-  action?: {
-    $in: string[];
-  };
-}
+type DateFilter = { gte?: Date; lte?: Date };
 
 export default defineEventHandler(async (event) => {
   try {
@@ -25,48 +13,39 @@ export default defineEventHandler(async (event) => {
     const users = query.users as string | string[];
     const actions = query.actions as string | string[];
 
-    // Build MongoDB query
-    const mongoQuery: LogQuery = {};
+    const createdAt: DateFilter = {};
 
     // Date range filter
     if (startDate || endDate) {
-      mongoQuery.createdAt = {};
+      // prepare the createdAt filter
 
       if (startDate) {
         const parsedStartDate = new Date(startDate);
         parsedStartDate.setHours(0, 0, 0, 0);
-        mongoQuery.createdAt.$gte = parsedStartDate;
+        createdAt.gte = parsedStartDate;
       }
 
       if (endDate) {
         const parsedEndDate = new Date(endDate);
         parsedEndDate.setHours(23, 59, 59, 999);
-        mongoQuery.createdAt.$lte = parsedEndDate;
+        createdAt.lte = parsedEndDate;
       }
     }
 
     // User filter
-    if (users) {
-      const userIds = Array.isArray(users) ? users : [users];
-      if (userIds.length > 0) {
-        mongoQuery.executor = {
-          $in: userIds.map((id) => new mongoose.Types.ObjectId(id)),
-        };
-      }
-    }
+    const userIds = users ? (Array.isArray(users) ? users : [users]) : [];
 
     // Action filter
-    if (actions) {
-      const actionTypes = Array.isArray(actions) ? actions : [actions];
-      if (actionTypes.length > 0) {
-        mongoQuery.action = { $in: actionTypes };
-      }
-    }
-    // Fetch logs with populated references
-    const logs = await Log.find(mongoQuery)
-      .populate("executor", "username email firstName lastName")
-      .populate("objectId", "username name title")
-      .sort({ createdAt: -1 });
+    const actionTypes = actions ? (Array.isArray(actions) ? actions : [actions]) : [];
+    const logs = await prisma.log.findMany({
+      where: {
+        ...(startDate || endDate ? { createdAt } : {}),
+        ...(userIds.length ? { executorId: { in: userIds.map((id: string) => Number(id)) } } : {}),
+        ...(actionTypes.length ? { action: { in: actionTypes as string[] } } : {}),
+      },
+      include: { executor: true },
+      orderBy: { createdAt: 'desc' },
+    });
     // Prepare response headers based on format
     if (format === "csv") {
       event.res.setHeader("Content-Type", "text/csv");
@@ -78,16 +57,11 @@ export default defineEventHandler(async (event) => {
       // Generate CSV content
       const csvHeader =
         "id,executor,action,objectType,objectId,description,createdAt\n";
-      const csvRows = logs.map((log) => {
+      const csvRows = logs.map((log: any) => {
         const executor = log.executor ? log.executor.username : "Unknown";
-        const description = log.description
-          ? `"${log.description.replace(/"/g, '""')}"`
-          : "";
-        const createdAt = new Date(log.createdAt).toISOString();
-
-        return `${log._id},${executor},${log.action},${log.objectType},${
-          log.objectId?._id || log.objectId || ""
-        },${description},${createdAt}`;
+        const description = log.description ? `"${log.description.replace(/"/g, '""')}"` : "";
+        const createdAtStr = new Date(log.createdAt).toISOString();
+        return `${log.id},${executor},${log.action},${log.targetType || ''},${log.targetId || ''},${description},${createdAtStr}`;
       });
 
       return csvHeader + csvRows.join("\n");
@@ -100,19 +74,12 @@ export default defineEventHandler(async (event) => {
       );
 
       // Map logs to a simpler structure
-      const exportedLogs = logs.map((log) => ({
-        id: log._id,
-        executor: log.executor
-          ? {
-              id: log.executor._id,
-              username: log.executor.username,
-              email: log.executor.email,
-            }
-          : null,
+      const exportedLogs = logs.map((log: any) => ({
+        id: log.id,
+        executor: log.executor ? { id: log.executor.id, username: log.executor.username, email: log.executor.email } : null,
         action: log.action,
-        objectType: log.objectType,
-        objectId: log.objectId?._id || log.objectId,
-        objectName: log.objectId?.name || log.objectId?.username || null,
+        objectType: log.targetType,
+        objectId: log.targetId,
         description: log.description,
         createdAt: log.createdAt,
         updatedAt: log.updatedAt,

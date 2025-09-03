@@ -1,9 +1,6 @@
 import { hash } from "bcryptjs";
-import { CustomRole } from "~/server/models/customRole";
-import User from "~/server/models/user";
-import { Category } from "~/server/models/category";
-import { Product } from "~/server/models/product";
-import { Order } from "~/server/models/order";
+import prismaClient from "~/server/utils/prisma";
+// import type { PaymentMethod } from "@prisma/client";
 
 export interface SeederCounts {
   users?: number;
@@ -22,14 +19,19 @@ export interface SeederResult {
 }
 
 export async function clearDatabase() {
+  const prisma = prismaClient;
   try {
-    await Promise.all([
-      CustomRole.deleteMany({}),
-      User.deleteMany({}),
-      Category.deleteMany({}),
-      Product.deleteMany({}),
-      Order.deleteMany({}),
-    ]);
+    // Respect FK constraints: delete dependent records first
+    await prisma.log.deleteMany();
+    await prisma.orderItem.deleteMany();
+    await prisma.order.deleteMany();
+    await prisma.raise.deleteMany();
+    await prisma.productOnCategory.deleteMany();
+    await prisma.product.deleteMany();
+    await prisma.category.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.settings.deleteMany();
+    await prisma.customRole.deleteMany();
     console.log("Database cleared");
   } catch (error) {
     console.error("Error clearing database:", error);
@@ -38,16 +40,18 @@ export async function clearDatabase() {
 }
 
 export async function seedDatabase(
-  counts: SeederCounts = {}
+  inputCounts: SeederCounts = {}
 ): Promise<SeederResult> {
+  const prisma = prismaClient;
   try {
-    // Default counts if not provided
-    const counts = {
+    // Default counts if not provided, then merge with overrides
+    const finalCounts = {
       users: 10,
       categories: 5,
       products: 20,
       orders: 150,
       roles: 3,
+      ...inputCounts,
     };
 
     // Clear existing data
@@ -55,64 +59,81 @@ export async function seedDatabase(
 
     // Seed roles
     console.log("Seeding roles...");
-    const roleData = [
+    const roleData: Prisma.CustomRoleCreateInput[] = [
       { roleName: "admin", roleDescription: "Administrator with full access" },
       { roleName: "user", roleDescription: "Regular user with basic access" },
       { roleName: "cashier", roleDescription: "Can process orders" },
-    ].slice(0, counts.roles);
+    ].slice(0, finalCounts.roles ?? 3);
 
-    const createdRoles = await CustomRole.insertMany(roleData);
+    const createdRoles = await Promise.all(
+      roleData.map((data) => prisma.customRole.create({ data }))
+    );
     console.log(`Seeded ${createdRoles.length} roles`);
 
     // Seed users
     console.log("Seeding users...");
-    const hashedPassword = await hash("password123", 10);
-    const adminUser = {
-      username: "admin",
-      email: "admin@example.com",
-      password: await hash("admin123", 10),
-      firstName: "Admin",
-      lastName: "User",
-      balance: 1000,
-      active: true,
-      role: createdRoles.find((r) => r.roleName === "admin")?._id,
-    };
+    const hashedDefault = await hash("password123", 10);
+    const adminPassword = await hash("admin123", 10);
 
-    const testUsers = Array.from({ length: counts.users - 1 }, (_, i) => ({
-      username: `user${i + 1}`,
-      email: `user${i + 1}@example.com`,
-      password: hashedPassword,
-      firstName: `User${i + 1}`,
-      lastName: `Test`,
-      balance: Math.floor(Math.random() * 1000),
-      active: true,
-      role: createdRoles.find((r) => r.roleName === "user")?._id,
-    }));
+    const adminRole = createdRoles.find((r) => r.roleName === "admin") || null;
+    const userRole = createdRoles.find((r) => r.roleName === "user") || null;
 
-    const createdUsers = await User.insertMany([adminUser, ...testUsers]);
+    const createdUsers = [] as any[];
+    const adminUser = await prisma.user.create({
+      data: {
+        username: "admin",
+        email: "admin@example.com",
+        password: adminPassword,
+        firstName: "Admin",
+        lastName: "User",
+        balance: 1000,
+        active: true,
+        role: adminRole ? { connect: { id: adminRole.id } } : undefined,
+      },
+    });
+    createdUsers.push(adminUser);
+
+    const toCreate = Math.max((finalCounts.users ?? 10) - 1, 0);
+    for (let i = 0; i < toCreate; i++) {
+      const u = await prisma.user.create({
+        data: {
+          username: `user${i + 1}`,
+          email: `user${i + 1}@example.com`,
+          password: hashedDefault,
+          firstName: `User${i + 1}`,
+          lastName: "Test",
+          balance: Math.floor(Math.random() * 1000),
+          active: true,
+          role: userRole ? { connect: { id: userRole.id } } : undefined,
+        },
+      });
+      createdUsers.push(u);
+    }
     console.log(`Seeded ${createdUsers.length} users`);
 
     // Seed categories
     console.log("Seeding categories...");
-    const categoryData = [
+    const categoryData: Prisma.CategoryCreateInput[] = [
       { name: "Dranken", ageRestriction: true },
       { name: "Snoep", ageRestriction: false },
       { name: "Snacks", ageRestriction: false },
       { name: "Broodjes", ageRestriction: false },
       { name: "Overig", ageRestriction: false },
-    ].slice(0, counts.categories);
+    ].slice(0, finalCounts.categories ?? 5);
 
-    const createdCategories = await Category.insertMany(categoryData);
+    const createdCategories = await Promise.all(
+      categoryData.map((data) => prisma.category.create({ data }))
+    );
     console.log(`Seeded ${createdCategories.length} categories`);
 
     // Seed products
     console.log("Seeding products...");
-    const productData = [
+    const baseProducts = [
       {
         name: "Cola",
         description: "Frisdrank",
-        price: 150, // €1.50
-        categories: [createdCategories[0]._id],
+        price: 150,
+        categoryIndex: 0,
         stock: 100,
         ageRestriction: false,
         imageUrl: "/images/placeholder.jpg",
@@ -120,8 +141,8 @@ export async function seedDatabase(
       {
         name: "Bier",
         description: "Alcoholische drank",
-        price: 250, // €2.50
-        categories: [createdCategories[0]._id],
+        price: 250,
+        categoryIndex: 0,
         stock: 50,
         ageRestriction: true,
         imageUrl: "/images/placeholder.jpg",
@@ -129,8 +150,8 @@ export async function seedDatabase(
       {
         name: "Mars",
         description: "Chocoladereep",
-        price: 100, // €1.00
-        categories: [createdCategories[1]._id],
+        price: 100,
+        categoryIndex: 1,
         stock: 75,
         ageRestriction: false,
         imageUrl: "/images/placeholder.jpg",
@@ -138,41 +159,104 @@ export async function seedDatabase(
       {
         name: "Chips",
         description: "Zoute snack",
-        price: 125, // €1.25
-        categories: [createdCategories[2]._id],
+        price: 125,
+        categoryIndex: 2,
         stock: 60,
         ageRestriction: false,
         imageUrl: "/images/placeholder.jpg",
       },
-    ].slice(0, counts.products);
+    ].slice(0, finalCounts.products ?? 20);
 
-    const createdProducts = await Product.insertMany(productData);
+    const createdProducts = [] as any[];
+    for (const p of baseProducts) {
+      const product = await prisma.product.create({
+        data: {
+          name: p.name,
+          description: p.description,
+          price: p.price,
+          stock: p.stock,
+          ageRestriction: p.ageRestriction,
+          imageUrl: p.imageUrl,
+        },
+      });
+      createdProducts.push(product);
+
+      const cat = createdCategories[p.categoryIndex];
+      if (cat) {
+        await prisma.productOnCategory.create({
+          data: { productId: product.id, categoryId: cat.id },
+        });
+      }
+    }
     console.log(`Seeded ${createdProducts.length} products`);
 
     // Seed orders
     console.log("Seeding orders...");
-    const orderData = Array.from({ length: counts.orders }, () => {
-      const user =
-        createdUsers[Math.floor(Math.random() * createdUsers.length)];
-      const product =
-        createdProducts[Math.floor(Math.random() * createdProducts.length)];
+    const createdOrders = [] as any[];
+    const ordersToCreate = finalCounts.orders ?? 150;
+    for (let i = 0; i < ordersToCreate; i++) {
+      const user = createdUsers[Math.floor(Math.random() * createdUsers.length)];
+      const product = createdProducts[Math.floor(Math.random() * createdProducts.length)];
       const count = Math.floor(Math.random() * 3) + 1; // 1-3 items
       const total = product.price * count;
 
-      return {
-        user: user._id,
-        products: [
-          {
-            product: product._id,
-            count,
-          },
-        ],
-        total,
-        bartender: createdUsers[0]._id, // Admin user as bartender
-      };
-    });
+      // 8 AM rule for Amsterdam timezone equivalent simplified (use system time)
+      const now = new Date();
+      const dayOfOrder = new Date(now);
+      if (dayOfOrder.getHours() < 8) {
+        dayOfOrder.setDate(dayOfOrder.getDate() - 1);
+      }
+      dayOfOrder.setHours(0, 0, 0, 0);
 
-    const createdOrders = await Order.insertMany(orderData);
+      const order = await prisma.order.create({
+        data: {
+          userId: user.id,
+          bartenderId: createdUsers[0].id,
+          total,
+          dayOfOrder,
+          items: {
+            create: [
+              {
+                productId: product.id,
+                count,
+              },
+            ],
+          },
+        },
+        include: { items: true },
+      });
+      createdOrders.push(order);
+
+      // Update product metrics
+      const recentOrdersArr: any[] = product.recentOrders
+        ? JSON.parse(product.recentOrders as unknown as string)
+        : [];
+      recentOrdersArr.push({ date: new Date().toISOString(), quantity: count });
+
+      // Keep only last 30 days
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const pruned = recentOrdersArr.filter((o: any) => new Date(o.date) >= thirtyDaysAgo);
+      const recentQuantity = pruned.reduce((sum: number, o: any) => sum + (o.quantity || 0), 0);
+      const popularityScore = recentQuantity * 0.7 + (product.totalQuantitySold + count) * 0.3;
+
+      await prisma.product.update({
+        where: { id: product.id },
+        data: {
+          totalOrders: { increment: 1 },
+          totalQuantitySold: { increment: count },
+          stock: { decrement: count },
+          recentOrders: JSON.stringify(pruned),
+          popularityScore,
+        },
+      });
+      // Also update local product copy for subsequent iterations
+      product.totalOrders += 1;
+      product.totalQuantitySold += count;
+      product.stock -= count;
+      product.recentOrders = JSON.stringify(pruned) as unknown as any;
+      product.popularityScore = popularityScore;
+    }
     console.log(`Seeded ${createdOrders.length} orders`);
 
     return {

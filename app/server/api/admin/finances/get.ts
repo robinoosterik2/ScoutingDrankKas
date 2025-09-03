@@ -1,6 +1,4 @@
-import { Order } from "@/server/models/order";
-import { Raise } from "@/server/models/raise";
-import { Purchase } from "@/server/models/purchase";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const { month, year } = getQuery(event);
@@ -24,126 +22,16 @@ export default defineEventHandler(async (event) => {
     endDate = new Date(filterYear + 1, 0, 1);
   }
 
-  const orders = await Order.aggregate([
-    {
-      $match: {
-        createdAt: {
-          $gte: startDate,
-          $lt: endDate,
-        },
-      },
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "user",
-        foreignField: "_id",
-        as: "user",
-      },
-    },
-    {
-      $unwind: "$user",
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "bartender",
-        foreignField: "_id",
-        as: "user",
-      },
-    },
-    {
-      $unwind: "$user",
-    },
-  ]);
+  const orders = await prisma.order.findMany({ where: { createdAt: { gte: startDate, lt: endDate } } });
 
-  const totalSales = await Order.aggregate([
-    {
-      $match: {
-        createdAt: {
-          $gte: startDate,
-          $lt: endDate,
-        },
-      },
-    },
-    {
-      $group: {
-        _id: null,
-        totalSales: { $sum: "$total" },
-      },
-    },
-  ]);
+  const totalSalesAgg = await prisma.order.aggregate({ _sum: { total: true }, where: { createdAt: { gte: startDate, lt: endDate } } });
 
-  const totalRaised = await Raise.aggregate([
-    {
-      $match: {
-        createdAt: {
-          $gte: startDate,
-          $lt: endDate,
-        },
-      },
-    },
-    {
-      $group: {
-        _id: null,
-        totalRaised: { $sum: "$amount" },
-      },
-    },
-  ]);
+  const totalRaisedAgg = await prisma.raise.aggregate({ _sum: { amount: true }, where: { createdAt: { gte: startDate, lt: endDate } } });
 
   // Get total purchases
-  const totalPurchases = await Purchase.aggregate([
-    {
-      $match: {
-        purchaseDate: {
-          $gte: startDate,
-          $lt: endDate,
-        },
-      },
-    },
-    {
-      $group: {
-        _id: null,
-        totalPurchases: { $sum: "$price" },
-      },
-    },
-  ]);
+  const totalPurchases = 0;
 
-  const raises = await Raise.aggregate([
-    {
-      $match: {
-        createdAt: {
-          $gte: startDate,
-          $lt: endDate,
-        },
-      },
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "user",
-        foreignField: "_id",
-        as: "user",
-      },
-    },
-    {
-      $unwind: "$user",
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "raiser",
-        foreignField: "_id",
-        as: "user",
-      },
-    },
-    {
-      $unwind: {
-        path: "$user",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-  ]);
+  const raises = await prisma.raise.findMany({ where: { createdAt: { gte: startDate, lt: endDate } } });
 
   // Get daily sales for the current month with adjusted dates for purchases before 8:00 AM
   const salesDataStartDate = month
@@ -153,194 +41,26 @@ export default defineEventHandler(async (event) => {
     ? new Date(filterYear, parseInt(month as string), 1, 0, 0, 0)
     : new Date(filterYear + 1, 0, 1, 0, 0, 0);
 
-  // Get purchases data for the chart
-  const purchasesData = await Purchase.aggregate([
-    {
-      $match: {
-        purchaseDate: {
-          $gte: salesDataStartDate,
-          $lt: salesDataEndDate,
-        },
-      },
-    },
-    {
-      $addFields: {
-        // Convert to local time and adjust date if needed
-        localDate: {
-          $dateToString: {
-            format: "%Y-%m-%d",
-            date: "$purchaseDate",
-            timezone: "Europe/Amsterdam",
-          },
-        },
-        // Calculate total amount for each purchase
-        totalAmount: { $sum: "$price" },
-      },
-    },
-    {
-      $group: {
-        _id: "$localDate",
-        total: { $sum: "$totalAmount" },
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        date: "$_id",
-        total: 1,
-        label: "Purchases",
-      },
-    },
-    {
-      $sort: { date: 1 },
-    },
-  ]);
+  // Purchases not modeled; empty array for chart
+  const purchasesData: any[] = [];
 
-  // Get sales data with date adjustments
-  const salesData = await Order.aggregate([
-    {
-      $match: {
-        createdAt: {
-          $gte: salesDataStartDate,
-          $lt: salesDataEndDate,
-        },
-      },
-    },
-    {
-      $addFields: {
-        // Convert to local time and check if hour is before 8:00 AM
-        localHour: {
-          $hour: { date: "$createdAt", timezone: "Europe/Amsterdam" },
-        },
-        localDate: {
-          $dateToString: {
-            format: "%Y-%m-%d",
-            date: "$createdAt",
-            timezone: "Europe/Amsterdam",
-          },
-        },
-        // Get the date parts for potential adjustment
-        year: { $year: { date: "$createdAt", timezone: "Europe/Amsterdam" } },
-        month: { $month: { date: "$createdAt", timezone: "Europe/Amsterdam" } },
-        day: {
-          $dayOfMonth: { date: "$createdAt", timezone: "Europe/Amsterdam" },
-        },
-      },
-    },
-    {
-      $addFields: {
-        // Adjust date if before 8:00 AM
-        adjustedDate: {
-          $cond: {
-            if: { $lt: ["$localHour", 8] }, // Before 8:00 AM
-            then: {
-              $dateToString: {
-                format: "%Y-%m-%d",
-                date: {
-                  $dateFromParts: {
-                    year: "$year",
-                    month: "$month",
-                    day: "$day",
-                    timezone: "Europe/Amsterdam",
-                  },
-                },
-                timezone: "Europe/Amsterdam",
-              },
-            },
-            else: "$localDate",
-          },
-        },
-      },
-    },
-    {
-      $group: {
-        _id: "$adjustedDate",
-        total: { $sum: "$total" },
-        date: { $first: "$adjustedDate" },
-      },
-    },
-    { $sort: { date: 1 } },
-    {
-      $project: {
-        _id: 0,
-        date: 1,
-        total: 1,
-      },
-    },
-  ]);
+  // Aggregate sales per day
+  const salesRows = await prisma.order.findMany({ where: { createdAt: { gte: salesDataStartDate, lt: salesDataEndDate } }, select: { dayOfOrder: true, total: true } });
+  const salesDataMap = new Map<string, number>();
+  for (const r of salesRows) {
+    const key = r.dayOfOrder.toISOString().slice(0,10);
+    salesDataMap.set(key, (salesDataMap.get(key) || 0) + r.total);
+  }
+  const salesData = Array.from(salesDataMap.entries()).map(([date, total]) => ({ date, total }));
 
-  // Get raises data with similar date adjustments
-  const raisesData = await Raise.aggregate([
-    {
-      $match: {
-        createdAt: {
-          $gte: salesDataStartDate,
-          $lt: salesDataEndDate,
-        },
-      },
-    },
-    {
-      $addFields: {
-        // Convert to local time and check if hour is before 8:00 AM
-        localHour: {
-          $hour: { date: "$createdAt", timezone: "Europe/Amsterdam" },
-        },
-        localDate: {
-          $dateToString: {
-            format: "%Y-%m-%d",
-            date: "$createdAt",
-            timezone: "Europe/Amsterdam",
-          },
-        },
-        // Get the date parts for potential adjustment
-        year: { $year: { date: "$createdAt", timezone: "Europe/Amsterdam" } },
-        month: { $month: { date: "$createdAt", timezone: "Europe/Amsterdam" } },
-        day: {
-          $dayOfMonth: { date: "$createdAt", timezone: "Europe/Amsterdam" },
-        },
-      },
-    },
-    {
-      $addFields: {
-        // Adjust date if before 8:00 AM
-        adjustedDate: {
-          $cond: {
-            if: { $lt: ["$localHour", 8] }, // Before 8:00 AM
-            then: {
-              $dateToString: {
-                format: "%Y-%m-%d",
-                date: {
-                  $dateFromParts: {
-                    year: "$year",
-                    month: "$month",
-                    day: "$day",
-                    timezone: "Europe/Amsterdam",
-                  },
-                },
-                timezone: "Europe/Amsterdam",
-              },
-            },
-            else: "$localDate",
-          },
-        },
-      },
-    },
-    {
-      $group: {
-        _id: "$adjustedDate",
-        total: { $sum: "$amount" },
-        date: { $first: "$adjustedDate" },
-      },
-    },
-    { $sort: { date: 1 } },
-    {
-      $project: {
-        _id: 0,
-        date: 1,
-        total: 1,
-      },
-    },
-  ]);
+  // Aggregate raises per day
+  const raisesRows = await prisma.raise.findMany({ where: { createdAt: { gte: salesDataStartDate, lt: salesDataEndDate } }, select: { dayOfOrder: true, amount: true } });
+  const raisesDataMap = new Map<string, number>();
+  for (const r of raisesRows) {
+    const key = r.dayOfOrder.toISOString().slice(0,10);
+    raisesDataMap.set(key, (raisesDataMap.get(key) || 0) + r.amount);
+  }
+  const raisesData = Array.from(raisesDataMap.entries()).map(([date, total]) => ({ date, total }));
 
   // Month names for labels
   const months = [

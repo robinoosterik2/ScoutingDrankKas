@@ -1,5 +1,5 @@
 import { defineEventHandler } from 'h3';
-import { Raise } from '@/server/models/raise';
+import prisma from "~/server/utils/prisma";
 
 interface RaiseDocument {
   _id: any;
@@ -43,28 +43,24 @@ export default defineEventHandler(async (event) => {
     }
 
     const [raises, total] = await Promise.all([
-      Raise.find({ user: userId })
-        .populate<{ raiser: { _id: any; firstName: string; lastName: string } | null }>('raiser', 'firstName lastName')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean<RaiseDocument[]>(),
-      Raise.countDocuments({ user: userId })
+      prisma.raise.findMany({
+        where: { userId: Number(userId) },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+        include: { raiser: { select: { id: true, firstName: true, lastName: true } } },
+      }),
+      prisma.raise.count({ where: { userId: Number(userId) } })
     ]);
 
     return {
-      raises: raises.map<RaiseResponse>(raise => ({
-        ...raise,
-        _id: raise._id.toString(),
-        user: raise.user.toString(),
-        raiser: raise.raiser ? {
-          _id: raise.raiser._id.toString(),
-          firstName: raise.raiser.firstName,
-          lastName: raise.raiser.lastName
-        } : null,
+      raises: raises.map((raise: any) => ({
+        _id: String(raise.id),
+        user: String(raise.userId),
+        raiser: raise.raiser ? { _id: String(raise.raiser.id), firstName: raise.raiser.firstName, lastName: raise.raiser.lastName } : null,
         amount: raise.amount,
         createdAt: raise.createdAt,
-        updatedAt: raise.updatedAt
+        updatedAt: raise.updatedAt,
       })),
       total
     };

@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3';
-import { CustomRole } from '@/server/models/customRole';
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
     const { id } = event.context.params || {};
@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const role = await CustomRole.findById(id);
+        const role = await prisma.customRole.findUnique({ where: { id: Number(id) } });
         if (!role) {
             throw createError({ statusCode: 404, statusMessage: "Role not found" });
         }

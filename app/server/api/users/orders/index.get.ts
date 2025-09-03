@@ -1,6 +1,5 @@
 import { defineEventHandler, getQuery, createError } from "h3";
-import { Order } from "@/server/models/order";
-import User from "@/server/models/user";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const { userId, page = "1", limit = "10", month, year } = getQuery(event);
@@ -20,7 +19,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const user = await User.findById(userId);
+  const user = await prisma.user.findUnique({ where: { id: Number(userId) } });
   if (!user) {
     throw createError({
       statusCode: 404,
@@ -29,7 +28,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Build the match query
-  const matchQuery = { user: user._id };
+  const matchQuery: any = { userId: user.id };
 
   // Add date filters if provided
   if (year) {
@@ -42,19 +41,13 @@ export default defineEventHandler(async (event) => {
       const startDate = new Date(yearNum, monthNum - 1, 1);
       const endDate = new Date(yearNum, monthNum, 1);
 
-      matchQuery.createdAt = {
-        $gte: startDate,
-        $lt: endDate,
-      };
+      matchQuery.createdAt = { gte: startDate, lt: endDate };
     } else {
       // Filter by year only
       const startDate = new Date(yearNum, 0, 1);
       const endDate = new Date(yearNum + 1, 0, 1);
 
-      matchQuery.createdAt = {
-        $gte: startDate,
-        $lt: endDate,
-      };
+      matchQuery.createdAt = { gte: startDate, lt: endDate };
     }
   }
 
@@ -66,14 +59,16 @@ export default defineEventHandler(async (event) => {
   const skip = (pageNum - 1) * limitNum;
 
   // Get total count for pagination
-  const total = await Order.countDocuments(matchQuery);
+  const total = await prisma.order.count({ where: matchQuery });
 
   // Get orders with pagination and populate bartender
-  const orders = await Order.find(matchQuery)
-    .populate("bartender", "username")
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limitNum);
+  const orders = await prisma.order.findMany({
+    where: matchQuery,
+    include: { bartender: { select: { id: true, username: true } } },
+    orderBy: { createdAt: 'desc' },
+    skip,
+    take: limitNum,
+  });
 
   console.log(`Found ${orders.length} orders out of ${total} total`);
 

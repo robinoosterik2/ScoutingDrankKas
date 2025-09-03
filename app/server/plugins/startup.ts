@@ -1,111 +1,64 @@
-import { connectDB } from "@/utils/mongoose";
-import User from "../models/user";
-import mongoose from "mongoose";
-// import { MongoBackupService } from "./cron/backup";
+import prisma from "~/server/utils/prisma";
 
-// const backupConfig = {
-//   mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017',
-//   backupDir: '/backup',
-//   retentionDays: 3000,
-//   enableCompression: true
-// };
-// const backupService = new MongoBackupService(backupConfig);
-// const scheduler = new BackupScheduler(backupService);
+// Note: hashPassword is provided by nuxt-auth-utils globally.
+// We call it directly to avoid duplicating hashing logic.
 
-export default defineNitroPlugin(async (nitroApp) => {
-  // if (process.env.NODE_ENV !== "development") {
-  //   scheduler.start();
-  // }
-
-  // Check for required environment variables
-  if (!process.env.MONGODB_URI) {
-    console.error("Startup plugin: MONGODB_URI is not defined");
-    return;
-  }
-
-  // Connect to MongoDB
+export default defineNitroPlugin(async () => {
   try {
-    await connectDB(process.env.MONGODB_URI);
-    console.log("Startup plugin: Using centralized MongoDB connection.");
-  } catch (error) {
-    console.error(
-      "Startup plugin: Error connecting to MongoDB (centralized):",
-      error
-    );
-    return;
-  }
+    console.log("Startup: Prisma initialized. Ensuring admin role and user...");
 
-  try {
-    console.log("Startup plugin: Proceeding with admin role and user setup...");
-    const { CustomRole } = await import("../models/customRole");
     const adminEmail = process.env.ADMIN_EMAIL || "robinoosterik03@gmail.com";
-
-    // eslint-disable-next-line prefer-const
-    let [adminRole, adminUser] = await Promise.all([
-      CustomRole.findOne({ roleName: "admin" }),
-      User.findOne({ email: adminEmail }),
-    ]);
-
-    // If both exist, we're done
-    if (adminRole && adminUser) {
-      console.log(
-        "Startup plugin: Admin role and user already exist, skipping setup"
-      );
-      return;
-    }
-
-    // Setup admin role
-    if (!adminRole) {
-      console.log("Startup plugin: Creating admin role...");
-      adminRole = new CustomRole({
-        roleName: "admin",
-        roleDescription: "Administrator with full access",
-        rolePermissions: ["admin"],
-      });
-      await adminRole.save();
-      console.log("Startup plugin: Admin role created successfully");
-    }
-
-    // Setup admin user
     const adminPassword = process.env.ADMIN_PASSWORD || "admin";
 
-    await User.deleteOne({ email: adminEmail });
-    if (!adminUser) {
-      console.log(
-        "Startup plugin: Force deleting and recreating admin user..."
-      );
-      const hashedPassword = await hashPassword(adminPassword);
+    // Ensure admin role exists (with 'admin' permission)
+    const role = await prisma.customRole.upsert({
+      where: { roleName: "admin" },
+      update: {},
+      create: {
+        roleName: "admin",
+        roleDescription: "Administrator with full access",
+        rolePermissions: JSON.stringify(["admin"]),
+      },
+    });
 
-      // Use save() instead of insertOne for better error handling and middleware
-      await User.collection.insertOne({
-        email: adminEmail,
-        username: "admin",
-        firstName: "Admin",
-        lastName: "User",
-        password: hashedPassword,
-        role: adminRole._id,
-        active: true,
-        balance: 0,
-        loggedInAt: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
+    // Ensure admin user exists. We don't try to preserve any legacy user IDs.
+    const existing = await prisma.user.findUnique({ where: { email: adminEmail } });
+    const hashed = await hashPassword(adminPassword);
+
+    if (!existing) {
+      await prisma.user.create({
+        data: {
+          email: adminEmail,
+          username: "admin",
+          firstName: "Admin",
+          lastName: "User",
+          password: hashed,
+          active: true,
+          balance: 0,
+          loggedInAt: new Date(),
+          role: { connect: { id: role.id } },
+        },
       });
-
-      console.log("Startup plugin: Admin user created successfully");
+      console.log("Startup: Admin user created.");
     } else {
-      console.log("Startup plugin: Admin user already exists");
+      // Keep email as the identifier; update other fields to ensure consistency
+      await prisma.user.update({
+        where: { id: existing.id },
+        data: {
+          username: existing.username || "admin",
+          firstName: existing.firstName || "Admin",
+          lastName: existing.lastName || "User",
+          role: { connect: { id: role.id } },
+        },
+      });
+      console.log("Startup: Admin user already exists; ensured role.");
     }
 
-    console.log("Startup plugin: Admin setup completed.");
+    console.log("Startup: Admin setup completed.");
   } catch (error) {
-    console.error("Startup plugin: Error during admin setup:", error);
-    // Don't set the flag if setup fails, allowing retry on next restart
-
-    // In production, you might want to exit the process on critical failures
+    console.error("Startup: Error ensuring admin setup:", error);
     if (process.env.NODE_ENV === "production") {
-      console.error(
-        "Startup plugin: Critical failure in production, consider manual intervention"
-      );
+      console.error("Startup: Please verify DB connectivity and schema.");
     }
   }
 });

@@ -1,4 +1,4 @@
-import User from "@/server/models/user";
+import { hasPermission } from "@/server/utils/authPrisma";
 import type { H3Event } from "h3";
 
 const noneLoginRequiredPaths = [
@@ -50,8 +50,8 @@ export default defineEventHandler(async (event) => {
     currentPath.startsWith("/api/admin")
   ) {
     try {
-      const session = await getUserSession(event); // Await the promise
-      const user = session?.user as { _id: string } | undefined;
+      const session = await getUserSession(event);
+      const user = session?.user as { id?: number | string; _id?: string } | undefined;
 
       if (!user) {
         return handleAuthError(
@@ -62,7 +62,8 @@ export default defineEventHandler(async (event) => {
         );
       }
 
-      const hasAdminAccess = await User.hasPermission(user.id, "admin");
+      const uid = user?.id ?? user?._id;
+      const hasAdminAccess = await hasPermission(uid as any, "admin");
 
       if (!hasAdminAccess) {
         return handleAuthError(

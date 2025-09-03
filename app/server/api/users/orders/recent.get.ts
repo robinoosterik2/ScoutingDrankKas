@@ -1,6 +1,5 @@
 import { defineEventHandler, getQuery } from "h3";
-import { Order } from "@/server/models/order";
-import User from "@/server/models/user";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const { userId, limit } = getQuery(event);
@@ -12,13 +11,11 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const user = await User.findById(userId);
+  const user = await prisma.user.findUnique({ where: { id: Number(userId) } });
   if (!user) {
     throw createError({ statusCode: 404, statusMessage: "User not found" });
   }
 
-  const orders = await Order.find({ user: userId })
-    .sort({ createdAt: -1 })
-    .limit(Number(limit) || 10);
+  const orders = await prisma.order.findMany({ where: { userId: user.id }, orderBy: { createdAt: 'desc' }, take: Number(limit) || 10 });
   return orders;
 });

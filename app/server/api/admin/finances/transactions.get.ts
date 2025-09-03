@@ -1,7 +1,4 @@
-import type { Types } from 'mongoose';
-import { Order } from '~/server/models/order';
-import { Raise } from '~/server/models/raise';
-import { Purchase } from '~/server/models/purchase';
+import prisma from "~/server/utils/prisma";
 import { getDateRangeFromQuery } from '~/server/utils/dateFilters';
 
 interface UserInfo {
@@ -78,73 +75,26 @@ export default defineEventHandler(async (event) => {
     // Remove unused queryOptions since we're using MongoDB's native methods
 
     // Get all orders, raises, and purchases in parallel with proper population and pagination
-    const [
-      [orders, totalOrders],
-      [raises, totalRaises],
-      [purchases, totalPurchases]
-    ] = await Promise.all<[any[], number]>([
-      // Query orders with pagination and population
-      Promise.all([
-        Order.find({
-          createdAt: { $gte: startDate, $lte: endDate }
-        })
-          .populate([
-            { path: 'user', select: 'firstName lastName' },
-            { path: 'bartender', select: 'firstName lastName' },
-            { 
-              path: 'products',
-              populate: {
-                path: 'productId',
-                select: 'name price'
-              }
-            }
-          ])
-          .sort({ createdAt: -1 })
-          .skip((pageNum - 1) * limitNum)
-          .limit(limitNum)
-          .lean()
-          .exec(),
-        Order.countDocuments({
-          createdAt: { $gte: startDate, $lte: endDate }
-        }).exec()
-      ]),
-      // Query raises with pagination and population
-      Promise.all([
-        Raise.find({
-          createdAt: { $gte: startDate, $lte: endDate }
-        })
-          .populate([
-            { path: 'user', select: 'firstName lastName' },
-            { path: 'raiser', select: 'firstName lastName' }
-          ])
-          .sort({ createdAt: -1 })
-          .skip((pageNum - 1) * limitNum)
-          .limit(limitNum)
-          .lean()
-          .exec(),
-        Raise.countDocuments({
-          createdAt: { $gte: startDate, $lte: endDate }
-        })
-      ]),
-      // Query purchases with pagination and population
-      Promise.all([
-        Purchase.find({
-          dayOfOrder: { $gte: startDate, $lte: endDate }
-        })
-          .populate([
-            { path: 'userId', select: 'firstName lastName' },
-            { path: 'productId', select: 'name price' }
-          ])
-          .sort({ dayOfOrder: -1 })
-          .skip((pageNum - 1) * limitNum)
-          .limit(limitNum)
-          .lean()
-          .exec(),
-        Purchase.countDocuments({
-          dayOfOrder: { $gte: startDate, $lte: endDate }
-        })
-      ])
+    const [orders, totalOrders, raises, totalRaises] = await Promise.all([
+      prisma.order.findMany({
+        where: { createdAt: { gte: startDate, lte: endDate } },
+        include: { user: true, bartender: true, items: { include: { product: true } } },
+        orderBy: { createdAt: 'desc' },
+        skip: (pageNum - 1) * limitNum,
+        take: limitNum,
+      }),
+      prisma.order.count({ where: { createdAt: { gte: startDate, lte: endDate } } }),
+      prisma.raise.findMany({
+        where: { createdAt: { gte: startDate, lte: endDate } },
+        include: { user: true, raiser: true },
+        orderBy: { createdAt: 'desc' },
+        skip: (pageNum - 1) * limitNum,
+        take: limitNum,
+      }),
+      prisma.raise.count({ where: { createdAt: { gte: startDate, lte: endDate } } }),
     ]);
+    const purchases: any[] = [];
+    const totalPurchases = 0;
 
     // Calculate total items across all transaction types
     const totalItems = Number(totalOrders || 0) + Number(totalRaises || 0) + Number(totalPurchases || 0);
@@ -161,18 +111,18 @@ export default defineEventHandler(async (event) => {
       } : undefined;
 
       return {
-        _id: order._id.toString(),
+        _id: String(order.id),
         type: 'order',
         displayAmount: order.total,
         user: userInfo,
         bartender: bartenderInfo,
-        products: (order.products || []).map((p: any) => ({
-          _id: p.productId?._id?.toString() || '',
-          name: p.productId?.name || 'Unknown Product',
-          price: p.productId?.price || 0,
+        products: (order.items || []).map((p: any) => ({
+          _id: String(p.product?.id || ''),
+          name: p.product?.name || 'Unknown Product',
+          price: p.product?.price || 0,
           quantity: p.count || 0
         })),
-        paymentMethod: order.paymentMethod,
+        paymentMethod: 'unknown',
         createdAt: order.createdAt,
         updatedAt: order.updatedAt
       };
@@ -180,7 +130,7 @@ export default defineEventHandler(async (event) => {
 
     // Transform raises to transactions
     const raiseTransactions = (raises || []).map((raise: any): Transaction => ({
-      _id: raise._id.toString(),
+      _id: String(raise.id),
       type: 'raise',
       displayAmount: raise.amount,
       user: {

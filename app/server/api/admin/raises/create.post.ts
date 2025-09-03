@@ -1,11 +1,11 @@
-import { Raise } from "@/server/models/raise";
-import User from "@/server/models/user";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
     const session = await getUserSession(event);
-    const admin_id = session.user;
+    const adminUser = session?.user as { id?: number | string; _id?: string } | undefined;
+    const admin_id = Number(adminUser?.id ?? adminUser?._id);
 
     const userId = body.userId;
 
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
     const amount = body.amount;
 
     // Find user to raise
-    const user = await User.findById(userId);
+    const user = await prisma.user.findUnique({ where: { id: Number(userId) } });
     if (!user) {
       throw createError({
         statusCode: 404,
@@ -53,18 +53,9 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const raise = new Raise({
-      user: userId,
-      amount: amount,
-      raiser: admin_id,
-      paymentMethod: paymentMethod,
-    });
-    await raise.save();
-
-    // Update user balance
-    const updatedUser = await user.raise(amount);
-
-    return { newBalance: updatedUser.balance };
+    const created = await prisma.raise.create({ data: { userId: user.id, raiserId: admin_id, amount, paymentMethod, dayOfOrder: new Date() } });
+    const updated = await prisma.user.update({ where: { id: user.id }, data: { balance: { increment: amount } } });
+    return { newBalance: updated.balance };
   } catch (error) {
     console.error("Operation error:", error);
 

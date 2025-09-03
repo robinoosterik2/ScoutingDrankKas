@@ -1,6 +1,4 @@
-import { Order } from "@/server/models/order";
-import { Raise } from "@/server/models/raise";
-import { Purchase } from "@/server/models/purchase";
+import prisma from "~/server/utils/prisma";
 import { getDateRangeFromQuery } from "~/server/utils/dateFilters";
 
 export default defineEventHandler(async (event) => {
@@ -8,64 +6,15 @@ export default defineEventHandler(async (event) => {
     const { startDate, endDate } = getDateRangeFromQuery(event);
 
     // Run all aggregations in parallel
-    const [totalSales, totalRaised, totalPurchases, totalOrders] =
-      await Promise.all([
-        // Get total sales
-        Order.aggregate([
-          {
-            $match: {
-              createdAt: { $gte: startDate, $lt: endDate },
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              total: { $sum: "$total" },
-              count: { $sum: 1 },
-            },
-          },
-        ]),
+    const [salesAgg, raisesAgg, ordersCount] = await Promise.all([
+      prisma.order.aggregate({ _sum: { total: true }, where: { createdAt: { gte: startDate, lt: endDate } } }),
+      prisma.raise.aggregate({ _sum: { amount: true }, where: { createdAt: { gte: startDate, lt: endDate } } }),
+      prisma.order.count({ where: { createdAt: { gte: startDate, lt: endDate } } }),
+    ]);
 
-        // Get total raised
-        Raise.aggregate([
-          {
-            $match: {
-              createdAt: { $gte: startDate, $lt: endDate },
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              total: { $sum: "$amount" },
-            },
-          },
-        ]),
-
-        // Get total purchases
-        Purchase.aggregate([
-          {
-            $match: {
-              dayOfOrder: { $gte: startDate, $lt: endDate },
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              total: { $sum: "$price" },
-            },
-          },
-        ]),
-
-        // Get total order count (separate from sales as we need the full count)
-        Order.countDocuments({
-          createdAt: { $gte: startDate, $lt: endDate },
-        }),
-      ]);
-
-    const salesTotal = totalSales[0]?.total || 0;
-    const raisesTotal = totalRaised[0]?.total || 0;
-    const purchasesTotal = totalPurchases[0]?.total || 0;
-    const ordersCount = totalOrders;
+    const salesTotal = salesAgg._sum.total || 0;
+    const raisesTotal = raisesAgg._sum.amount || 0;
+    const purchasesTotal = 0;
 
     return {
       totalRevenue: salesTotal,

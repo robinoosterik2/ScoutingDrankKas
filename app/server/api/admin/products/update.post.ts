@@ -1,6 +1,5 @@
 import { defineEventHandler } from "h3";
-import { Product } from "@/server/models/product";
-import { Category } from "@/server/models/category";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -53,7 +52,7 @@ export default defineEventHandler(async (event) => {
         body: { message: "Invalid category" },
       };
     } else {
-      const found = await Category.findById(categories[i]);
+      const found = await prisma.category.findUnique({ where: { id: Number(categories[i]) } });
       if (!found) {
         return {
           status: 400,
@@ -67,25 +66,31 @@ export default defineEventHandler(async (event) => {
   }
 
   // Update if id exists
-  let found = await Product.findById(body.id);
+  let found = await prisma.product.findUnique({ where: { id: Number(body.id) } });
   if (found) {
-    found.name = name;
-    found.price = price;
-    found.description = description;
-    found.stock = stock;
-    found.ageRestriction = ageRestriction;
-    // Handle packSize - it can be null or a positive number
-    if (body.packSize !== undefined) {
-      found.packSize = body.packSize > 0 ? body.packSize : null;
-    }
-    await found.save();
+    await prisma.product.update({
+      where: { id: Number(body.id) },
+      data: {
+        name,
+        price: Number(price),
+        description,
+        stock,
+        ageRestriction,
+        packSize: body.packSize !== undefined ? (body.packSize > 0 ? body.packSize : null) : undefined,
+        categories: {
+          // reset and set categories
+          deleteMany: {},
+          create: categories.map((cid: string) => ({ categoryId: Number(cid) })),
+        },
+      },
+    });
     return {
       status: 200,
-      body: found,
+      body: await prisma.product.findUnique({ where: { id: Number(body.id) } }),
     };
   }
   // Create if name does not exist
-  found = await Product.findOne({ name: body.name });
+  const dup = await prisma.product.findFirst({ where: { name: body.name } });
   if (found) {
     return {
       status: 400,
@@ -97,8 +102,18 @@ export default defineEventHandler(async (event) => {
   if (body.packSize !== undefined) {
     body.packSize = body.packSize > 0 ? body.packSize : null;
   }
-  const product = new Product(body);
-  await product.save();
+  const product = await prisma.product.create({
+    data: {
+      name,
+      price: Number(price),
+      description,
+      stock,
+      ageRestriction,
+      packSize: body.packSize ?? null,
+      imageUrl,
+      categories: { create: categories.map((cid: string) => ({ categoryId: Number(cid) })) },
+    },
+  });
   return {
     status: 200,
     body: product,

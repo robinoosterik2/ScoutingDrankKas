@@ -1,5 +1,5 @@
 import { defineEventHandler } from 'h3';
-import { Category } from '@/server/models/category';
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
     const { id } = event.context.params || {};
@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
         throw new Error("Category ID is required");
     }
 
-    const category = await Category.findById(id)
+    const category = await prisma.category.findUnique({ where: { id: Number(id) } })
 
     if (!category) {
         throw new Error("Category not found");

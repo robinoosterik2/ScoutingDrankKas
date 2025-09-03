@@ -1,10 +1,4 @@
-import { Category } from "@/server/models/category";
-import Log from "@/server/models/log";
-import {
-  LOG_ACTIONS,
-  LOG_CATEGORIES,
-  LOG_TARGET_OBJECTS,
-} from "@/server/models/constants/log.constants";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -12,40 +6,27 @@ export default defineEventHandler(async (event) => {
     const user = await getUserSession(event);
 
     const { name, ageRestriction } = body;
-    const categoryExists = await Category.findOne({ name: name });
+    const categoryExists = await prisma.category.findFirst({ where: { name } });
     if (categoryExists) {
       throw createError({
         statusCode: 400,
         statusMessage: "Category already exists",
       });
     }
-    const category = new Category({ name, ageRestriction });
-    const log = new Log({
-      executor: user.user?._id,
-      action: LOG_ACTIONS.CATEGORY_CREATED,
-      targetObject: {
-        type: LOG_TARGET_OBJECTS.CATEGORY,
-        id: category._id,
-        snapshot: category.toObject(),
+    const created = await prisma.category.create({ data: { name, ageRestriction } });
+    // Optionally log
+    await prisma.log.create({
+      data: {
+        executorId: Number(user.user?.id ?? user.user?._id) || undefined,
+        action: 'category_created',
+        level: 'info',
+        category: 'category',
+        targetType: 'Category',
+        targetId: created.id,
+        description: `User created a new category: ${created.name}`,
       },
-      changes: [
-        {
-          field: "name",
-          oldValue: null,
-          newValue: category.name,
-        },
-        {
-          field: "ageRestriction",
-          oldValue: null,
-          newValue: category.ageRestriction,
-        },
-      ],
-      description: `User created a new category: ${category.name}`,
-      category: LOG_CATEGORIES.CATEGORY,
     });
-    await log.save();
-    await category.save();
-    return body;
+    return created;
   } catch (error) {
     console.error("Failed to create category", error);
     throw createError({

@@ -1,15 +1,7 @@
-import mongoose from 'mongoose';
-import { connectDB, disconnectDB } from '../utils/mongoose.js';
 import { seedDatabase, type SeederCounts } from '../server/utils/seedUtils.js';
-
-// Connect to MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/scoutingdrankkas';
 
 async function runSeeder() {
   try {
-    await connectDB(MONGODB_URI);
-    console.log('Connected to MongoDB');
-    
     const counts = getCountsFromArgs();
     console.log('Starting database seeding with counts:', counts);
     
@@ -22,8 +14,6 @@ async function runSeeder() {
       orders: result.orders.length,
       roles: result.roles.length
     });
-    
-    await disconnectDB();
     process.exit(0);
   } catch (error) {
     console.error('Error seeding database:', error);

@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody, createError } from "h3";
-import User from "@/server/models/user";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const user = await getUserSession(event);
@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "missing userId" });
   }
 
-  const userToBeAnonymized = await User.findById(userId);
+  const userToBeAnonymized = await prisma.user.findUnique({ where: { id: Number(userId) } });
   if (!userToBeAnonymized) {
     throw createError({ statusCode: 404, statusMessage: "User not found" });
   }
@@ -23,13 +23,16 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  userToBeAnonymized.username = `anonymized_${Date.now()}`;
-  userToBeAnonymized.email = `anonymized_${userId}@example.com`;
-  userToBeAnonymized.firstName = "Anonymized";
-  userToBeAnonymized.lastName = "Anonymized";
-  userToBeAnonymized.active = false;
-
-  await userToBeAnonymized.save();
+  await prisma.user.update({
+    where: { id: userToBeAnonymized.id },
+    data: {
+      username: `anonymized_${Date.now()}`,
+      email: `anonymized_${userId}@example.com`,
+      firstName: 'Anonymized',
+      lastName: 'Anonymized',
+      active: false,
+    },
+  });
 
   return { message: "User anonymized successfully" };
 });

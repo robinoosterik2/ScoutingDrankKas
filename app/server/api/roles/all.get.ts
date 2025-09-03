@@ -1,9 +1,9 @@
 import { defineEventHandler } from "h3";
-import { CustomRole } from "@/server/models/customRole";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async () => {
   try {
-    const customRoles = await CustomRole.find();
+    const customRoles = await prisma.customRole.findMany({ orderBy: { roleName: 'asc' } });
     return customRoles;
   } catch (error) {
     throw createError({ statusCode: 500, statusMessage: "Error while fetching custom roles"});

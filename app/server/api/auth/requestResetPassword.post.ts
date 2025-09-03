@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import User from "~/server/models/user";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   // Parse the request body to extract the email
@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Find the user by email
-  const user = await User.findOne({ email });
+  const user = await prisma.user.findFirst({ where: { email } });
   if (!user) {
     throw createError({ statusCode: 404, message: "User not found" });
   }
@@ -24,9 +24,7 @@ export default defineEventHandler(async (event) => {
   const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // Token valid for 1 hour
 
   // Store token in the user document
-  user.resetPasswordToken = resetTokenHash;
-  user.resetPasswordExpires = resetTokenExpiry;
-  await user.save();
+  await prisma.user.update({ where: { id: user.id }, data: { resetPasswordToken: resetTokenHash, resetPasswordExpires: resetTokenExpiry } });
 
   // Construct the reset URL
   const baseUrl = process.env.BASE_URL || "http://localhost";

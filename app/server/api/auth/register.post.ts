@@ -1,6 +1,5 @@
 import { defineEventHandler, readBody } from "h3";
-import User from "@/server/models/user";
-import { Settings } from "@/server/models/settings";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -19,26 +18,21 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  if (await User.findOne({ username: normalizedUsername })) {
+  if (await prisma.user.findFirst({ where: { username: normalizedUsername } })) {
     throw createError({
       statusCode: 400,
       statusMessage: "Username already exists",
     });
   }
 
-  if (await User.findOne({ email: normalizedEmail })) {
+  if (await prisma.user.findFirst({ where: { email: normalizedEmail } })) {
     throw createError({
       statusCode: 400,
       statusMessage: "Email already exists",
     });
   }
 
-  if (
-    await User.findOne({
-      firstName: normalizedFirstName,
-      lastName: normalizedLastName,
-    })
-  ) {
+  if (await prisma.user.findFirst({ where: { firstName: normalizedFirstName, lastName: normalizedLastName } })) {
     throw createError({
       statusCode: 400,
       statusMessage: "User already has an account",
@@ -60,30 +54,23 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const settings = new Settings({
-      language: "nl",
-      darkMode: true,
-      speedMode: false,
+    const hashed = await hashPassword(password);
+    const settings = await prisma.settings.create({ data: { language: 'nl', darkMode: true, speedMode: false } });
+    const user = await prisma.user.create({
+      data: {
+        username: normalizedUsername,
+        email: normalizedEmail,
+        firstName: normalizedFirstName,
+        lastName: normalizedLastName,
+        password: hashed,
+        settingsId: settings.id,
+        active: true,
+      },
     });
-    await settings.save();
-    const user = new User({
-      username: normalizedUsername,
-      email: normalizedEmail,
-      firstName: normalizedFirstName,
-      lastName: normalizedLastName,
-      password: password,
-      settings: settings._id,
-    });
-    await user.save();
-    await setUserSession(event, { user, loggedInAt: Date.now() });
+    await setUserSession(event, { user: { id: user.id, _id: String(user.id), email: user.email, username: user.username, firstName: user.firstName, lastName: user.lastName }, loggedInAt: Date.now() });
     return {
       message: "User created successfully",
-      user: {
-        username: user.username,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
+      user: { username: normalizedUsername, email: normalizedEmail, firstName: normalizedFirstName, lastName: normalizedLastName },
     };
   } catch (error) {
     throw createError({

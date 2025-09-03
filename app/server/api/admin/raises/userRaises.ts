@@ -1,15 +1,16 @@
 import { defineEventHandler } from "h3";
-import { Raise } from "@/server/models/raise";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const recentRaises = await Raise.find({ user: body.userId })
-      .sort({ createdAt: -1 })
-      .limit(body.limit || 5)
-      .populate('raiser', 'firstName lastName') // Populate the raiser field with the firstName and lastName of the user
-      .exec();
-    return recentRaises;
+    const recentRaises = await prisma.raise.findMany({
+      where: { userId: Number(body.userId) },
+      orderBy: { createdAt: 'desc' },
+      take: body.limit || 5,
+      include: { raiser: { select: { id: true, firstName: true, lastName: true } } },
+    });
+    return recentRaises.map(r => ({ ...r, user: r.userId, raiser: r.raiser }));
   } catch (error) {
     throw createError({
       statusCode: 500,

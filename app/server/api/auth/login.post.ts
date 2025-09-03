@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody, createError } from "h3";
-import User from "@/server/models/user";
+import { hasPermission, findUserByUsername } from "~/server/utils/authPrisma";
 
 interface CustomError {
   statusCode?: number;
@@ -32,9 +32,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const user = await User.findOne({
-      username: { $regex: new RegExp(`^${normalizedUsername}$`, "i") },
-    });
+    const user = await findUserByUsername(normalizedUsername);
     if (!user) {
       throw { statusCode: 401, statusMessage: "User not found" };
     }
@@ -45,15 +43,22 @@ export default defineEventHandler(async (event) => {
     }
 
     const [isAdmin, isStam] = await Promise.all([
-      User.hasPermission(user.id, "admin"),
-      User.hasPermission(user.id, "stam"),
+      hasPermission(user.id, "admin"),
+      hasPermission(user.id, "stam"),
     ]);
 
     if (body.rememberMe) {
       await setUserSession(
         event,
         {
-          user,
+          user: {
+            id: user.id,
+            _id: String(user.id),
+            email: user.email,
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+          },
           loggedInAt: Date.now(),
           isAdmin,
           isStam,
@@ -68,7 +73,14 @@ export default defineEventHandler(async (event) => {
       await setUserSession(
         event,
         {
-          user,
+          user: {
+            id: user.id,
+            _id: String(user.id),
+            email: user.email,
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+          },
           loggedInAt: Date.now(),
           isAdmin,
           isStam,
@@ -90,7 +102,7 @@ export default defineEventHandler(async (event) => {
         firstName: user.firstName,
         lastName: user.lastName,
         loggedInAt: user.loggedInAt,
-        role: user.role,
+        role: undefined,
         permissions: {
           admin: isAdmin,
           stam: isStam,

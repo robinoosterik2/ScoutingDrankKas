@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody, createError } from 'h3';
-import { CustomRole } from '@/server/models/customRole';
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
     // Read the request body
@@ -12,23 +12,20 @@ export default defineEventHandler(async (event) => {
     }
 
     // Find and update the custom role
-    const role = await CustomRole.findById(id);
+    const role = await prisma.customRole.findUnique({ where: { id: Number(id) } });
     if (!role) {
         throw createError({ statusCode: 404, statusMessage: "Role not found" });
     }
 
-    role.roleName = roleName;
-    role.roleDescription = roleDescription;
-    role.rolePermissions = rolePermissions;
-    await role.save();
+    await prisma.customRole.update({ where: { id: role.id }, data: { roleName, roleDescription, rolePermissions: JSON.stringify(rolePermissions) } });
 
     return {
         message: "Role updated successfully",
         role: {
-            id: role._id,
-            roleName: role.roleName,
-            roleDescription: role.roleDescription,
-            rolePermissions: role.rolePermissions,
+            id: role.id,
+            roleName,
+            roleDescription,
+            rolePermissions,
         },
     };
 });

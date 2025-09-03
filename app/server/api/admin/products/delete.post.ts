@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import { Product } from "@/server/models/product";
+import prisma from "~/server/utils/prisma";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const product = await Product.findById(id);
+    const product = await prisma.product.findUnique({ where: { id: Number(id) } });
 
     if (!product) {
       throw createError({
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    await Product.findByIdAndDelete(id);
+    await prisma.product.delete({ where: { id: Number(id) } });
     return { message: `Successfully deleted product: ${product.name}` };
   } catch (error: any) {
     // If it's already an H3 error, rethrow it

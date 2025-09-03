@@ -1,0 +1,170 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// --- Domain models migrated from Mongoose ---
+
+model User {
+  id                   Int       @id @default(autoincrement())
+  email                String    @unique
+  username             String    @unique
+  firstName            String
+  lastName             String
+  password             String
+  loggedInAt           DateTime  @default(now())
+  active               Boolean   @default(true)
+  balance              Int       @default(0)
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+
+  roleId Int?
+  role   CustomRole? @relation(fields: [roleId], references: [id])
+
+  settingsId Int?
+  settings   Settings? @relation(fields: [settingsId], references: [id])
+
+  orders          Order[] @relation("UserOrders")
+  bartendedOrders Order[] @relation("BartenderOrders")
+  raises          Raise[] @relation("UserRaises")
+  raisedBy        Raise[] @relation("RaiserRaises")
+  logs            Log[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CustomRole {
+  id              Int    @id @default(autoincrement())
+  roleName        String @unique
+  roleDescription String
+  rolePermissions String?
+  users           User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Settings {
+  id        Int     @id @default(autoincrement())
+  language  String  @default("nl")
+  darkMode  Boolean @default(true)
+  speedMode Boolean @default(false)
+
+  users User[]
+}
+
+model Category {
+  id             Int      @id @default(autoincrement())
+  name           String   @unique
+  ageRestriction Boolean
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  products ProductOnCategory[]
+}
+
+model Product {
+  id                Int      @id @default(autoincrement())
+  name              String   @unique
+  description       String
+  price             Int
+  ageRestriction    Boolean  @default(false)
+  stock             Int      @default(0)
+  packSize          Int?
+  imageUrl          String   @default("/images/placeholder.jpg")
+  totalOrders       Int      @default(0)
+  totalQuantitySold Int      @default(0)
+  recentOrders      String?
+  popularityScore   Float    @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  categories ProductOnCategory[]
+  orderItems OrderItem[]
+}
+
+model ProductOnCategory {
+  productId  Int
+  categoryId Int
+
+  product  Product  @relation(fields: [productId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@id([productId, categoryId])
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  bartenderId Int?
+  total       Int
+  dayOfOrder  DateTime
+
+  user      User        @relation("UserOrders", fields: [userId], references: [id])
+  bartender User?       @relation("BartenderOrders", fields: [bartenderId], references: [id])
+  items     OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  orderId   Int
+  productId Int
+  count     Int
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@id([orderId, productId])
+}
+
+enum PaymentMethod {
+  cash
+  pin
+}
+
+model Raise {
+  id            Int           @id @default(autoincrement())
+  userId        Int
+  raiserId      Int?
+  amount        Int
+  paymentMethod PaymentMethod @default(cash)
+  dayOfOrder    DateTime
+
+  user   User  @relation("UserRaises", fields: [userId], references: [id])
+  raiser User? @relation("RaiserRaises", fields: [raiserId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Log {
+  id                    Int       @id @default(autoincrement())
+  executorId            Int?
+  executor              User?     @relation(fields: [executorId], references: [id])
+  action                String
+  level                 String
+  category              String
+  targetType            String
+  targetId              Int?
+  snapshot              String?
+  changes               String?
+  description           String
+  metadata              String?
+  retentionUntil        DateTime?
+  tags                  String?
+  severity              String?
+  containsSensitiveData Boolean   @default(false)
+  archived              Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}

@@ -1,9 +1,9 @@
 import { defineEventHandler } from "h3";
-import { Product } from "@/server/models/product";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async () => {
   try {
-    const products = await Product.find();
+    const products = await prisma.product.findMany({ orderBy: { name: 'asc' } });
     return products;
   } catch (error) {
     throw createError({

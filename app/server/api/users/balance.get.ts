@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery } from "h3";
-import User from "@/server/models/user";
+import prisma from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const { userId } = getQuery(event);
@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const user = await User.findById(userId).select("balance");
+  const user = await prisma.user.findUnique({ where: { id: Number(userId) }, select: { balance: true } });
 
   if (!user) {
     throw createError({ statusCode: 404, statusMessage: "User not found" });
