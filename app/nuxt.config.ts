@@ -70,9 +70,11 @@ export default defineNuxtConfig({
     experimental: {
       wasm: true,
     },
-    // Ensure Prisma client is bundled correctly
+    // Keep Prisma client and its internal .prisma folder external during bundling
+    // to avoid resolver errors like: Invalid module ".prisma" is not a valid package name
+    moduleSideEffects: ["@prisma/client"],
     rollupConfig: {
-      external: [],
+      external: ["@prisma/client", ".prisma", ".prisma/client"],
     },
   },
 });
