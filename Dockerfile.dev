@@ -1,41 +1,87 @@
-FROM node:18 AS base
-WORKDIR /app
-# Enable pnpm via corepack
-RUN corepack enable && corepack prepare pnpm@latest --activate
-COPY app/pnpm-lock.yaml app/package.json ./
-RUN pnpm install --frozen-lockfile
-COPY app .
+# =======================================
+# Development Stage
+# =======================================
+FROM node:18-slim AS development
 
-FROM base AS builder
-# Generate Prisma client BEFORE building
+# Set environment variables
+ENV NODE_ENV=development
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_OPTIONS=--max_old_space_size=4096
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Set working directory
+WORKDIR /app
+
+# Copy only package files for better layer caching
+COPY app/package.json app/pnpm-lock.yaml* ./
+
+# Install dependencies
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile --prefer-offline
+
+# Copy the rest of the application
+COPY app/ .
+
+# Expose ports
+EXPOSE 3000 24678
+
+# Default command (can be overridden in docker-compose)
+CMD ["pnpm", "run", "dev"]
+
+# =======================================
+# Builder Stage (for production)
+# =======================================
+FROM development AS builder
+
+# Generate Prisma client
 RUN pnpm prisma generate
+
+# Build the application
 RUN pnpm run build
 
-FROM node:18 AS production
-WORKDIR /app
+# =======================================
+# Production Stage
+# =======================================
+FROM node:18-slim AS production
+
+# Set environment variables
 ENV NODE_ENV=production
-ENV DATABASE_URL=file:/var/data/prod.db
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_OPTIONS=--max_old_space_size=2048
+
+# Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
+# Set working directory
+WORKDIR /app
+
 # Copy package files
-COPY --from=builder /app/pnpm-lock.yaml /app/package.json ./
+COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
 
-# Install all dependencies (include dev for Prisma CLI), then prune later
-RUN pnpm install --frozen-lockfile
+# Install production dependencies only
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile --prod --prefer-offline
 
-# Copy prisma schema first
-COPY --from=builder /app/prisma ./prisma
-
-# Generate Prisma client in production environment
-RUN pnpm prisma generate
-
-# Copy the built application (now Prisma client matches)
+# Copy built application
 COPY --from=builder /app/.output ./.output
 
-# Prune dev deps, then clean pnpm store
-RUN pnpm prune --prod && pnpm store prune
+# Copy Prisma schema and generate client
+COPY --from=builder /app/prisma ./prisma
+RUN pnpm prisma generate
 
+# Clean up
+RUN pnpm store prune
+
+# Expose port
 EXPOSE 3000
 
-# Run migrations against the SQLite file on the mounted disk, then start Nitro
-CMD ["sh", "-c", "pnpm exec prisma migrate deploy || pnpm exec prisma db push; node .output/server/index.mjs"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
+
+# Start command
+CMD ["node", ".output/server/index.mjs"]

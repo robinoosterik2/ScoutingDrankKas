@@ -1,34 +1,55 @@
+version: '3.8'
+
 services:
-  nuxtjs:
+  app:
+    container_name: drankkas-dev
     build:
+      context: .
       dockerfile: Dockerfile.dev
-    restart: always
+      target: development
+      cache_from:
+        - node:18
+    restart: unless-stopped
     env_file:
       - .env.dev
     environment:
-      NODE_ENV: "development"
-      CI: "true"
-      # Ensure devDependencies are installed inside the container
+      NODE_ENV: development
+      CI: "false"
       NPM_CONFIG_PRODUCTION: "false"
       npm_config_production: "false"
       PNPM_CONFIG_PROD: "false"
-      # Optionally disable Nuxt ESLint module inside the container
       DISABLE_NUXT_ESLINT: "true"
+      WATCHPACK_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
     volumes:
-      - ./app:/app # Map your local app folder to the container
+      - ./app:/app
       - /app/node_modules
       - /app/.nuxt
+      - /app/.output
     ports:
-      - "80:3000"
+      - "3000:3000"
+      - "24678:24678" # Vite HMR port
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    working_dir: /app
     command: >
       sh -c "
-      pnpm install --frozen-lockfile && \
-      pnpm dlx prisma@6.15.0 generate && \
-      pnpm dlx prisma@6.15.0 db push && \
+      pnpm install --frozen-lockfile && 
+      pnpm prisma generate && 
+      pnpm prisma db push --skip-generate && 
       pnpm run dev
       "
     networks:
       - drankkas
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
 
 networks:
   drankkas:

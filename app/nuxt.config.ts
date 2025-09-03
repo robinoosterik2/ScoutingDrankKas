@@ -21,13 +21,56 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
 
+  // Build configuration
   build: {
     transpile: ["@prisma/client"],
+    // Enable faster builds in development
+    cache: process.env.NODE_ENV !== 'production',
+    // Enable parallel builds
+    parallel: true,
+    // Enable CSS source maps in development only
+    cssSourceMap: process.env.NODE_ENV !== 'production',
   },
 
+  // Vite configuration
   vite: {
+    // Faster HMR in Docker
+    server: {
+      watch: {
+        usePolling: true,
+        interval: 100,
+      },
+      hmr: {
+        protocol: 'ws',
+        host: '0.0.0.0',
+        port: 24678,
+      },
+    },
+    // Optimize dependencies
+    optimizeDeps: {
+      include: ['@prisma/client'],
+      exclude: ['@prisma/engines'],
+    },
+    // SSR configuration
     ssr: {
       noExternal: ["nodemailer"],
+      // Optimize SSR build
+      target: 'node',
+      format: 'esm',
+    },
+    // Build optimization
+    build: {
+      target: 'esnext',
+      minify: 'esbuild',
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor': ['vue', 'vue-router', 'pinia'],
+            'prisma': ['@prisma/client'],
+          },
+        },
+      },
     },
   },
 
