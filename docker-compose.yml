@@ -7,15 +7,25 @@ services:
       - .env.dev
     environment:
       NODE_ENV: "development"
+      CI: "true"
+      # Ensure devDependencies are installed inside the container
+      NPM_CONFIG_PRODUCTION: "false"
+      npm_config_production: "false"
+      PNPM_CONFIG_PROD: "false"
+      # Optionally disable Nuxt ESLint module inside the container
+      DISABLE_NUXT_ESLINT: "true"
     volumes:
-      - ./app:/app  # Map your local app folder to the container
+      - ./app:/app # Map your local app folder to the container
       - /app/node_modules
       - /app/.nuxt
     ports:
-      - '80:3000'
+      - "80:3000"
     command: >
       sh -c "
-      pnpm prisma:generate && pnpm exec prisma migrate deploy || pnpm db:push && pnpm run dev
+      pnpm install --frozen-lockfile && \
+      pnpm dlx prisma@6.15.0 generate && \
+      pnpm dlx prisma@6.15.0 db push && \
+      pnpm run dev
       "
     networks:
       - drankkas

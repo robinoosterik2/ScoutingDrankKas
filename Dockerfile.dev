@@ -20,8 +20,8 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 # Copy package files
 COPY --from=builder /app/pnpm-lock.yaml /app/package.json ./
 
-# Install production dependencies
-RUN pnpm install --frozen-lockfile --production
+# Install all dependencies (include dev for Prisma CLI), then prune later
+RUN pnpm install --frozen-lockfile
 
 # Copy prisma schema first
 COPY --from=builder /app/prisma ./prisma
@@ -32,8 +32,8 @@ RUN pnpm prisma generate
 # Copy the built application (now Prisma client matches)
 COPY --from=builder /app/.output ./.output
 
-# Clean up
-RUN pnpm store prune
+# Prune dev deps, then clean pnpm store
+RUN pnpm prune --prod && pnpm store prune
 
 EXPOSE 3000
 

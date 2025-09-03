@@ -1,5 +1,22 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
+const modules: string[] = [
+  "@nuxt/image",
+  "@nuxt/fonts",
+  "@nuxtjs/color-mode",
+  "nuxt-auth-utils",
+  "@nuxtjs/i18n",
+  "@nuxt/test-utils/module",
+];
+
+// Only load ESLint module in dev and when not explicitly disabled
+if (
+  process.env.NODE_ENV !== "production" &&
+  process.env.DISABLE_NUXT_ESLINT !== "true"
+) {
+  modules.unshift("@nuxt/eslint");
+}
+
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
@@ -14,15 +31,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: [
-    "@nuxt/image",
-    "@nuxt/eslint",
-    "@nuxt/fonts",
-    "@nuxtjs/color-mode",
-    "nuxt-auth-utils",
-    "@nuxtjs/i18n",
-    "@nuxt/test-utils/module",
-  ],
+  modules,
 
   runtimeConfig: {
     authSecret: process.env.AUTH_SECRET,
