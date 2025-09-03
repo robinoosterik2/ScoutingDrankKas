@@ -1,5 +1,4 @@
-import pkg from '@prisma/client'
-const { PrismaClient } = pkg
+import { PrismaClient } from '@prisma/client'
 
 // Ensure a single PrismaClient instance across hot-reloads in dev
 // and across server utilities.
@@ -13,3 +12,4 @@ export function getPrisma(): PrismaClient {
 }
 
 export default getPrisma()
+
