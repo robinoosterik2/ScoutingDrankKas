@@ -2,7 +2,7 @@ services:
   - type: web
     name: nuxt-app
     runtime: node
-    region: oregon
+    region: frankfurt
     plan: starter
     rootDir: app
 
