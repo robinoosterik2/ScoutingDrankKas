@@ -17,7 +17,10 @@
         @click.stop
         @input="onSearch"
         @focus="openDropdown"
-      >
+        @keydown.enter="selectFirstItem"
+        @keydown.escape="handleEscape"
+        @keydown="$emit('number-key', $event)"
+      />
 
       <!-- Display selected item when not searching -->
       <div
@@ -84,7 +87,7 @@ const props = defineProps({
   },
   itemText: {
     type: String,
-    default: 'name',
+    default: "name",
   },
   placeholder: {
     type: String,
@@ -92,57 +95,78 @@ const props = defineProps({
   },
   searchKeys: {
     type: Array,
-    default: () => ['name', 'firstName', 'lastName', 'email'],
+    default: () => ["name", "firstName", "lastName", "email"],
   },
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "number-key"]);
 
 const isOpen = ref(false);
 const searchTerm = ref("");
 const inputRef = ref(null);
 
+// Expose focus method to parent component
+const focusInput = () => {
+  nextTick(() => {
+    if (inputRef.value) {
+      inputRef.value.focus();
+      openDropdown();
+    }
+  });
+};
+
+// Expose the focus method
+defineExpose({
+  focusInput,
+  openDropdown: () => {
+    openDropdown();
+  },
+});
+
 // Format item display text
 const formatItem = (item) => {
   if (!item) return "";
-  
+
   // If item has firstName and lastName, format as name
   if (item.firstName || item.lastName) {
-    const firstName = item.firstName || '';
-    const lastName = item.lastName || '';
-    const username = item.username ? `(${item.username})` : '';
+    const firstName = item.firstName || "";
+    const lastName = item.lastName || "";
+    const username = item.username ? `(${item.username})` : "";
     return `${firstName} ${lastName} ${username}`.trim();
   }
-  
+
   // Otherwise try to use the specified text property or default to 'name'
-  return item[props.itemText] || item.name || item.id || '';
+  return item[props.itemText] || item.name || item.id || "";
 };
 
 const selectedItem = computed(() => {
   if (!props.modelValue) return null;
-  
+
   // Handle both string IDs and object values
-  const id = typeof props.modelValue === 'string' || typeof props.modelValue === 'number'
-    ? props.modelValue 
-    : props.modelValue?.id;
-    
+  const id =
+    typeof props.modelValue === "string" || typeof props.modelValue === "number"
+      ? props.modelValue
+      : props.modelValue?.id;
+
   return props.items.find((item) => item.id === id) || null;
 });
 
 const selectedItemDisplay = computed(() => {
-  if (!selectedItem.value) return '';
+  if (!selectedItem.value) return "";
   return formatItem(selectedItem.value);
 });
 
 const filteredItems = computed(() => {
   if (!searchTerm.value) return props.items;
-  
+
   const term = searchTerm.value.toLowerCase();
-  return props.items.filter(item => {
+  return props.items.filter((item) => {
     // Check each search key for a match
-    return props.searchKeys.some(key => {
+    return props.searchKeys.some((key) => {
       const value = item[key];
-      return value && typeof value === 'string' && value.toLowerCase().includes(term);
+      return (
+        value && typeof value === "string" && value.toLowerCase().includes(term)
+      );
     });
   });
 });
@@ -178,11 +202,23 @@ const handleContainerClick = () => {
 
 const selectItem = (item) => {
   if (!item) return;
-  
+
   // Always emit just the ID to keep it simple and consistent
   emit("update:modelValue", item.id);
   searchTerm.value = "";
   isOpen.value = false;
+};
+
+const selectFirstItem = () => {
+  if (filteredItems.value.length > 0 && isOpen.value) {
+    selectItem(filteredItems.value[0]);
+  }
+};
+
+const handleEscape = () => {
+  isOpen.value = false;
+  searchTerm.value = "";
+  inputRef.value?.blur();
 };
 
 const handleBackdropClick = () => {

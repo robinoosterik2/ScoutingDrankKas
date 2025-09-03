@@ -6,6 +6,7 @@ export default defineEventHandler(async (event) => {
   try {
     // Read and validate request body
     const body = await readBody(event);
+    console.log(body);
     if (!body.productId || !body.quantity || body.price === undefined) {
       throw createError({
         statusCode: 400,

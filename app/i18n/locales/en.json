@@ -55,7 +55,8 @@
     "noCategories": "No categories found",
     "selectCategories": "Select categories...",
     "title": "Manage Categories",
-    "updateCategory": "Update Category"
+    "updateCategory": "Update Category",
+    "confirmDelete": "Are you sure you want to delete this category? This action cannot be undone."
   },
   "common": {
     "noResults": "No results found",
@@ -63,7 +64,7 @@
     "orderedBy": "Ordered By",
     "orderId": "Order ID",
     "cancel": "Cancel",
-    "optional": "(Optional)"
+    "optional": "Optional"
   },
   "confirm": "Confirm",
   "customer": "Customer",
@@ -77,6 +78,7 @@
   "description": "Description",
   "edit": "Edit",
   "email": "Email",
+  "logout": "Logout",
   "endDate": "End Date",
   "executor": "Executor",
   "exportFailed": "Export failed. Please try again.",
@@ -184,7 +186,8 @@
     "allCategories": "All Categories",
     "recentOrders": "Recent Orders",
     "quickReorder": "Quick Reorder",
-    "noRecentOrders": "No recent orders"
+    "noRecentOrders": "No recent orders",
+    "userRecentOrders": "Your Recent Orders"
   },
   "pagination": {
     "showing": "Showing",
@@ -254,6 +257,10 @@
     "tryDifferentFilters": "Try adjusting your filters or add a new purchase",
     "noPurchases": "No purchases found",
     "purchaseAdded": "Purchase added successfully",
+    "packOf": "Pack of",
+    "totalItems": "Total Items",
+    "amount": "Amount",
+    "buyButton": "Buy",
     "errors": {
       "addFailed": "Failed to add purchase. Please try again.",
       "fetchPurchases": "Failed to load purchases. Please try again.",

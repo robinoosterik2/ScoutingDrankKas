@@ -31,7 +31,7 @@
                 :src="product.imageUrl"
                 :alt="product.name"
                 class="h-16 w-16 object-cover rounded"
-              >
+              />
               <div>
                 <h3 class="font-medium text-gray-800 dark:text-white">
                   {{ product.name }}
@@ -84,8 +84,9 @@
           {{ $t("cancel") }}
         </button>
         <button
+          ref="confirmButton"
           :disabled="selectedProducts.length === 0"
-          class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           @click="confirmOrder"
         >
           {{ $t("confirm") }}
@@ -96,7 +97,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 
 const { format } = useMoney();
 
@@ -110,6 +111,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["close", "confirm"]);
+
+const confirmButton = ref(null);
 
 const selectedProducts = computed(() => {
   return props.products.filter(
@@ -126,4 +129,16 @@ const totalAmount = computed(() => {
 const confirmOrder = () => {
   emit("confirm");
 };
+
+// Auto-focus the confirm button when modal opens
+watch(
+  () => props.show,
+  (newValue) => {
+    if (newValue && selectedProducts.value.length > 0) {
+      nextTick(() => {
+        confirmButton.value?.focus();
+      });
+    }
+  }
+);
 </script>

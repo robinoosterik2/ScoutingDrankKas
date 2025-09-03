@@ -2,7 +2,7 @@
   <!-- Page Title and Create Button -->
   <CTitle :text="$t('products.title')" />
   <div class="flex justify-between items-center mb-2">
-    <BackLink to="/admin" :back-page="$t('admin.title')"/>
+    <BackLink to="/admin" :back-page="$t('admin.title')" />
 
     <div class="">
       <DashboardLink
@@ -19,7 +19,7 @@
       v-model="searchQuery"
       :placeholder="$t('Search') + '...'"
       class="flex-grow px-3 py-2 mb-4 me-4 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-    >
+    />
 
     <select
       v-model="selectedCategory"
@@ -85,6 +85,17 @@
     <template #cell-description="{ row: product }">
       <div class="text-sm text-gray-500 dark:text-gray-300">
         {{ product.description }}
+      </div>
+    </template>
+
+    <template #cell-stock="{ row: product }">
+      <div
+        :class="{
+          'text-red-600 dark:text-red-400 font-semibold': product.stock <= 0,
+          'text-gray-900 dark:text-white': product.stock > 0,
+        }"
+      >
+        {{ product.stock }}
       </div>
     </template>
 

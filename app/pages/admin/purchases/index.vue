@@ -260,14 +260,7 @@
                   <div class="flex flex-col space-y-1">
                     <span
                       class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                      :class="{
-                        'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400':
-                          row.quantity >= 12,
-                        'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400':
-                          row.quantity >= 6 && row.quantity < 12,
-                        'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400':
-                          row.quantity < 6,
-                      }"
+                      :class="'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'"
                     >
                       {{ row.quantity }}
                       {{
@@ -497,12 +490,6 @@ const tableColumns = computed(() => [
     field: "notes",
     sortable: false,
   },
-  {
-    header: "Actions",
-    field: "actions",
-    sortable: false,
-    align: "center",
-  },
 ]);
 
 const tablePagination = computed(() => ({
@@ -526,6 +513,7 @@ const closePurchaseModal = () => {
 
 const handlePurchaseSubmit = async (purchaseData) => {
   try {
+    console.log(purchaseData);
     // Parse price properly
     const processedData = {
       ...purchaseData,

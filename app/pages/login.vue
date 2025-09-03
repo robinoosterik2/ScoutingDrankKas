@@ -22,7 +22,7 @@
             required
             class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
             :placeholder="$t('login.usernamePlaceholder')"
-          >
+          />
           <div id="errorUsername" class="text-red-500 mt-1" />
         </div>
         <div>
@@ -35,7 +35,7 @@
             required
             class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
             placeholder="••••••••••"
-          >
+          />
           <div id="errorPassword" class="text-red-500 mt-1" />
         </div>
         <!-- Remember me -->
@@ -45,7 +45,7 @@
             v-model="rememberMe"
             type="checkbox"
             class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-          >
+          />
           <label
             for="rememberMe"
             class="ml-2 block text-sm text-gray-900 dark:text-white"

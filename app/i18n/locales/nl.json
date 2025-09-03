@@ -22,7 +22,7 @@
     "ProductManagementDescription": "Beheer producten, maak nieuwe producten en werk productdetails bij.",
     "rolesManagement": "Beheer rollen",
     "RolesManagementDescription": "Beheer gebruikersrollen, maak nieuwe rollen en definieer machtigingen.",
-    "title": "Beheer Dashboard",
+    "title": "Admin",
     "UserManagement": "Beheer gebruikers",
     "UserManagementDescription": "Beheer gebruikersaccounts, reset wachtwoorden en beheer gebruikersrechten.",
     "viewAllCategories": "Bekijk alle categorieën",
@@ -54,7 +54,8 @@
     "noCategories": "Geen categorieën gevonden",
     "selectCategories": "Selecteer categorieën...",
     "title": "Beheer categorieën",
-    "updateCategory": "Categorie bijwerken"
+    "updateCategory": "Categorie bijwerken",
+    "confirmDelete": "Weet je zeker dat je deze categorie wilt verwijderen?"
   },
   "common": {
     "noResults": "Geen resultaten gevonden",
@@ -62,7 +63,7 @@
     "orderedBy": "Besteld door",
     "orderId": "Bestelnummer",
     "cancel": "Annuleren",
-    "optional": "(Optioneel)"
+    "optional": "Optioneel"
   },
   "confirm": "Bevestigen",
   "customer": "Klant",
@@ -78,6 +79,7 @@
   "email": "email",
   "endDate": "Einddatum",
   "executor": "Uitvoerder",
+  "logout": "Uitloggen",
   "exportFailed": "Exporteren mislukt",
   "exportFormat": "Export formaat",
   "exportLogs": "Exporteer logboeken",
@@ -161,7 +163,8 @@
     "recentOrders": "Recente bestellingen",
     "searchProducts": "Producten zoeken",
     "selectUser": "Selecteer Gebruiker",
-    "title": "Bestellingen"
+    "title": "Bestellingen",
+    "userRecentOrders": "Recente bestellingen"
   },
   "pagination": {
     "showing": "Toon",
@@ -222,6 +225,10 @@
     "tryDifferentFilters": "Pas je filters aan of voeg een nieuwe aankoop toe",
     "noPurchases": "Geen aankopen gevonden",
     "purchaseAdded": "Aankoop succesvol toegevoegd",
+    "packOf": "Standaard hoeveelheid",
+    "totalItems": "Totaal aantal",
+    "amount": "Bedrag",
+    "buyButton": "Aankopen",
     "errors": {
       "addFailed": "Toevoegen van aankoop mislukt. Probeer het opnieuw.",
       "fetchPurchases": "Laden van aankopen mislukt. Probeer het opnieuw.",

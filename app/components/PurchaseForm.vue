@@ -142,7 +142,7 @@
                           v-model="usePackSize"
                           type="checkbox"
                           class="w-5 h-5 rounded-md border-2 border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 focus:ring-offset-2 dark:bg-gray-700 dark:border-gray-600 transition-all duration-200"
-                        >
+                        />
                         <span
                           class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
                         >
@@ -225,7 +225,7 @@
                             type="number"
                             min="1"
                             class="w-20 px-3 py-2 text-center text-lg font-semibold border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
-                          >
+                          />
                           <button
                             type="button"
                             class="w-10 h-10 rounded-lg bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all duration-200 flex items-center justify-center group"
@@ -310,7 +310,7 @@
                             type="number"
                             min="1"
                             class="w-20 px-3 py-2 text-center text-lg font-semibold border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
-                          >
+                          />
                           <button
                             type="button"
                             class="w-10 h-10 rounded-lg bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 flex items-center justify-center group"
@@ -354,20 +354,25 @@
                       >
                     </div>
                     <input
-                      v-model.number="formData.price"
-                      type="number"
-                      min="0"
-                      step="0.01"
+                      v-model="priceInput"
+                      type="text"
                       class="w-full pl-12 pr-5 py-4 text-lg border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:ring-3 focus:ring-indigo-200 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-500 shadow-sm hover:shadow-md [appearance:textfield]"
+                      :class="{
+                        'border-red-500 focus:border-red-500': !isPriceValid,
+                      }"
                       placeholder="0.00"
+                      @input="handlePriceInput"
+                      @blur="formatPrice"
                       required
-                    >
+                    />
                   </div>
                 </div>
 
                 <!-- Purchase Date & Time -->
                 <div class="space-y-3">
-                  <label class="block text-sm font-semibold text-gray-800 dark:text-gray-200">
+                  <label
+                    class="block text-sm font-semibold text-gray-800 dark:text-gray-200"
+                  >
                     {{ $t("purchases.purchaseDateTime") }}
                     <span class="text-red-500">*</span>
                   </label>
@@ -376,7 +381,7 @@
                     type="datetime-local"
                     required
                     class="w-full px-5 py-4 text-base border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:ring-3 focus:ring-indigo-200 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-500 shadow-sm hover:shadow-md"
-                  >
+                  />
                 </div>
 
                 <!-- Notes -->
@@ -480,23 +485,18 @@ const props = defineProps({
 
 const emit = defineEmits(["close", "submit"]);
 
-// Form state
+// Form state - using single variables instead of formData object
 const selectedProduct = ref(null);
 const packQuantity = ref(1);
 const quantity = ref(1);
 const usePackSize = ref(false);
 const price = ref(0);
+const priceInput = ref("0.00");
+const isPriceValid = ref(true);
 const notes = ref("");
 const purchaseDate = ref(new Date().toISOString().slice(0, 16));
 const isSubmitting = ref(false);
 const modalPanel = ref(null);
-
-const formData = ref({
-  productId: "",
-  quantity: 1,
-  price: 0,
-  notes: "",
-});
 
 // Computed properties
 const selectedProductPackSize = computed(() => {
@@ -529,15 +529,6 @@ watch(usePackSize, (newVal) => {
   }
 });
 
-watch(selectedProduct, (newProduct) => {
-  if (newProduct) {
-    formData.value.productId = newProduct.id;
-    packQuantity.value = 1;
-    quantity.value = 1;
-    usePackSize.value = false;
-  }
-});
-
 // Methods
 const closeModal = () => {
   if (!isSubmitting.value) {
@@ -554,20 +545,88 @@ const handleOverlayClick = (event) => {
 const resetForm = () => {
   selectedProduct.value = null;
   price.value = 0;
+  priceInput.value = "0.00";
+  isPriceValid.value = true;
   quantity.value = 1;
   packQuantity.value = 1;
   usePackSize.value = false;
   notes.value = "";
   purchaseDate.value = new Date().toISOString().slice(0, 16);
-  formData.value = {
-    productId: "",
-    quantity: 1,
-    price: 0,
-    notes: "",
-  };
+};
+
+const handlePriceInput = (event) => {
+  const value = event.target.value;
+
+  // Allow only numbers, dots, commas, and backspace/delete
+  const sanitized = value.replace(/[^0-9.,]/g, "");
+
+  // Replace comma with dot for decimal separator
+  const normalized = sanitized.replace(",", ".");
+
+  // Ensure only one decimal separator
+  const parts = normalized.split(".");
+  if (parts.length > 2) {
+    // Keep only the first decimal point
+    const reconstructed = parts[0] + "." + parts.slice(1).join("");
+    event.target.value = reconstructed;
+    priceInput.value = reconstructed;
+  } else {
+    event.target.value = normalized;
+    priceInput.value = normalized;
+  }
+
+  // Validate the price
+  validatePrice(priceInput.value);
+};
+
+const validatePrice = (value) => {
+  if (value === "" || value === "0" || value === "0.") {
+    isPriceValid.value = true;
+    price.value = 0;
+    return;
+  }
+
+  const numValue = parseFloat(value);
+  if (isNaN(numValue) || numValue < 0) {
+    isPriceValid.value = false;
+    price.value = 0;
+  } else {
+    isPriceValid.value = true;
+    price.value = numValue;
+  }
+};
+
+const formatPrice = () => {
+  if (
+    priceInput.value === "" ||
+    priceInput.value === "0" ||
+    priceInput.value === "0."
+  ) {
+    priceInput.value = "0.00";
+    price.value = 0;
+    isPriceValid.value = true;
+    return;
+  }
+
+  const numValue = parseFloat(priceInput.value);
+  if (!isNaN(numValue) && numValue >= 0) {
+    priceInput.value = numValue.toFixed(2);
+    price.value = numValue;
+    isPriceValid.value = true;
+  } else {
+    priceInput.value = "0.00";
+    price.value = 0;
+    isPriceValid.value = false;
+  }
 };
 
 const submitStockPurchase = async () => {
+  // Validate price before submitting
+  if (!isPriceValid.value || price.value <= 0) {
+    isPriceValid.value = false;
+    return;
+  }
+
   isSubmitting.value = true;
 
   try {
@@ -580,12 +639,14 @@ const submitStockPurchase = async () => {
     const purchaseData = {
       productId: selectedProduct.value.id,
       quantity: totalQuantity,
-      price: parseFloat(price.value),
+      price: price.value, // Now guaranteed to be a valid number
       notes: notes.value,
       packSize: usePackSize.value ? selectedProductPackSize.value : undefined,
       packQuantity: usePackSize.value ? packQuantity.value : undefined,
       dayOfOrder: formattedDate.toISOString(),
     };
+
+    console.log("Submitting purchase data:", purchaseData); // Debug log
 
     emit("submit", purchaseData);
     resetForm();

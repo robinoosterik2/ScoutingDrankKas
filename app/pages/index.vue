@@ -61,6 +61,7 @@
       <div class="flex items-center">
         <div class="flex-1">
           <CSelect
+            ref="userSelectRef"
             v-model="selectedUser"
             :items="users"
             :placeholder="$t('orders.selectUser')"
@@ -71,6 +72,7 @@
                 selectedUser = val || null;
               }
             "
+            @number-key="handleNumberKeys"
           />
         </div>
         <!-- Order Button -->
@@ -90,11 +92,17 @@
     <div class="flex items-center mb-4 space-x-4">
       <!-- Search Bar -->
       <input
+        ref="productSearchRef"
         v-model="searchQuery"
         type="text"
         :placeholder="$t('orders.searchProducts')"
         class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-      >
+        @keydown.enter.exact="addFirstProduct"
+        @keydown.enter.shift="placeOrderIfReady"
+        @keydown.enter.ctrl="decrementFirstProduct"
+        @keydown.escape="clearProductSearch"
+        @keydown="handleNumberKeys"
+      />
       <!-- Category Filter -->
       <select
         v-model="selectedCategory"
@@ -140,7 +148,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed, watch, nextTick } from "vue";
 import ProductCard from "@/components/ProductCard.vue";
 
 const { user } = useUserSession();
@@ -156,10 +164,20 @@ const showConfirmation = ref(false);
 const searchQuery = ref("");
 const selectedCategory = ref("");
 const productCounts = ref({});
+const userSelectRef = ref(null);
+const productSearchRef = ref(null);
 
 // Watch for changes in selected user
 watch(selectedUser, async () => {
   await fetchRecentOrders();
+  // Focus product search when user is selected
+  if (selectedUser.value) {
+    nextTick(() => {
+      if (productSearchRef.value) {
+        productSearchRef.value.focus();
+      }
+    });
+  }
 });
 
 const fetchRecentOrders = async () => {
@@ -227,6 +245,13 @@ onMounted(async () => {
     });
 
     await fetchRecentOrders();
+
+    // Auto-focus the user select after data is loaded
+    nextTick(() => {
+      if (userSelectRef.value) {
+        userSelectRef.value.focusInput();
+      }
+    });
   } catch (error) {
     console.error("Failed to fetch data:", error);
     alert("Failed to fetch data. Please try again.");
@@ -237,6 +262,12 @@ const getProductCount = (product) => productCounts.value[product.id] || 0;
 
 const incrementProduct = (product) => {
   productCounts.value[product.id] += 1;
+  // Keep focus on product search for fast ordering
+  nextTick(() => {
+    if (productSearchRef.value) {
+      productSearchRef.value.focus();
+    }
+  });
 };
 
 const decrementProduct = (product) => {
@@ -264,6 +295,57 @@ const totalSelectedProducts = computed(() => {
   );
 });
 
+const addFirstProduct = () => {
+  if (filteredProducts.value.length > 0) {
+    const firstProduct = filteredProducts.value[0];
+    incrementProduct(firstProduct);
+    // Keep the search term so you can add more of the same product
+  }
+};
+
+const decrementFirstProduct = () => {
+  if (filteredProducts.value.length > 0) {
+    const firstProduct = filteredProducts.value[0];
+    decrementProduct(firstProduct);
+    // Keep the search term so you can remove more of the same product
+  }
+};
+
+const clearProductSearch = () => {
+  searchQuery.value = "";
+  if (productSearchRef.value) {
+    productSearchRef.value.blur();
+  }
+};
+
+const handleNumberKeys = (event) => {
+  // Only trigger if no search query and it's a number key 1, 2, or 3
+  if (searchQuery.value === "" && ["1", "2", "3"].includes(event.key)) {
+    event.preventDefault();
+    const orderIndex = parseInt(event.key) - 1;
+
+    if (recentOrders.value[orderIndex]) {
+      const order = recentOrders.value[orderIndex];
+      reorderItems(order.products, order);
+    }
+  }
+};
+
+const placeOrderIfReady = () => {
+  // Check if we have a selected user and products
+  if (selectedUser.value && totalSelectedProducts.value > 0) {
+    showConfirmation.value = true;
+  } else if (!selectedUser.value) {
+    // Focus back to user select if no user selected
+    nextTick(() => {
+      if (userSelectRef.value) {
+        userSelectRef.value.focusInput();
+      }
+    });
+  }
+  // If no products selected, just stay on product search (do nothing)
+};
+
 const placeOrder = async () => {
   const selectedProducts = Object.entries(productCounts.value)
     .filter(([_, count]) => count > 0)
@@ -283,6 +365,13 @@ const placeOrder = async () => {
     Object.keys(productCounts.value).forEach(
       (key) => (productCounts.value[key] = 0)
     );
+
+    // Auto-focus the user select again after placing order
+    nextTick(() => {
+      if (userSelectRef.value) {
+        userSelectRef.value.focusInput();
+      }
+    });
   } catch (error) {
     console.error("Failed to place order: ", error);
     alert("Failed to place order. Please try again.: ", error);
