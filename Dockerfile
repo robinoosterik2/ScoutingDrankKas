@@ -27,6 +27,10 @@ COPY --from=builder /app/prisma ./prisma
 
 RUN pnpm prisma generate
 
+# Ensure Nitro output can resolve Prisma's generated engines
+RUN mkdir -p .output/server/node_modules \
+  && cp -R node_modules/.prisma .output/server/node_modules/.prisma
+
 RUN pnpm store prune
 
 EXPOSE 3000
