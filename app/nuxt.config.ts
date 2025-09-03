@@ -10,6 +10,15 @@ export default defineNuxtConfig({
     },
   },
 
+  nitro: {
+    // Ensure Prisma is resolved from root node_modules at runtime,
+    // so it can find the generated client in node_modules/.prisma
+    externals: {
+      external: ["@prisma/client", "prisma"],
+      inline: [],
+    },
+  },
+
   modules: [
     "@nuxt/image",
     "@nuxt/eslint",
