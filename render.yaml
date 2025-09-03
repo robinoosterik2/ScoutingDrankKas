@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: nuxt-app
+    name: Drankkas
     runtime: node
     region: frankfurt
     plan: starter
