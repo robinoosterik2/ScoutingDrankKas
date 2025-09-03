@@ -1,32 +1,41 @@
-# Development stage
-FROM node:18
-
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+FROM node:18 AS base
+WORKDIR /app
 # Enable pnpm via corepack
 RUN corepack enable && corepack prepare pnpm@latest --activate
-
-# Set workdir
-WORKDIR /app
-
-# Install dependencies first for better caching
 COPY app/pnpm-lock.yaml app/package.json ./
-
-# Install dependencies with development tools
-RUN pnpm i --frozen-lockfile
-
-# Copy the rest of the app
+RUN pnpm install --frozen-lockfile
 COPY app .
 
-# Generate Prisma client at build time (safe in dev; compose also regenerates on start)
-RUN pnpm prisma generate || true
+FROM base AS builder
+# Generate Prisma client BEFORE building
+RUN pnpm prisma generate
+RUN pnpm run build
 
-# Set environment variables
-ENV NODE_ENV=development
-ENV HOST=0.0.0.0
-ENV PORT=3000
+FROM node:18 AS production
+WORKDIR /app
+ENV NODE_ENV=production
+ENV DATABASE_URL=file:/var/data/prod.db
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Expose Nuxt default port
+# Copy package files
+COPY --from=builder /app/pnpm-lock.yaml /app/package.json ./
+
+# Install production dependencies
+RUN pnpm install --frozen-lockfile --production
+
+# Copy prisma schema first
+COPY --from=builder /app/prisma ./prisma
+
+# Generate Prisma client in production environment
+RUN pnpm prisma generate
+
+# Copy the built application (now Prisma client matches)
+COPY --from=builder /app/.output ./.output
+
+# Clean up
+RUN pnpm store prune
+
 EXPOSE 3000
 
-# Command to run the application
-CMD ["pnpm", "run", "dev"]
+# Run migrations against the SQLite file on the mounted disk, then start Nitro
+CMD ["sh", "-c", "pnpm exec prisma migrate deploy || pnpm exec prisma db push; node .output/server/index.mjs"]
