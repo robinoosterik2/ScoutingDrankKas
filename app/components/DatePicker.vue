@@ -145,36 +145,6 @@ watch(
       </div>
     </div>
 
-    <!-- Calendar Dropdown -->
-    <transition
-      enter-active-class="transition ease-out duration-100"
-      enter-from-class="transform opacity-0 scale-95"
-      enter-to-class="transform opacity-100 scale-100"
-      leave-active-class="transition ease-in duration-75"
-      leave-from-class="transform opacity-100 scale-100"
-      leave-to-class="transform opacity-0 scale-95"
-    >
-      <div
-        v-show="isOpen"
-        class="absolute z-[9999] mt-1 w-full rounded-md bg-white dark:bg-gray-700 shadow-lg border border-gray-200 dark:border-gray-600"
-        style="z-index: 9999"
-      >
-        <input
-          ref="dateInput"
-          type="date"
-          :value="modelValue"
-          :min="min"
-          :max="max"
-          :class="{
-            'border-red-300 dark:border-red-600': error,
-            'border-gray-300 dark:border-gray-600': !error,
-          }"
-          class="w-full px-3 py-2 border-0 focus:ring-2 focus:ring-indigo-500 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-          @change="selectDate"
-        >
-      </div>
-    </transition>
-
     <!-- Error Message -->
     <p
       v-if="error && errorMessage"

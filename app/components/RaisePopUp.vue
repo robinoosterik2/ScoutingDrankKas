@@ -221,7 +221,24 @@ export default {
         });
       } catch (error) {
         console.error("Failed to raise balance", error);
-        alert("Failed to raise balance. Please try again. Error: ", error);
+        const statusMessage =
+          (error && typeof error === "object" && "data" in error && error.data && error.data.statusMessage) ||
+          (error instanceof Error ? error.message : "");
+        const i18nKey =
+          error && typeof error === "object" && "data" in error && error.data && typeof error.data.i18nKey === "string"
+            ? error.data.i18nKey
+            : null;
+        const canTranslate =
+          !!(
+            i18nKey &&
+            this.$i18n &&
+            typeof this.$i18n.te === "function" &&
+            this.$i18n.te(i18nKey)
+          );
+        const translatedMessage =
+          (canTranslate && this.$t(i18nKey)) ||
+          (statusMessage && statusMessage.length > 0 ? statusMessage : this.$t("raise.errors.unknown"));
+        alert(this.$t("raise.errors.raiseFailedWithReason", { reason: translatedMessage }));
       }
     },
     close() {

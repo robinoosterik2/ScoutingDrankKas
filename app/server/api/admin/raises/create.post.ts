@@ -28,6 +28,7 @@ export default defineEventHandler(async (event) => {
       throw createError({
         statusCode: 400,
         statusMessage: "Cannot top up yourself for security reasons",
+        data: { i18nKey: "raise.errors.selfTopUp" },
       });
     }
 
@@ -59,9 +60,12 @@ export default defineEventHandler(async (event) => {
   } catch (error) {
     console.error("Operation error:", error);
 
-    // Re-throw createError instances
+    // Let H3 errors bubble up so the frontend receives the original status/message
+    if (error instanceof Error && "statusCode" in error) {
+      throw error;
+    }
     if (error instanceof Error) {
-      return createError({
+      throw createError({
         statusCode: 500,
         statusMessage: error.message,
       });

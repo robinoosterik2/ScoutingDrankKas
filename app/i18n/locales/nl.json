@@ -254,7 +254,12 @@
     "raiseBalance": "Verhoog saldo",
     "paymentMethod": "Betalingswijze",
     "cash": "Contant",
-    "pin": "PIN"
+    "pin": "PIN",
+    "errors": {
+      "raiseFailedWithReason": "Saldo verhogen mislukt. Probeer het opnieuw. Fout: {reason}",
+      "unknown": "Onbekende fout",
+      "selfTopUp": "Je kunt om veiligheidsredenen jezelf niet opwaarderen."
+    }
   },
   "raisedBy": "Verhoogd door",
   "register": {

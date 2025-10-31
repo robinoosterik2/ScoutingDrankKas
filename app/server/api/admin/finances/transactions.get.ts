@@ -75,7 +75,7 @@ export default defineEventHandler(async (event) => {
     // Remove unused queryOptions since we're using MongoDB's native methods
 
     // Get all orders, raises, and purchases in parallel with proper population and pagination
-    const [orders, totalOrders, raises, totalRaises] = await Promise.all([
+    const [orders, totalOrders, raises, totalRaises, purchases, totalPurchases] = await Promise.all([
       prisma.order.findMany({
         where: { createdAt: { gte: startDate, lte: endDate } },
         include: { user: true, bartender: true, items: { include: { product: true } } },
@@ -92,9 +92,18 @@ export default defineEventHandler(async (event) => {
         take: limitNum,
       }),
       prisma.raise.count({ where: { createdAt: { gte: startDate, lte: endDate } } }),
+      prisma.purchase.findMany({
+        where: { dayOfOrder: { gte: startDate, lte: endDate } },
+        include: {
+          product: true,
+          user: true,
+        },
+        orderBy: { dayOfOrder: 'desc' },
+        skip: (pageNum - 1) * limitNum,
+        take: limitNum,
+      }),
+      prisma.purchase.count({ where: { dayOfOrder: { gte: startDate, lte: endDate } } }),
     ]);
-    const purchases: any[] = [];
-    const totalPurchases = 0;
 
     // Calculate total items across all transaction types
     const totalItems = Number(totalOrders || 0) + Number(totalRaises || 0) + Number(totalPurchases || 0);
@@ -147,18 +156,18 @@ export default defineEventHandler(async (event) => {
     }));
 
     // Transform purchases to transactions
-    const purchaseTransactions = (purchases || []).map((purchase: any): Transaction => ({
-      _id: purchase._id.toString(),
+    const purchaseTransactions = (purchases || []).map((purchase): Transaction => ({
+      _id: String(purchase.id),
       type: 'purchase',
-      displayAmount: purchase.price * purchase.quantity,
+      displayAmount: purchase.price,
       user: {
-        firstName: purchase.userId?.firstName,
-        lastName: purchase.userId?.lastName
+        firstName: purchase.user?.firstName,
+        lastName: purchase.user?.lastName
       },
       product: {
-        _id: purchase.productId._id.toString(),
-        name: purchase.productId.name,
-        price: purchase.productId.price,
+        _id: String(purchase.product?.id ?? ''),
+        name: purchase.product?.name ?? 'Unknown Product',
+        price: purchase.product?.price ?? 0,
         quantity: purchase.quantity
       },
       quantity: purchase.quantity,
@@ -167,7 +176,7 @@ export default defineEventHandler(async (event) => {
       packSize: purchase.packSize,
       packQuantity: purchase.packQuantity,
       dayOfOrder: purchase.dayOfOrder,
-      createdAt: purchase.dayOfOrder, // Using dayOfOrder as created at
+      createdAt: purchase.dayOfOrder,
       updatedAt: purchase.updatedAt
     }));
 

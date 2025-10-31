@@ -36,6 +36,7 @@ model User {
   raises          Raise[] @relation("UserRaises")
   raisedBy        Raise[] @relation("RaiserRaises")
   logs            Log[]
+  purchases       Purchase[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -89,6 +90,7 @@ model Product {
 
   categories ProductOnCategory[]
   orderItems OrderItem[]
+  purchases Purchase[]
 }
 
 model ProductOnCategory {
@@ -125,6 +127,22 @@ model OrderItem {
   product Product @relation(fields: [productId], references: [id])
 
   @@id([orderId, productId])
+}
+
+model Purchase {
+  id           Int      @id @default(autoincrement())
+  productId    Int
+  product      Product  @relation(fields: [productId], references: [id])
+  userId       Int?
+  user         User?    @relation(fields: [userId], references: [id])
+  quantity     Int
+  price        Int
+  packSize     Int?
+  packQuantity Int?
+  notes        String?
+  dayOfOrder   DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 enum PaymentMethod {

@@ -182,7 +182,15 @@ const { parse } = useMoney();
 
 // Get product ID from route
 const route = useRoute();
-const productId = ref(route.params.id || null);
+const initialProductId = route.params.id;
+const productId = ref(
+  initialProductId !== undefined
+    ? (() => {
+        const parsed = Number.parseInt(String(initialProductId), 10);
+        return Number.isNaN(parsed) ? null : parsed;
+      })()
+    : null
+);
 
 // Available categories state
 const availableCategories = ref([]);
@@ -208,12 +216,13 @@ onMounted(async () => {
     availableCategories.value = await $fetch("/api/categories/all", {
       method: "GET",
     });
-
+    console.log(productId.value)
     // Fetch product data if editing
-    if (productId.value) {
+    if (productId.value !== null) {
       const product = await $fetch(`/api/products/${productId.value}`, {
         method: "GET",
       });
+      console.log(product)
       formData.value = {
         name: product.name,
         description: product.description,

@@ -1,10 +1,9 @@
 import prisma from "~/server/utils/prisma";
+import { logAuditEvent } from "~/server/utils/logger";
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const user = await getUserSession(event);
-
     const { name, ageRestriction } = body;
     const categoryExists = await prisma.category.findFirst({ where: { name } });
     if (categoryExists) {
@@ -14,17 +13,13 @@ export default defineEventHandler(async (event) => {
       });
     }
     const created = await prisma.category.create({ data: { name, ageRestriction } });
-    // Optionally log
-    await prisma.log.create({
-      data: {
-        executorId: Number(user.user?.id ?? user.user?._id) || undefined,
-        action: 'category_created',
-        level: 'info',
-        category: 'category',
-        targetType: 'Category',
-        targetId: created.id,
-        description: `User created a new category: ${created.name}`,
-      },
+    await logAuditEvent({
+      event,
+      action: "category_created",
+      category: "category",
+      targetType: "Category",
+      targetId: created.id,
+      description: `Created category ${created.name} (${created.id}).`,
     });
     return created;
   } catch (error) {

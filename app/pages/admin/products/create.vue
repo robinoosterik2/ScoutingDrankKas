@@ -45,7 +45,15 @@
             type="text"
             required
             class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            :class="priceError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
+            @blur="validatePrice"
           >
+          <p
+            v-if="priceError"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
+          >
+            {{ priceError }}
+          </p>
         </div>
       </div>
 
@@ -182,12 +190,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue"; // Added onUnmounted
+import { ref, onMounted, onUnmounted, watch } from "vue"; // Added onUnmounted
 const { parse } = useMoney();
 
 // Get product ID from route
 const route = useRoute();
-const productId = ref(route.params.id || null);
+const initialProductId = route.params.id;
+const productId = ref(
+  initialProductId !== undefined
+    ? (() => {
+        const parsed = Number.parseInt(String(initialProductId), 10);
+        return Number.isNaN(parsed) ? null : parsed;
+      })()
+    : null
+);
 
 // Available categories state
 const availableCategories = ref([]);
@@ -205,6 +221,7 @@ const formData = ref({
 });
 
 const originalImageUrl = ref("/images/placeholder.jpg"); // Store the initial/fetched image URL
+const priceError = ref("");
 
 // Fetch categories on component mount
 onMounted(async () => {
@@ -215,7 +232,7 @@ onMounted(async () => {
     });
 
     // Fetch product data if editing
-    if (productId.value) {
+    if (productId.value !== null) {
       const product = await $fetch(`/api/products/${productId.value}`, {
         method: "GET",
       });
@@ -264,9 +281,50 @@ const handleImageUpload = (event) => {
   }
 };
 
+const pricePattern = /^\d+(?:[.,]\d{1,2})?$/;
+
+const validatePrice = () => {
+  const rawPrice = formData.value.price;
+
+  if (rawPrice === null || rawPrice === undefined || rawPrice === "") {
+    priceError.value = "Price is required.";
+    return false;
+  }
+
+  const normalizedPrice = String(rawPrice).replace(",", ".");
+
+  if (!pricePattern.test(normalizedPrice)) {
+    priceError.value = "Enter a valid price using up to two decimals.";
+    return false;
+  }
+
+  const parsedPrice = parse(rawPrice);
+
+  if (parsedPrice <= 0) {
+    priceError.value = "Price must be greater than zero.";
+    return false;
+  }
+
+  priceError.value = "";
+  return true;
+};
+
+watch(
+  () => formData.value.price,
+  () => {
+    if (priceError.value) {
+      validatePrice();
+    }
+  }
+);
+
 // Save product method (create or update)
 const saveProduct = async () => {
   try {
+    if (!validatePrice()) {
+      return;
+    }
+
     const finalProductData = { ...formData.value };
 
     if (formData.value.imageFile) {

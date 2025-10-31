@@ -1,21 +1,39 @@
 import { defineEventHandler, readBody, createError } from "h3";
 import prisma from "~/server/utils/prisma";
+import { logAuditEvent } from "~/server/utils/logger";
+
+type SessionUser = {
+  id?: number | string;
+  _id?: string;
+};
 
 export default defineEventHandler(async (event) => {
   try {
-    // Read and validate request body
     const body = await readBody(event);
-    console.log(body);
-    if (!body.productId || !body.quantity || body.price === undefined) {
+
+    if (!body?.productId || !body?.quantity || body.price === undefined) {
       throw createError({
         statusCode: 400,
-        statusMessage:
-          "Missing required fields: productId, quantity, and price are required",
+        statusMessage: "Missing required fields: productId, quantity, and price are required",
       });
     }
 
-    // Verify product exists
-    const product = await prisma.product.findUnique({ where: { id: Number(body.productId) } });
+    const productId = Number(body.productId);
+    const quantity = Number(body.quantity);
+    const price = Number(body.price);
+    const packSize = body.packSize !== undefined ? Number(body.packSize) : null;
+    const packQuantity = body.packQuantity !== undefined ? Number(body.packQuantity) : null;
+    const notes = typeof body.notes === "string" ? body.notes.trim() : null;
+    const dayOfOrder = body.dayOfOrder ? new Date(body.dayOfOrder) : new Date();
+
+    if (Number.isNaN(productId) || Number.isNaN(quantity) || Number.isNaN(price)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Invalid numeric values supplied for productId, quantity, or price",
+      });
+    }
+
+    const product = await prisma.product.findUnique({ where: { id: productId } });
     if (!product) {
       throw createError({
         statusCode: 404,
@@ -24,20 +42,61 @@ export default defineEventHandler(async (event) => {
     }
 
     const session = await getUserSession(event);
+    const sessionUser = session?.user as SessionUser | undefined;
+    const executorValue = sessionUser?.id ?? sessionUser?._id;
+    const parsedExecutorId =
+      executorValue !== undefined && executorValue !== null
+        ? Number(executorValue)
+        : null;
+    const executorId =
+      parsedExecutorId !== null && !Number.isNaN(parsedExecutorId)
+        ? parsedExecutorId
+        : null;
 
-    // Create new purchase
-    const purchaseDate = body.dayOfOrder
-      ? new Date(body.dayOfOrder)
-      : new Date();
-    const dayOfOrder = purchaseDate;
+    const [purchase] = await prisma.$transaction([
+      prisma.purchase.create({
+        data: {
+          productId,
+          userId: executorId ?? undefined,
+          quantity,
+          price,
+          packSize: packSize ?? undefined,
+          packQuantity: packQuantity ?? undefined,
+          notes: notes || undefined,
+          dayOfOrder,
+        },
+        include: {
+          product: true,
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              username: true,
+              email: true,
+            },
+          },
+        },
+      }),
+      prisma.product.update({
+        where: { id: productId },
+        data: {
+          stock: { increment: quantity },
+        },
+      }),
+    ]);
 
-    // Not modeled in Prisma schema: skip persisting purchase for now.
+    await logAuditEvent({
+      event,
+      executorId: executorId ?? undefined,
+      action: "purchase_created",
+      category: "inventory",
+      targetType: "Product",
+      targetId: product.id,
+      description: `Recorded purchase #${purchase.id} for product ${product.name} (${product.id}): +${quantity} units, total ${price} cents.`,
+    });
 
-    // Update product stock
-    await prisma.product.update({ where: { id: product.id }, data: { stock: { increment: Number(body.quantity) } } });
-
-    // Return created purchase with populated fields
-    return { success: true };
+    return { success: true, data: purchase };
   } catch (error: any) {
     console.error("Error creating purchase:", error);
     throw createError({

@@ -121,7 +121,7 @@ onMounted(async () => {
 
 // Edit role method (navigate to edit page)
 const editRole = (role) => {
-  navigateTo(`/admin/roles/edit/${role._id}`);
+  navigateTo(`/admin/roles/edit/${role.id}`);
 };
 
 // Open delete confirmation modal
@@ -143,7 +143,7 @@ const deleteRole = async (roleId) => {
       method: "POST",
       body: JSON.stringify({ roleId }),
     });
-    roles.value = roles.value.filter((role) => role._id !== roleId);
+    roles.value = roles.value.filter((role) => role.id !== roleId);
   } catch (error) {
     alert("Failed to delete role. Please try again.");
   }
@@ -152,7 +152,7 @@ const deleteRole = async (roleId) => {
 // Confirm delete action
 const confirmDelete = () => {
   if (roleToDelete.value) {
-    deleteRole(roleToDelete.value._id);
+    deleteRole(roleToDelete.value.id);
     closeDeleteConfirmation();
   }
 };

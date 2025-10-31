@@ -2,13 +2,22 @@ import { defineVitestConfig } from '@nuxt/test-utils/config'
 
 export default defineVitestConfig({
   test: {
-    testTimeout: 10000,
-    include: ['tests/index.test.ts'],
+    testTimeout: 30000,
+    include: ['tests/**/*.test.ts'],
+    exclude: ['tests/utils/**', 'tests/fixtures/**'],
     setupFiles: ['./tests/utils/setup.ts'],
     environment: 'nuxt',
     globals: true,
+    isolate: true,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true
+      }
+    },
     env: {
-      MONGODB_URI: process.env.MONGO_TEST_URI,
+      DATABASE_URL: 'file:./test.db',
+      NODE_ENV: 'test'
     },
   }
 })

@@ -67,6 +67,10 @@
             </label>
           </div>
         </div>
+        <div
+          id="errorRolePermissions"
+          class="text-red-500 text-sm mt-1"
+        />
 
         <div class="pt-4">
           <button
@@ -84,6 +88,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 
+const route = useRoute();
+
 const availablePermissions = ["admin", "stam", "scouting-lid", "extern"];
 
 const roleForm = ref({
@@ -92,20 +98,41 @@ const roleForm = ref({
   rolePermissions: [],
 });
 
-try {
-  const route = useRoute();
-  const roleId = ref(route.params.id);
-  const roleData = await $fetch(`/api/roles/${roleId.value}`, {
-    method: "GET",
-  });
-  roleForm.value = {
-    roleName: roleData.roleName,
-    roleDescription: roleData.roleDescription,
-    rolePermissions: roleData.rolePermissions,
-  };
-} catch (error) {
-  console.error("Failed to load role data", error);
-}
+const normalizePermissions = (permissions) => {
+  if (Array.isArray(permissions)) return permissions;
+  if (typeof permissions === "string" && permissions.length) {
+    try {
+      const parsed = JSON.parse(permissions);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.error("Failed to parse role permissions", error);
+    }
+  }
+  return [];
+};
+
+const loadRole = async () => {
+  try {
+    const roleId = route.params.id;
+    if (!roleId) return;
+
+    const roleData = await $fetch(`/api/roles/${roleId}`, {
+      method: "GET",
+    });
+
+    roleForm.value = {
+      roleName: roleData.roleName || "",
+      roleDescription: roleData.roleDescription || "",
+      rolePermissions: normalizePermissions(roleData.rolePermissions),
+    };
+  } catch (error) {
+    console.error("Failed to load role data", error);
+  }
+};
+
+onMounted(() => {
+  loadRole();
+});
 
 const togglePermission = (permission) => {
   const index = roleForm.value.rolePermissions.indexOf(permission);
@@ -140,11 +167,10 @@ const updateCustomRole = async () => {
   if (hasError) return;
 
   try {
-    const route = useRoute();
-    const roleId = ref(route.params.id);
+    const roleId = route.params.id;
     await $fetch(`/api/admin/roles/update`, {
       method: "POST",
-      body: { ...roleForm.value, id: roleId.value },
+      body: { ...roleForm.value, id: Number(roleId) },
     });
 
     navigateTo("/admin/roles");

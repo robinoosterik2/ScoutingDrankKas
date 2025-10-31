@@ -1,5 +1,6 @@
 import { defineEventHandler, readBody, createError } from 'h3';
 import prisma from "~/server/utils/prisma";
+import { logAuditEvent } from "~/server/utils/logger";
 
 export default defineEventHandler(async (event) => {
     // Read the request body
@@ -17,7 +18,15 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 404, statusMessage: "Role not found" });
     }
 
-    await prisma.customRole.update({ where: { id: role.id }, data: { roleName, roleDescription, rolePermissions: JSON.stringify(rolePermissions) } });
+    const updatedRole = await prisma.customRole.update({ where: { id: role.id }, data: { roleName, roleDescription, rolePermissions: JSON.stringify(rolePermissions) } });
+    await logAuditEvent({
+        event,
+        action: "role_updated",
+        category: "security",
+        targetType: "CustomRole",
+        targetId: updatedRole.id,
+        description: `Updated role ${updatedRole.roleName} (${updatedRole.id}).`,
+    });
 
     return {
         message: "Role updated successfully",

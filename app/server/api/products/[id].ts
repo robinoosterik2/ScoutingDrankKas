@@ -11,7 +11,15 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const product = await prisma.product.findUnique({ where: { id: Number(id) }, include: { categories: true } });
+  const productId = Number.parseInt(String(id), 10);
+  if (Number.isNaN(productId)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Product ID must be a number",
+    });
+  }
+
+  const product = await prisma.product.findUnique({ where: { id: productId }, include: { categories: true } });
   if (!product) {
     throw createError({ statusCode: 400, statusMessage: "Product not found" });
   }

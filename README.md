@@ -1,7 +1,7 @@
 # ScoutingDrankKas
 I created the ScoutingDrankKas as a system to sell and manage drinks effectively, providing a seamless experience for users and barkeepers at my scouting.
 
-I am planning on adding a lot of features to the system, but for now I am focusing on the basics. The system is built with Nuxt 3 and uses a MongoDB database.
+I am planning on adding a lot of features to the system, but for now I am focusing on the basics. The system is built with Nuxt 3 and now runs on Prisma with a SQLite database by default.
 
 It is maintained but not my main focus as I am rounding up my studies. I am open to contributions and suggestions for improvements.
 
@@ -21,7 +21,8 @@ It is maintained but not my main focus as I am rounding up my studies. I am open
 
 ## 🛠️ Tech Stack
 - **Full-Stack Framework**: [Nuxt 3](https://nuxtjs.org/)
-- **Database**: [MongoDB](https://www.mongodb.com/)
+- **ORM**: [Prisma](https://www.prisma.io/)
+- **Database (dev default)**: [SQLite](https://www.sqlite.org/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Containerization**: [Docker](https://www.docker.com/)
 - **Version Control**: [Git](https://git-scm.com/)
@@ -44,7 +45,7 @@ cd ScoutingDrankKas
 3. Install dependencies:
 
 ``` bash
-npm install
+pnpm install
 ```
 
 4. Create a `.env` file in the root directory. For an example look at `.env.example`:
@@ -62,20 +63,23 @@ docker compose up --build
 
 7. Create a superuser account:
  Sadly this work in progress. At this moment create a user, comment out the middleware checking for admin and add your own admin role :(.
+
+> **Note**  
+> You can also run the app directly without Docker by executing `pnpm prisma generate && pnpm prisma db push` followed by `pnpm run dev` inside `app/`.
 ---
 
 ## 📂 Project Structure
 
-- `/components`: Reusable Vue components.
-- `/layouts`: Layout components for different pages.
-- `/pages`: Vue pages for routing.
-- `/plugins`: Nuxt plugins for extending functionality.
-- `/store`: Vuex store for state management.
-- `/middleware`: Middleware for route handling.
-- `/assets`: CSS files for styling.
-- `/public`: Static files and assets.
-- `/server`: Server-side code and API routes.
-- `/utils`: Utility functions and helpers.
+- `/app`: Nuxt 3 frontend and server routes.
+  - `/components`: Reusable Vue components.
+  - `/layouts`: Layout components for different pages.
+  - `/pages`: Vue pages for routing.
+  - `/middleware`: Route guards and navigation logic.
+  - `/prisma`: Prisma schema and migrations for the SQLite database.
+  - `/server`: Nitro server routes, middleware, and utilities.
+  - `/utils`: Shared helpers and composables.
+- `/docker-compose.yml`: Development container configuration.
+- `/render.yaml`: Deployment configuration for Render.com.
 
 ---
 

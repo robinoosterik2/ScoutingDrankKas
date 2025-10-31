@@ -208,7 +208,13 @@ const filteredAndSortedProducts = computed(() => {
 
 // Edit product method (navigate to edit page)
 const editProduct = (product) => {
-  navigateTo(`/admin/products/edit/${product._id}`);
+  const productId = product.id ?? product._id;
+  if (productId === undefined || productId === null) {
+    console.error("Missing product identifier", product);
+    alert("Cannot edit this product because it lacks an identifier.");
+    return;
+  }
+  navigateTo(`/admin/products/edit/${productId}`);
 };
 
 // Delete confirmation modal state
@@ -240,7 +246,7 @@ const deleteProduct = async (productId) => {
       body: JSON.stringify({ productId }),
     });
     products.value = products.value.filter(
-      (product) => product._id !== productId
+      (product) => (product.id ?? product._id) !== productId
     );
   } catch (error) {
     alert("Failed to delete product. Please try again.");
@@ -250,7 +256,13 @@ const deleteProduct = async (productId) => {
 // Confirm delete action
 const confirmDelete = () => {
   if (productToDelete.value) {
-    deleteProduct(productToDelete.value._id);
+    const identifier = productToDelete.value.id ?? productToDelete.value._id;
+    if (identifier === undefined || identifier === null) {
+      console.error("Missing product identifier", productToDelete.value);
+      alert("Cannot delete this product because it lacks an identifier.");
+      return;
+    }
+    deleteProduct(identifier);
     closeDeleteConfirmation();
   }
 };

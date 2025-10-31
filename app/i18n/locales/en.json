@@ -276,7 +276,12 @@
     "enterAmount": "Enter the amount to raise the balance for the user.",
     "last5Raises": "Last 5 Raises",
     "noRaisesFound": "No raises found",
-    "raiseBalance": "Raise Balance"
+    "raiseBalance": "Raise Balance",
+    "errors": {
+      "raiseFailedWithReason": "Failed to raise balance. Please try again. Error: {reason}",
+      "unknown": "Unknown error",
+      "selfTopUp": "You cannot top up yourself for security reasons."
+    }
   },
   "raisedBy": "Raised By",
   "register": {

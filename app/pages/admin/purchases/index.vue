@@ -250,7 +250,7 @@
                     <span
                       class="text-sm font-medium text-gray-900 dark:text-white"
                     >
-                      {{ getProductName(row.productId) }}
+                      {{ getProductName(row.product) }}
                     </span>
                   </div>
                 </template>
@@ -290,10 +290,10 @@
                 <!-- User Cell -->
                 <template #cell-user="{ row }">
                   <span
-                    v-if="row.userId"
+                    v-if="row.user"
                     class="text-sm text-indigo-600 dark:text-indigo-400"
                   >
-                    {{ getUserName(row.userId) }}
+                    {{ getUserName(row.user) }}
                   </span>
                   <span v-else class="text-sm text-gray-500 dark:text-gray-400">
                     Unknown User
@@ -352,23 +352,6 @@
                 <!-- Empty State Slot -->
                 <template #empty>
                   <div class="text-center py-8">
-                    <div
-                      class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center"
-                    >
-                      <svg
-                        class="w-8 h-8 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="1.5"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    </div>
                     <h3
                       class="text-lg font-medium text-gray-900 dark:text-white mb-2"
                     >
@@ -597,11 +580,21 @@ const fetchUsersAndProducts = async () => {
       $fetch("/api/products/all"),
     ]);
     users.value = usersResponse;
-    selectableProducts.value = productsResponse.map((p) => ({
-      id: p._id,
-      name: p.name,
-      price: p.price,
-      packSize: p.packSize || 1,
+    selectableProducts.value = productsResponse.map((p) => {
+      const numericId =
+        typeof p.id === "number"
+          ? p.id
+          : Number(p._id ?? (typeof p.id === "string" ? p.id : undefined));
+      return {
+        id: !Number.isNaN(numericId) ? numericId : String(p._id ?? p.id),
+        name: p.name,
+        price: p.price,
+        packSize: p.packSize || 1,
+      };
+    });
+    products.value = productsResponse.map((p) => ({
+      ...p,
+      _id: p._id ?? String(p.id),
     }));
   } catch (error) {
     console.error("Error fetching users or products:", error);
@@ -609,13 +602,6 @@ const fetchUsersAndProducts = async () => {
       t("purchases.errors.fetchUsersAndProducts"),
       "error"
     );
-  }
-};
-
-// Pagination methods
-const goToPage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
   }
 };
 
@@ -627,11 +613,31 @@ const viewPurchase = (purchase) => {
 
 // Helper methods
 const getProductName = (purchaseProduct) => {
+  if (!purchaseProduct) {
+    return "Unknown Product";
+  }
+
+  if (typeof purchaseProduct === "string" || typeof purchaseProduct === "number") {
+    const productMatch = products.value.find(
+      (product) => product.id === purchaseProduct || product._id === String(purchaseProduct)
+    );
+    return productMatch ? productMatch.name : "Unknown Product";
+  }
+
   if (purchaseProduct.name) {
     return purchaseProduct.name;
   }
-  const product = products.value.find((p) => p.id === purchaseProduct.id);
-  return product ? product.name : "Unknown Product";
+
+  if (purchaseProduct.id) {
+    const product = products.value.find(
+      (p) => p.id === purchaseProduct.id || p._id === String(purchaseProduct.id)
+    );
+    if (product) {
+      return product.name;
+    }
+  }
+
+  return "Unknown Product";
 };
 
 const getUserName = (purchaseUser) => {
@@ -639,6 +645,12 @@ const getUserName = (purchaseUser) => {
     return `${purchaseUser.firstName} ${purchaseUser.lastName}`;
   }
   return "Unknown User";
+};
+// Pagination methods
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
 };
 
 const formatDate = (dateString) => {

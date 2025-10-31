@@ -1,5 +1,6 @@
 import { defineEventHandler, readBody } from "h3";
 import prisma from "~/server/utils/prisma";
+import { logAuditEvent } from "~/server/utils/logger";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -68,6 +69,15 @@ export default defineEventHandler(async (event) => {
       },
     });
     await setUserSession(event, { user: { id: user.id, _id: String(user.id), email: user.email, username: user.username, firstName: user.firstName, lastName: user.lastName }, loggedInAt: Date.now() });
+    await logAuditEvent({
+      event,
+      executorId: user.id,
+      action: "user_created",
+      category: "user",
+      targetType: "User",
+      targetId: user.id,
+      description: `Registered new user ${user.username} (${user.email}).`,
+    });
     return {
       message: "User created successfully",
       user: { username: normalizedUsername, email: normalizedEmail, firstName: normalizedFirstName, lastName: normalizedLastName },

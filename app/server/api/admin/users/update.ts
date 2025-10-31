@@ -1,5 +1,6 @@
 import { defineEventHandler, readBody } from "h3";
 import prisma from "~/server/utils/prisma";
+import { logAuditEvent } from "~/server/utils/logger";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -43,7 +44,7 @@ export default defineEventHandler(async (event) => {
         throw new Error("User with this first and last name already exists");
       }
     }
-    await prisma.user.update({
+    const updated = await prisma.user.update({
       where: { id: user.id },
       data: {
         email: email || user.email,
@@ -52,6 +53,15 @@ export default defineEventHandler(async (event) => {
         lastName: lastName || user.lastName,
         roleId: roleObject ? roleObject.id : user.roleId,
       },
+    });
+
+    await logAuditEvent({
+      event,
+      action: "user_updated",
+      category: "user",
+      targetType: "User",
+      targetId: updated.id,
+      description: `Updated user ${updated.username} (${updated.id}).`,
     });
 
     return { message: "User updated successfully" };

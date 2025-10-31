@@ -1,5 +1,6 @@
 import { defineEventHandler } from "h3";
 import prisma from "~/server/utils/prisma";
+import { logAuditEvent } from "~/server/utils/logger";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -68,7 +69,7 @@ export default defineEventHandler(async (event) => {
   // Update if id exists
   let found = await prisma.product.findUnique({ where: { id: Number(body.id) } });
   if (found) {
-    await prisma.product.update({
+    const updated = await prisma.product.update({
       where: { id: Number(body.id) },
       data: {
         name,
@@ -84,9 +85,17 @@ export default defineEventHandler(async (event) => {
         },
       },
     });
+    await logAuditEvent({
+      event,
+      action: "product_updated",
+      category: "product",
+      targetType: "Product",
+      targetId: updated.id,
+      description: `Updated product ${updated.name} (${updated.id}).`,
+    });
     return {
       status: 200,
-      body: await prisma.product.findUnique({ where: { id: Number(body.id) } }),
+      body: updated,
     };
   }
   // Create if name does not exist
@@ -113,6 +122,14 @@ export default defineEventHandler(async (event) => {
       imageUrl,
       categories: { create: categories.map((cid: string) => ({ categoryId: Number(cid) })) },
     },
+  });
+  await logAuditEvent({
+    event,
+    action: "product_created",
+    category: "product",
+    targetType: "Product",
+    targetId: product.id,
+    description: `Created product ${product.name} (${product.id}).`,
   });
   return {
     status: 200,

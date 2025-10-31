@@ -1,5 +1,6 @@
 import { defineEventHandler, createError, readBody } from "h3";
 import prisma from "~/server/utils/prisma";
+import { logAuditEvent } from "~/server/utils/logger";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -66,7 +67,7 @@ export default defineEventHandler(async (event) => {
 
     await prisma.user.update({ where: { id: user.id }, data: { balance: { decrement: totalInCents } } });
 
-    await prisma.order.create({
+    const order = await prisma.order.create({
       data: {
         userId: user.id,
         bartenderId: Number(bartenderId),
@@ -79,6 +80,14 @@ export default defineEventHandler(async (event) => {
           })),
         },
       },
+    });
+    await logAuditEvent({
+      event,
+      action: "order_created",
+      category: "order",
+      targetType: "Order",
+      targetId: order.id,
+      description: `Order ${order.id} created for user ${user.username} (${user.id}) totaling ${totalInCents} cents.`,
     });
     return { message: "Order created successfully" };
   } catch (error) {
