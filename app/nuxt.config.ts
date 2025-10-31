@@ -66,7 +66,7 @@ export default defineNuxtConfig({
       rollupOptions: {
         output: {
           manualChunks: {
-            'vendor': ['vue', 'vue-router', 'pinia'],
+            'vendor': ['vue', 'vue-router'],
             'prisma': ['@prisma/client'],
           },
         },
