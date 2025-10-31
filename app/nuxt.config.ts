@@ -23,7 +23,6 @@ export default defineNuxtConfig({
 
   // Build configuration
   build: {
-    transpile: ["@prisma/client"],
     // Enable faster builds in development
     cache: process.env.NODE_ENV !== 'production',
     // Enable parallel builds
@@ -48,7 +47,6 @@ export default defineNuxtConfig({
     },
     // Optimize dependencies
     optimizeDeps: {
-      include: ['@prisma/client'],
       exclude: ['@prisma/engines'],
     },
     // SSR configuration
@@ -67,7 +65,6 @@ export default defineNuxtConfig({
         output: {
           manualChunks: {
             'vendor': ['vue', 'vue-router'],
-            'prisma': ['@prisma/client'],
           },
         },
       },
