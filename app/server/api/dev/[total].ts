@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 import { faker } from "@faker-js/faker";
 
 export default defineEventHandler(async (event) => {

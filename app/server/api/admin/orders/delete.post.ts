@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -13,7 +13,10 @@ export default defineEventHandler(async (event) => {
     }
 
     // First, get the order to be deleted
-    const order = await prisma.order.findUnique({ where: { id: Number(id) }, include: { items: true } });
+    const order = await prisma.order.findUnique({
+      where: { id: Number(id) },
+      include: { items: true },
+    });
 
     if (!order) {
       throw createError({ statusCode: 404, statusMessage: "Order not found" });
@@ -26,18 +29,27 @@ export default defineEventHandler(async (event) => {
     }
 
     // Add the order total back to user's balance
-    await prisma.user.update({ where: { id: user.id }, data: { balance: { increment: order.total } } });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { balance: { increment: order.total } },
+    });
 
     // Revert product metrics for each product in the order
     for (const item of order.items) {
-      const product = await prisma.product.findUnique({ where: { id: item.productId } });
+      const product = await prisma.product.findUnique({
+        where: { id: item.productId },
+      });
       if (product) {
-        const recent = product.recentOrders ? JSON.parse(product.recentOrders) : [];
+        const recent = product.recentOrders
+          ? JSON.parse(product.recentOrders)
+          : [];
         // Can't reliably match exact historical entry; just keep within 30 days
         const thirty = new Date();
         thirty.setDate(thirty.getDate() - 30);
         const pruned = recent.filter((o: any) => new Date(o.date) >= thirty);
-        const popularity = pruned.reduce((s: number, o: any) => s + (o.quantity || 0), 0) * 0.7 + Math.max(0, product.totalQuantitySold - item.count) * 0.3;
+        const popularity =
+          pruned.reduce((s: number, o: any) => s + (o.quantity || 0), 0) * 0.7 +
+          Math.max(0, product.totalQuantitySold - item.count) * 0.3;
         await prisma.product.update({
           where: { id: product.id },
           data: {

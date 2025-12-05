@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody, createError } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 import { logAuditEvent } from "~/server/utils/logger";
 
 type SessionUser = {
@@ -14,7 +14,8 @@ export default defineEventHandler(async (event) => {
     if (!body?.productId || !body?.quantity || body.price === undefined) {
       throw createError({
         statusCode: 400,
-        statusMessage: "Missing required fields: productId, quantity, and price are required",
+        statusMessage:
+          "Missing required fields: productId, quantity, and price are required",
       });
     }
 
@@ -22,18 +23,26 @@ export default defineEventHandler(async (event) => {
     const quantity = Number(body.quantity);
     const price = Number(body.price);
     const packSize = body.packSize !== undefined ? Number(body.packSize) : null;
-    const packQuantity = body.packQuantity !== undefined ? Number(body.packQuantity) : null;
+    const packQuantity =
+      body.packQuantity !== undefined ? Number(body.packQuantity) : null;
     const notes = typeof body.notes === "string" ? body.notes.trim() : null;
     const dayOfOrder = body.dayOfOrder ? new Date(body.dayOfOrder) : new Date();
 
-    if (Number.isNaN(productId) || Number.isNaN(quantity) || Number.isNaN(price)) {
+    if (
+      Number.isNaN(productId) ||
+      Number.isNaN(quantity) ||
+      Number.isNaN(price)
+    ) {
       throw createError({
         statusCode: 400,
-        statusMessage: "Invalid numeric values supplied for productId, quantity, or price",
+        statusMessage:
+          "Invalid numeric values supplied for productId, quantity, or price",
       });
     }
 
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
     if (!product) {
       throw createError({
         statusCode: 404,

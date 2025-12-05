@@ -1,5 +1,8 @@
-import { getDateRangeFromQuery, fillMissingDataPoints } from "~/server/utils/dateFilters";
-import prisma from "~/server/utils/prisma";
+import {
+  getDateRangeFromQuery,
+  fillMissingDataPoints,
+} from "~/server/utils/dateFilters";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -24,7 +27,10 @@ export default defineEventHandler(async (event) => {
       const date = purchase.dayOfOrder;
       const key = range.isMonthlyView
         ? date.toISOString().split("T")[0]
-        : `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-01`;
+        : `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+            2,
+            "0"
+          )}-01`;
       purchasesMap.set(key, (purchasesMap.get(key) || 0) + purchase.price);
     }
 
@@ -45,10 +51,10 @@ export default defineEventHandler(async (event) => {
       month: range.month,
     };
   } catch (error) {
-    console.error('Error in purchases chart endpoint:', error);
+    console.error("Error in purchases chart endpoint:", error);
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch purchases chart data',
+      statusMessage: "Failed to fetch purchases chart data",
     });
   }
 });

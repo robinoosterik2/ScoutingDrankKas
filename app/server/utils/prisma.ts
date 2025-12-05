@@ -1,15 +1,19 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3"; // Needs to be sqlite for now
+import { PrismaClient } from "@prisma/client";
 
-// Ensure a single PrismaClient instance across hot-reloads in dev
-// and across server utilities.
-let prisma: PrismaClient | undefined
+const prismaClientSingleton = () => {
+  const adapter = new PrismaBetterSqlite3({
+    url: process.env.DATABASE_URL!,
+  });
+  return new PrismaClient({ adapter });
+};
 
-export function getPrisma(): PrismaClient {
-  if (!prisma) {
-    prisma = new PrismaClient()
-  }
-  return prisma
-}
+type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
 
-export default getPrisma()
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClientSingleton | undefined;
+};
 
+export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

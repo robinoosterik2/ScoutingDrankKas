@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 type DateFilter = { gte?: Date; lte?: Date };
 
@@ -36,15 +36,23 @@ export default defineEventHandler(async (event) => {
     const userIds = users ? (Array.isArray(users) ? users : [users]) : [];
 
     // Action filter
-    const actionTypes = actions ? (Array.isArray(actions) ? actions : [actions]) : [];
+    const actionTypes = actions
+      ? Array.isArray(actions)
+        ? actions
+        : [actions]
+      : [];
     const logs = await prisma.log.findMany({
       where: {
         ...(startDate || endDate ? { createdAt } : {}),
-        ...(userIds.length ? { executorId: { in: userIds.map((id: string) => Number(id)) } } : {}),
-        ...(actionTypes.length ? { action: { in: actionTypes as string[] } } : {}),
+        ...(userIds.length
+          ? { executorId: { in: userIds.map((id: string) => Number(id)) } }
+          : {}),
+        ...(actionTypes.length
+          ? { action: { in: actionTypes as string[] } }
+          : {}),
       },
       include: { executor: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
     // Prepare response headers based on format
     if (format === "csv") {
@@ -59,9 +67,13 @@ export default defineEventHandler(async (event) => {
         "id,executor,action,objectType,objectId,description,createdAt\n";
       const csvRows = logs.map((log: any) => {
         const executor = log.executor ? log.executor.username : "Unknown";
-        const description = log.description ? `"${log.description.replace(/"/g, '""')}"` : "";
+        const description = log.description
+          ? `"${log.description.replace(/"/g, '""')}"`
+          : "";
         const createdAtStr = new Date(log.createdAt).toISOString();
-        return `${log.id},${executor},${log.action},${log.targetType || ''},${log.targetId || ''},${description},${createdAtStr}`;
+        return `${log.id},${executor},${log.action},${log.targetType || ""},${
+          log.targetId || ""
+        },${description},${createdAtStr}`;
       });
 
       return csvHeader + csvRows.join("\n");
@@ -76,7 +88,13 @@ export default defineEventHandler(async (event) => {
       // Map logs to a simpler structure
       const exportedLogs = logs.map((log: any) => ({
         id: log.id,
-        executor: log.executor ? { id: log.executor.id, username: log.executor.username, email: log.executor.email } : null,
+        executor: log.executor
+          ? {
+              id: log.executor.id,
+              username: log.executor.username,
+              email: log.executor.email,
+            }
+          : null,
         action: log.action,
         objectType: log.targetType,
         objectId: log.targetId,

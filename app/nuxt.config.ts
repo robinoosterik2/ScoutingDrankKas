@@ -22,14 +22,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   // Build configuration
-  build: {
-    // Enable faster builds in development
-    cache: process.env.NODE_ENV !== 'production',
-    // Enable parallel builds
-    parallel: true,
-    // Enable CSS source maps in development only
-    cssSourceMap: process.env.NODE_ENV !== 'production',
-  },
+  build: {},
 
   // Vite configuration
   vite: {
@@ -40,31 +33,30 @@ export default defineNuxtConfig({
         interval: 100,
       },
       hmr: {
-        protocol: 'ws',
-        host: '0.0.0.0',
+        protocol: "ws",
+        host: "0.0.0.0",
         port: 24678,
       },
     },
     // Optimize dependencies
     optimizeDeps: {
-      exclude: ['@prisma/engines'],
+      exclude: ["@prisma/engines"],
     },
     // SSR configuration
     ssr: {
       noExternal: ["nodemailer"],
       // Optimize SSR build
-      target: 'node',
-      format: 'esm',
+      target: "node",
     },
     // Build optimization
     build: {
-      target: 'esnext',
-      minify: 'esbuild',
+      target: "esnext",
+      minify: "esbuild",
       chunkSizeWarningLimit: 1000,
       rollupOptions: {
         output: {
           manualChunks: {
-            'vendor': ['vue', 'vue-router'],
+            vendor: ["vue", "vue-router"],
           },
         },
       },
@@ -84,10 +76,6 @@ export default defineNuxtConfig({
       process.env.NUXT_SESSION_PASSWORD || "default-session-password",
   },
 
-  eslint: {
-    //
-  },
-
   css: ["~/assets/css/main.css"],
 
   colorMode: {
@@ -97,7 +85,7 @@ export default defineNuxtConfig({
 
   postcss: {
     plugins: {
-      tailwindcss: {},
+      "@tailwindcss/postcss": {},
       autoprefixer: {},
     },
   },
@@ -107,12 +95,8 @@ export default defineNuxtConfig({
       { code: "en", iso: "en-US", name: "English", file: "en.json" },
       { code: "nl", iso: "nl-NL", name: "Dutch", file: "nl.json" },
     ],
-    lazy: true,
     langDir: "locales/",
     defaultLocale: "en",
-    bundle: {
-      optimizeTranslationDirective: false,
-    },
   },
 
   nitro: {

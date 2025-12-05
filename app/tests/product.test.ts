@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { $fetch } from "@nuxt/test-utils";
 import { faker } from "@faker-js/faker";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 import { adminRequest } from "./utils/auth";
 
 describe("Product API", () => {
@@ -19,7 +19,9 @@ describe("Product API", () => {
   });
 
   beforeEach(async () => {
-    const category = await prisma.category.create({ data: { name: faker.commerce.department(), ageRestriction: false } });
+    const category = await prisma.category.create({
+      data: { name: faker.commerce.department(), ageRestriction: false },
+    });
     categoryId = String(category.id);
   });
 

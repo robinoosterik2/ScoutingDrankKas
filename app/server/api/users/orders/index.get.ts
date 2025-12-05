@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery, createError } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const { userId, page = "1", limit = "10", month, year } = getQuery(event);
@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
   const orders = await prisma.order.findMany({
     where: matchQuery,
     include: { bartender: { select: { id: true, username: true } } },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     skip,
     take: limitNum,
   });

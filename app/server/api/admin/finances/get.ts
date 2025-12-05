@@ -1,4 +1,4 @@
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const { month, year } = getQuery(event);
@@ -22,16 +22,26 @@ export default defineEventHandler(async (event) => {
     endDate = new Date(filterYear + 1, 0, 1);
   }
 
-  const orders = await prisma.order.findMany({ where: { createdAt: { gte: startDate, lt: endDate } } });
+  const orders = await prisma.order.findMany({
+    where: { createdAt: { gte: startDate, lt: endDate } },
+  });
 
-  const totalSalesAgg = await prisma.order.aggregate({ _sum: { total: true }, where: { createdAt: { gte: startDate, lt: endDate } } });
+  const totalSalesAgg = await prisma.order.aggregate({
+    _sum: { total: true },
+    where: { createdAt: { gte: startDate, lt: endDate } },
+  });
 
-  const totalRaisedAgg = await prisma.raise.aggregate({ _sum: { amount: true }, where: { createdAt: { gte: startDate, lt: endDate } } });
+  const totalRaisedAgg = await prisma.raise.aggregate({
+    _sum: { amount: true },
+    where: { createdAt: { gte: startDate, lt: endDate } },
+  });
 
   // Get total purchases
   const totalPurchases = 0;
 
-  const raises = await prisma.raise.findMany({ where: { createdAt: { gte: startDate, lt: endDate } } });
+  const raises = await prisma.raise.findMany({
+    where: { createdAt: { gte: startDate, lt: endDate } },
+  });
 
   // Get daily sales for the current month with adjusted dates for purchases before 8:00 AM
   const salesDataStartDate = month
@@ -45,22 +55,33 @@ export default defineEventHandler(async (event) => {
   const purchasesData: any[] = [];
 
   // Aggregate sales per day
-  const salesRows = await prisma.order.findMany({ where: { createdAt: { gte: salesDataStartDate, lt: salesDataEndDate } }, select: { dayOfOrder: true, total: true } });
+  const salesRows = await prisma.order.findMany({
+    where: { createdAt: { gte: salesDataStartDate, lt: salesDataEndDate } },
+    select: { dayOfOrder: true, total: true },
+  });
   const salesDataMap = new Map<string, number>();
   for (const r of salesRows) {
-    const key = r.dayOfOrder.toISOString().slice(0,10);
+    const key = r.dayOfOrder.toISOString().slice(0, 10);
     salesDataMap.set(key, (salesDataMap.get(key) || 0) + r.total);
   }
-  const salesData = Array.from(salesDataMap.entries()).map(([date, total]) => ({ date, total }));
+  const salesData = Array.from(salesDataMap.entries()).map(([date, total]) => ({
+    date,
+    total,
+  }));
 
   // Aggregate raises per day
-  const raisesRows = await prisma.raise.findMany({ where: { createdAt: { gte: salesDataStartDate, lt: salesDataEndDate } }, select: { dayOfOrder: true, amount: true } });
+  const raisesRows = await prisma.raise.findMany({
+    where: { createdAt: { gte: salesDataStartDate, lt: salesDataEndDate } },
+    select: { dayOfOrder: true, amount: true },
+  });
   const raisesDataMap = new Map<string, number>();
   for (const r of raisesRows) {
-    const key = r.dayOfOrder.toISOString().slice(0,10);
+    const key = r.dayOfOrder.toISOString().slice(0, 10);
     raisesDataMap.set(key, (raisesDataMap.get(key) || 0) + r.amount);
   }
-  const raisesData = Array.from(raisesDataMap.entries()).map(([date, total]) => ({ date, total }));
+  const raisesData = Array.from(raisesDataMap.entries()).map(
+    ([date, total]) => ({ date, total })
+  );
 
   // Month names for labels
   const months = [

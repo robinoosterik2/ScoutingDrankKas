@@ -1,5 +1,5 @@
 import type { H3Event } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 type SessionUser = {
   id?: number | string;
@@ -46,7 +46,10 @@ export async function logAuditEvent({
           }
         }
       } catch (sessionError) {
-        console.warn("logAuditEvent: Unable to resolve session user", sessionError);
+        console.warn(
+          "logAuditEvent: Unable to resolve session user",
+          sessionError
+        );
       }
     }
 

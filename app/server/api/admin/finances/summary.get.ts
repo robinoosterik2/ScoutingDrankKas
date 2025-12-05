@@ -1,4 +1,4 @@
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 import { getDateRangeFromQuery } from "~/server/utils/dateFilters";
 
 export default defineEventHandler(async (event) => {
@@ -7,10 +7,21 @@ export default defineEventHandler(async (event) => {
 
     // Run all aggregations in parallel
     const [salesAgg, raisesAgg, ordersCount, purchasesAgg] = await Promise.all([
-      prisma.order.aggregate({ _sum: { total: true }, where: { createdAt: { gte: startDate, lt: endDate } } }),
-      prisma.raise.aggregate({ _sum: { amount: true }, where: { createdAt: { gte: startDate, lt: endDate } } }),
-      prisma.order.count({ where: { createdAt: { gte: startDate, lt: endDate } } }),
-      prisma.purchase.aggregate({ _sum: { price: true }, where: { dayOfOrder: { gte: startDate, lt: endDate } } }),
+      prisma.order.aggregate({
+        _sum: { total: true },
+        where: { createdAt: { gte: startDate, lt: endDate } },
+      }),
+      prisma.raise.aggregate({
+        _sum: { amount: true },
+        where: { createdAt: { gte: startDate, lt: endDate } },
+      }),
+      prisma.order.count({
+        where: { createdAt: { gte: startDate, lt: endDate } },
+      }),
+      prisma.purchase.aggregate({
+        _sum: { price: true },
+        where: { dayOfOrder: { gte: startDate, lt: endDate } },
+      }),
     ]);
 
     const salesTotal = salesAgg._sum.total || 0;

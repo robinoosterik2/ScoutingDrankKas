@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const { id } = event.context.params || {};
@@ -14,7 +14,17 @@ export default defineEventHandler(async (event) => {
 
   let user;
   try {
-    user = await prisma.user.findUnique({ where: { id: Number(id) }, select: { id: true, username: true, email: true, firstName: true, lastName: true, roleId: true } });
+    user = await prisma.user.findUnique({
+      where: { id: Number(id) },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        roleId: true,
+      },
+    });
   } catch (dbError) {
     console.error(
       `Database error in /api/users/[id] while fetching user with ID "${id}":`,

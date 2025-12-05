@@ -1,10 +1,10 @@
 import { defineEventHandler } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async () => {
   try {
     const orders = await prisma.order.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: {
         user: { select: { id: true, firstName: true, lastName: true } },
         bartender: { select: { id: true, firstName: true, lastName: true } },
@@ -16,7 +16,14 @@ export default defineEventHandler(async () => {
       _id: String(o.id),
       user: o.user,
       bartender: o.bartender,
-      products: o.items.map((it) => ({ productId: { id: it.product.id, _id: String(it.product.id), name: it.product.name }, count: it.count })),
+      products: o.items.map((it) => ({
+        productId: {
+          id: it.product.id,
+          _id: String(it.product.id),
+          name: it.product.name,
+        },
+        count: it.count,
+      })),
       total: o.total,
       createdAt: o.createdAt,
     }));

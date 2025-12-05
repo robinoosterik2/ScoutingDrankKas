@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const { id } = event.context.params || {};
@@ -19,7 +19,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const product = await prisma.product.findUnique({ where: { id: productId }, include: { categories: true } });
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    include: { categories: true },
+  });
   if (!product) {
     throw createError({ statusCode: 400, statusMessage: "Product not found" });
   }

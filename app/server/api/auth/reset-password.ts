@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   // Parse request body
@@ -34,7 +34,11 @@ export default defineEventHandler(async (event) => {
   const hashed = await hashPassword(newPassword);
   await prisma.user.update({
     where: { id: user.id },
-    data: { password: hashed, resetPasswordToken: null, resetPasswordExpires: null },
+    data: {
+      password: hashed,
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    },
   });
 
   return { success: true, message: "Password reset successful" };

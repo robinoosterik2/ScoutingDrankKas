@@ -1,5 +1,6 @@
+import type { Prisma } from "@prisma/client";
 import { hash } from "bcryptjs";
-import prismaClient from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 // import type { PaymentMethod } from "@prisma/client";
 
 export interface SeederCounts {
@@ -19,7 +20,6 @@ export interface SeederResult {
 }
 
 export async function clearDatabase() {
-  const prisma = prismaClient;
   try {
     // Respect FK constraints: delete dependent records first
     await prisma.log.deleteMany();
@@ -27,6 +27,7 @@ export async function clearDatabase() {
     await prisma.order.deleteMany();
     await prisma.raise.deleteMany();
     await prisma.productOnCategory.deleteMany();
+    await prisma.purchase.deleteMany();
     await prisma.product.deleteMany();
     await prisma.category.deleteMany();
     await prisma.user.deleteMany();
@@ -42,7 +43,6 @@ export async function clearDatabase() {
 export async function seedDatabase(
   inputCounts: SeederCounts = {}
 ): Promise<SeederResult> {
-  const prisma = prismaClient;
   try {
     // Default counts if not provided, then merge with overrides
     const finalCounts = {
@@ -195,8 +195,10 @@ export async function seedDatabase(
     const createdOrders = [] as any[];
     const ordersToCreate = finalCounts.orders ?? 150;
     for (let i = 0; i < ordersToCreate; i++) {
-      const user = createdUsers[Math.floor(Math.random() * createdUsers.length)];
-      const product = createdProducts[Math.floor(Math.random() * createdProducts.length)];
+      const user =
+        createdUsers[Math.floor(Math.random() * createdUsers.length)];
+      const product =
+        createdProducts[Math.floor(Math.random() * createdProducts.length)];
       const count = Math.floor(Math.random() * 3) + 1; // 1-3 items
       const total = product.price * count;
 
@@ -236,9 +238,15 @@ export async function seedDatabase(
       // Keep only last 30 days
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const pruned = recentOrdersArr.filter((o: any) => new Date(o.date) >= thirtyDaysAgo);
-      const recentQuantity = pruned.reduce((sum: number, o: any) => sum + (o.quantity || 0), 0);
-      const popularityScore = recentQuantity * 0.7 + (product.totalQuantitySold + count) * 0.3;
+      const pruned = recentOrdersArr.filter(
+        (o: any) => new Date(o.date) >= thirtyDaysAgo
+      );
+      const recentQuantity = pruned.reduce(
+        (sum: number, o: any) => sum + (o.quantity || 0),
+        0
+      );
+      const popularityScore =
+        recentQuantity * 0.7 + (product.totalQuantitySold + count) * 0.3;
 
       await prisma.product.update({
         where: { id: product.id },

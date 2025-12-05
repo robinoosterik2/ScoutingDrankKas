@@ -45,7 +45,7 @@
               type="text"
               class="w-full p-2 border-gray-300 rounded-md shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               :placeholder="$t('raise.enterAmount')"
-            >
+            />
           </div>
 
           <!-- Payment Method Selection -->
@@ -141,109 +141,116 @@
 </template>
 
 <script setup>
-const { format } = useMoney();
-</script>
+const { format, parse } = useMoney();
 
-<script>
-const { parse } = useMoney();
-export default {
-  props: {
-    isOpen: {
-      type: Boolean,
-      required: true,
-    },
-    title: {
-      type: String,
-      default: "Raise Balance",
-    },
-    message: {
-      type: String,
-      default: "Enter the amount to raise the balance for the user.",
-    },
-    userId: {
-      type: [String, null],
-      required: true,
-    },
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    required: true,
   },
-  emits: ["balanceUpdated", "close"],
-  emits: ["close"],
-  data() {
-    return {
-      raiseAmount: null,
-      paymentMethod: "cash", // Default to cash
-      recentRaises: [],
-    };
+  title: {
+    type: String,
+    default: "Raise Balance",
   },
-  watch: {
-    isOpen(newVal) {
-      if (newVal) {
-        this.fetchRecentRaises();
-      }
-    },
+  message: {
+    type: String,
+    default: "Enter the amount to raise the balance for the user.",
   },
-  methods: {
-    async fetchRecentRaises() {
-      try {
-        this.recentRaises = await $fetch(`/api/admin/raises/userRaises`, {
-          method: "POST",
-          body: {
-            userId: this.userId,
-            limit: 5,
-          },
-        });
-      } catch (error) {
-        console.error("Failed to fetch recent raises", error);
-      }
-    },
-    async confirmRaise() {
-      if (!this.raiseAmount || this.raiseAmount <= 0) {
-        alert("Please enter a valid amount.");
-        return;
-      }
+  userId: {
+    type: [String, null],
+    required: true,
+  },
+});
 
-      try {
-        const amount = parse(this.raiseAmount);
-        const response = await $fetch(`/api/admin/raises/create`, {
-          method: "POST",
-          body: {
-            userId: this.userId,
-            amount: amount,
-            paymentMethod: this.paymentMethod,
-          },
-        });
-        this.fetchRecentRaises();
-        this.raiseAmount = null;
-        this.paymentMethod = "cash"; // Reset to default
-        // Emit event with the updated balance
-        this.$emit("balanceUpdated", {
-          userId: this.userId,
-          newBalance: response.newBalance,
-        });
-      } catch (error) {
-        console.error("Failed to raise balance", error);
-        const statusMessage =
-          (error && typeof error === "object" && "data" in error && error.data && error.data.statusMessage) ||
-          (error instanceof Error ? error.message : "");
-        const i18nKey =
-          error && typeof error === "object" && "data" in error && error.data && typeof error.data.i18nKey === "string"
-            ? error.data.i18nKey
-            : null;
-        const canTranslate =
-          !!(
-            i18nKey &&
-            this.$i18n &&
-            typeof this.$i18n.te === "function" &&
-            this.$i18n.te(i18nKey)
-          );
-        const translatedMessage =
-          (canTranslate && this.$t(i18nKey)) ||
-          (statusMessage && statusMessage.length > 0 ? statusMessage : this.$t("raise.errors.unknown"));
-        alert(this.$t("raise.errors.raiseFailedWithReason", { reason: translatedMessage }));
-      }
-    },
-    close() {
-      this.$emit("close");
-    },
-  },
+const emit = defineEmits(["balanceUpdated", "close"]);
+
+const raiseAmount = ref(null);
+const paymentMethod = ref("cash");
+const recentRaises = ref([]);
+
+const fetchRecentRaises = async () => {
+  try {
+    recentRaises.value = await $fetch(`/api/admin/raises/userRaises`, {
+      method: "POST",
+      body: {
+        userId: props.userId,
+        limit: 5,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to fetch recent raises", error);
+  }
 };
+
+const confirmRaise = async () => {
+  if (!raiseAmount.value || raiseAmount.value <= 0) {
+    alert("Please enter a valid amount.");
+    return;
+  }
+
+  try {
+    const amount = parse(raiseAmount.value);
+    const response = await $fetch(`/api/admin/raises/create`, {
+      method: "POST",
+      body: {
+        userId: props.userId,
+        amount: amount,
+        paymentMethod: paymentMethod.value,
+      },
+    });
+    fetchRecentRaises();
+    raiseAmount.value = null;
+    paymentMethod.value = "cash";
+    emit("balanceUpdated", {
+      userId: props.userId,
+      newBalance: response.newBalance,
+    });
+  } catch (error) {
+    console.error("Failed to raise balance", error);
+    const statusMessage =
+      (error &&
+        typeof error === "object" &&
+        "data" in error &&
+        error.data &&
+        error.data.statusMessage) ||
+      (error instanceof Error ? error.message : "");
+    const i18nKey =
+      error &&
+      typeof error === "object" &&
+      "data" in error &&
+      error.data &&
+      typeof error.data.i18nKey === "string"
+        ? error.data.i18nKey
+        : null;
+    const { $i18n } = useNuxtApp();
+    const canTranslate = !!(
+      i18nKey &&
+      $i18n &&
+      typeof $i18n.te === "function" &&
+      $i18n.te(i18nKey)
+    );
+    const { $t } = useNuxtApp();
+    const translatedMessage =
+      (canTranslate && $t(i18nKey)) ||
+      (statusMessage && statusMessage.length > 0
+        ? statusMessage
+        : $t("raise.errors.unknown"));
+    alert(
+      $t("raise.errors.raiseFailedWithReason", { reason: translatedMessage })
+    );
+  }
+};
+
+const close = () => {
+  emit("close");
+};
+
+watch(
+  () => props.isOpen,
+  (newVal) => {
+    if (newVal) {
+      fetchRecentRaises();
+    }
+  }
+);
 </script>

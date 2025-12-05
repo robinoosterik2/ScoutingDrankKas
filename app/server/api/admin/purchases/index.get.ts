@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery, createError } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 interface PurchaseQuery {
   page?: string;

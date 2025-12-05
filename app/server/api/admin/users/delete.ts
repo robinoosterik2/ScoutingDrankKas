@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody, createError } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const user = await getUserSession(event);
@@ -11,7 +11,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "missing userId" });
   }
 
-  const userToBeAnonymized = await prisma.user.findUnique({ where: { id: Number(userId) } });
+  const userToBeAnonymized = await prisma.user.findUnique({
+    where: { id: Number(userId) },
+  });
   if (!userToBeAnonymized) {
     throw createError({ statusCode: 404, statusMessage: "User not found" });
   }
@@ -28,8 +30,8 @@ export default defineEventHandler(async (event) => {
     data: {
       username: `anonymized_${Date.now()}`,
       email: `anonymized_${userId}@example.com`,
-      firstName: 'Anonymized',
-      lastName: 'Anonymized',
+      firstName: "Anonymized",
+      lastName: "Anonymized",
       active: false,
     },
   });

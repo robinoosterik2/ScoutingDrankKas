@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const { userId, limit } = getQuery(event);
@@ -16,6 +16,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: "User not found" });
   }
 
-  const orders = await prisma.order.findMany({ where: { userId: user.id }, orderBy: { createdAt: 'desc' }, take: Number(limit) || 10 });
+  const orders = await prisma.order.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+    take: Number(limit) || 10,
+  });
   return orders;
 });

@@ -1,5 +1,5 @@
 import { defineEventHandler, createError } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   // Extract order id from route params
@@ -15,7 +15,11 @@ export default defineEventHandler(async (event) => {
       include: {
         user: { select: { id: true, firstName: true, lastName: true } },
         bartender: { select: { id: true, firstName: true, lastName: true } },
-        items: { include: { product: { select: { id: true, name: true, price: true } } } },
+        items: {
+          include: {
+            product: { select: { id: true, name: true, price: true } },
+          },
+        },
       },
     });
     if (!order) {
@@ -26,7 +30,15 @@ export default defineEventHandler(async (event) => {
       _id: String(order.id),
       user: order.user,
       bartender: order.bartender,
-      products: order.items.map((it) => ({ productId: { id: it.product.id, _id: String(it.product.id), name: it.product.name, price: it.product.price }, count: it.count })),
+      products: order.items.map((it) => ({
+        productId: {
+          id: it.product.id,
+          _id: String(it.product.id),
+          name: it.product.name,
+          price: it.product.price,
+        },
+        count: it.count,
+      })),
       total: order.total,
       createdAt: order.createdAt,
     };

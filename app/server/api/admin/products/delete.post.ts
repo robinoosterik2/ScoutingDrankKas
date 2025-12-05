@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -15,7 +15,9 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const product = await prisma.product.findUnique({ where: { id: Number(id) } });
+    const product = await prisma.product.findUnique({
+      where: { id: Number(id) },
+    });
 
     if (!product) {
       throw createError({

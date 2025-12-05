@@ -1,5 +1,5 @@
 import { defineEventHandler } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 import { logAuditEvent } from "~/server/utils/logger";
 
 export default defineEventHandler(async (event) => {
@@ -53,7 +53,9 @@ export default defineEventHandler(async (event) => {
         body: { message: "Invalid category" },
       };
     } else {
-      const found = await prisma.category.findUnique({ where: { id: Number(categories[i]) } });
+      const found = await prisma.category.findUnique({
+        where: { id: Number(categories[i]) },
+      });
       if (!found) {
         return {
           status: 400,
@@ -67,7 +69,9 @@ export default defineEventHandler(async (event) => {
   }
 
   // Update if id exists
-  let found = await prisma.product.findUnique({ where: { id: Number(body.id) } });
+  let found = await prisma.product.findUnique({
+    where: { id: Number(body.id) },
+  });
   if (found) {
     const updated = await prisma.product.update({
       where: { id: Number(body.id) },
@@ -77,11 +81,18 @@ export default defineEventHandler(async (event) => {
         description,
         stock,
         ageRestriction,
-        packSize: body.packSize !== undefined ? (body.packSize > 0 ? body.packSize : null) : undefined,
+        packSize:
+          body.packSize !== undefined
+            ? body.packSize > 0
+              ? body.packSize
+              : null
+            : undefined,
         categories: {
           // reset and set categories
           deleteMany: {},
-          create: categories.map((cid: string) => ({ categoryId: Number(cid) })),
+          create: categories.map((cid: string) => ({
+            categoryId: Number(cid),
+          })),
         },
       },
     });
@@ -120,7 +131,9 @@ export default defineEventHandler(async (event) => {
       ageRestriction,
       packSize: body.packSize ?? null,
       imageUrl,
-      categories: { create: categories.map((cid: string) => ({ categoryId: Number(cid) })) },
+      categories: {
+        create: categories.map((cid: string) => ({ categoryId: Number(cid) })),
+      },
     },
   });
   await logAuditEvent({

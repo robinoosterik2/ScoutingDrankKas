@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 import { logAuditEvent } from "~/server/utils/logger";
 
 export default defineEventHandler(async (event) => {
@@ -19,7 +19,9 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  if (await prisma.user.findFirst({ where: { username: normalizedUsername } })) {
+  if (
+    await prisma.user.findFirst({ where: { username: normalizedUsername } })
+  ) {
     throw createError({
       statusCode: 400,
       statusMessage: "Username already exists",
@@ -33,7 +35,11 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  if (await prisma.user.findFirst({ where: { firstName: normalizedFirstName, lastName: normalizedLastName } })) {
+  if (
+    await prisma.user.findFirst({
+      where: { firstName: normalizedFirstName, lastName: normalizedLastName },
+    })
+  ) {
     throw createError({
       statusCode: 400,
       statusMessage: "User already has an account",
@@ -56,7 +62,9 @@ export default defineEventHandler(async (event) => {
 
   try {
     const hashed = await hashPassword(password);
-    const settings = await prisma.settings.create({ data: { language: 'nl', darkMode: true, speedMode: false } });
+    const settings = await prisma.settings.create({
+      data: { language: "nl", darkMode: true, speedMode: false },
+    });
     const user = await prisma.user.create({
       data: {
         username: normalizedUsername,
@@ -68,7 +76,17 @@ export default defineEventHandler(async (event) => {
         active: true,
       },
     });
-    await setUserSession(event, { user: { id: user.id, _id: String(user.id), email: user.email, username: user.username, firstName: user.firstName, lastName: user.lastName }, loggedInAt: Date.now() });
+    await setUserSession(event, {
+      user: {
+        id: user.id,
+        _id: String(user.id),
+        email: user.email,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+      loggedInAt: Date.now(),
+    });
     await logAuditEvent({
       event,
       executorId: user.id,
@@ -80,7 +98,12 @@ export default defineEventHandler(async (event) => {
     });
     return {
       message: "User created successfully",
-      user: { username: normalizedUsername, email: normalizedEmail, firstName: normalizedFirstName, lastName: normalizedLastName },
+      user: {
+        username: normalizedUsername,
+        email: normalizedEmail,
+        firstName: normalizedFirstName,
+        lastName: normalizedLastName,
+      },
     };
   } catch (error) {
     throw createError({

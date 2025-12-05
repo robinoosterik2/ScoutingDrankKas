@@ -6,14 +6,11 @@
   </h2>
 </template>
 
-
-<script>
-export default {
-  props: {
-    text: {
-      type: String,
-      required: true,
-    },
+<script setup>
+defineProps({
+  text: {
+    type: String,
+    required: true,
   },
-};
+});
 </script>

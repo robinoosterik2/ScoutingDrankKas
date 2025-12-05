@@ -1,4 +1,4 @@
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 import { logAuditEvent } from "~/server/utils/logger";
 
 export default defineEventHandler(async (event) => {
@@ -12,7 +12,9 @@ export default defineEventHandler(async (event) => {
         statusMessage: "Category already exists",
       });
     }
-    const created = await prisma.category.create({ data: { name, ageRestriction } });
+    const created = await prisma.category.create({
+      data: { name, ageRestriction },
+    });
     await logAuditEvent({
       event,
       action: "category_created",

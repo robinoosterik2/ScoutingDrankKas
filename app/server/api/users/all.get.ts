@@ -1,11 +1,11 @@
 import { defineEventHandler } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async () => {
   const users = await prisma.user.findMany({
     where: { active: true },
     include: { role: true },
-    orderBy: { firstName: 'asc' },
+    orderBy: { firstName: "asc" },
   });
   return users.map((u) => ({
     id: u.id,

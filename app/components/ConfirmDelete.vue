@@ -77,38 +77,37 @@
   </Teleport>
 </template>
 
-<script>
-export default {
-  props: {
-    isOpen: {
-      type: Boolean,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    message: {
-      type: String,
-      required: true,
-    },
-    confirmText: {
-      type: String,
-      default: "Delete",
-    },
-    cancelText: {
-      type: String,
-      default: "Cancel",
-    },
+<script setup>
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    required: true,
   },
-  emits: ["close", "confirm"],
-  methods: {
-    close() {
-      this.$emit("close");
-    },
-    confirm() {
-      this.$emit("confirm");
-    },
+  title: {
+    type: String,
+    required: true,
   },
+  message: {
+    type: String,
+    required: true,
+  },
+  confirmText: {
+    type: String,
+    default: "Delete",
+  },
+  cancelText: {
+    type: String,
+    default: "Cancel",
+  },
+});
+
+const emit = defineEmits(["close", "confirm"]);
+
+const close = () => {
+  emit("close");
+};
+
+const confirm = () => {
+  emit("confirm");
 };
 </script>

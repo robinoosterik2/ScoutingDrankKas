@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 import { logAuditEvent } from "~/server/utils/logger";
 
 export default defineEventHandler(async (event) => {
@@ -20,18 +20,24 @@ export default defineEventHandler(async (event) => {
 
     // check if unique email, username (first and last name are not unique)
     if (user.email !== email) {
-      const existingUserByEmail = await prisma.user.findFirst({ where: { email } });
+      const existingUserByEmail = await prisma.user.findFirst({
+        where: { email },
+      });
       if (existingUserByEmail) {
         throw new Error("User with this email already exists");
       }
     }
     if (user.username !== username) {
-      const existingUserByUsername = await prisma.user.findFirst({ where: { username } });
+      const existingUserByUsername = await prisma.user.findFirst({
+        where: { username },
+      });
       if (existingUserByUsername) {
         throw new Error("User with this username already exists");
       }
     }
-    const roleObject = role ? await prisma.customRole.findUnique({ where: { id: Number(role) } }) : null;
+    const roleObject = role
+      ? await prisma.customRole.findUnique({ where: { id: Number(role) } })
+      : null;
     if (role && !roleObject) {
       throw createError("Error updating user, invalid role");
     }

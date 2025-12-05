@@ -1,5 +1,5 @@
 import { defineEventHandler, createError } from "h3";
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async () => {
   try {

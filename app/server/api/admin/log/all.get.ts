@@ -1,14 +1,14 @@
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 import { defineEventHandler } from "h3";
 
 export default defineEventHandler(async (event) => {
   try {
     const logs = await prisma.log.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: { executor: { select: { id: true, username: true } } },
       take: 200,
     });
-    return logs.map(l => ({
+    return logs.map((l) => ({
       id: l.id,
       _id: String(l.id),
       executor: l.executor,

@@ -1,4 +1,4 @@
-import prisma from "~/server/utils/prisma";
+import { prisma } from "~/server/utils/prisma";
 
 // Note: hashPassword is provided by nuxt-auth-utils globally.
 // We call it directly to avoid duplicating hashing logic.
@@ -22,7 +22,9 @@ export default defineNitroPlugin(async () => {
     });
 
     // Ensure admin user exists. We don't try to preserve any legacy user IDs.
-    const existing = await prisma.user.findUnique({ where: { email: adminEmail } });
+    const existing = await prisma.user.findUnique({
+      where: { email: adminEmail },
+    });
     const hashed = await hashPassword(adminPassword);
 
     if (!existing) {

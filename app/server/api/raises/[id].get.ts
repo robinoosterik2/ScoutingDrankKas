@@ -1,5 +1,5 @@
-import { defineEventHandler } from 'h3';
-import prisma from "~/server/utils/prisma";
+import { defineEventHandler } from "h3";
+import { prisma } from "~/server/utils/prisma";
 
 interface RaiseDocument {
   _id: any;
@@ -38,44 +38,52 @@ export default defineEventHandler(async (event) => {
     if (!userId) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'User ID is required'
+        statusMessage: "User ID is required",
       });
     }
 
     const [raises, total] = await Promise.all([
       prisma.raise.findMany({
         where: { userId: Number(userId) },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         skip,
         take: limit,
-        include: { raiser: { select: { id: true, firstName: true, lastName: true } } },
+        include: {
+          raiser: { select: { id: true, firstName: true, lastName: true } },
+        },
       }),
-      prisma.raise.count({ where: { userId: Number(userId) } })
+      prisma.raise.count({ where: { userId: Number(userId) } }),
     ]);
 
     return {
       raises: raises.map((raise: any) => ({
         _id: String(raise.id),
         user: String(raise.userId),
-        raiser: raise.raiser ? { _id: String(raise.raiser.id), firstName: raise.raiser.firstName, lastName: raise.raiser.lastName } : null,
+        raiser: raise.raiser
+          ? {
+              _id: String(raise.raiser.id),
+              firstName: raise.raiser.firstName,
+              lastName: raise.raiser.lastName,
+            }
+          : null,
         amount: raise.amount,
         createdAt: raise.createdAt,
         updatedAt: raise.updatedAt,
       })),
-      total
+      total,
     };
-
   } catch (error) {
-    console.error('Error fetching user raises:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch user raises';
+    console.error("Error fetching user raises:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch user raises";
     const statusCode = (error as any)?.statusCode || 500;
-    
+
     throw createError({
       statusCode: statusCode,
       statusMessage: errorMessage,
       data: {
-        message: 'Failed to fetch user raises'
-      }
+        message: "Failed to fetch user raises",
+      },
     });
   }
 });
