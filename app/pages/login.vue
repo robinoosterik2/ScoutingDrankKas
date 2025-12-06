@@ -20,7 +20,7 @@
             name="username"
             type="text"
             required
-            class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            class="appearance-none rounded-md relative block w-full px-3 py-1 mt-2 border text-white border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
             :placeholder="$t('login.usernamePlaceholder')"
           />
           <div id="errorUsername" class="text-red-500 mt-1" />
@@ -33,7 +33,7 @@
             name="password"
             type="password"
             required
-            class="appearance-none rounded-md relative block w-full px-3 py-1 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            class="appearance-none rounded-md relative block w-full px-3 py-1 mt-2 border text-white border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
             placeholder="••••••••••"
           />
           <div id="errorPassword" class="text-red-500 mt-1" />
