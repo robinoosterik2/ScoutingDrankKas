@@ -18,8 +18,8 @@ pnpm prisma generate
 echo "Building Nuxt app..."
 pnpm run build
 
-# Rebuild better-sqlite3 to ensure native bindings are correct for this system
-echo "Rebuilding better-sqlite3..."
-pnpm rebuild better-sqlite3
+# Rebuild better-sqlite3 manually (fix for missing bindings)
+echo "Rebuilding better-sqlite3 manually..."
+cd node_modules/.pnpm/better-sqlite3@*/node_modules/better-sqlite3 && npm run build-release && cd -
 
 echo "Build complete."
