@@ -1,9 +1,13 @@
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3"; // Needs to be sqlite for now
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "@prisma/client";
 
 const prismaClientSingleton = () => {
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL is not defined in environment variables");
+  }
+
   const adapter = new PrismaBetterSqlite3({
-    url: process.env.DATABASE_URL!,
+    url: process.env.DATABASE_URL,
   });
   return new PrismaClient({ adapter });
 };
