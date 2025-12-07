@@ -581,21 +581,14 @@ const fetchUsersAndProducts = async () => {
     ]);
     users.value = usersResponse;
     selectableProducts.value = productsResponse.map((p) => {
-      const numericId =
-        typeof p.id === "number"
-          ? p.id
-          : Number(p._id ?? (typeof p.id === "string" ? p.id : undefined));
       return {
-        id: !Number.isNaN(numericId) ? numericId : String(p._id ?? p.id),
+        id: p.id,
         name: p.name,
         price: p.price,
         packSize: p.packSize || 1,
       };
     });
-    products.value = productsResponse.map((p) => ({
-      ...p,
-      _id: p._id ?? String(p.id),
-    }));
+    products.value = productsResponse;
   } catch (error) {
     console.error("Error fetching users or products:", error);
     showNotificationMessage(
@@ -617,9 +610,12 @@ const getProductName = (purchaseProduct) => {
     return "Unknown Product";
   }
 
-  if (typeof purchaseProduct === "string" || typeof purchaseProduct === "number") {
+  if (
+    typeof purchaseProduct === "string" ||
+    typeof purchaseProduct === "number"
+  ) {
     const productMatch = products.value.find(
-      (product) => product.id === purchaseProduct || product._id === String(purchaseProduct)
+      (product) => product.id === purchaseProduct
     );
     return productMatch ? productMatch.name : "Unknown Product";
   }
@@ -629,9 +625,7 @@ const getProductName = (purchaseProduct) => {
   }
 
   if (purchaseProduct.id) {
-    const product = products.value.find(
-      (p) => p.id === purchaseProduct.id || p._id === String(purchaseProduct.id)
-    );
+    const product = products.value.find((p) => p.id === purchaseProduct.id);
     if (product) {
       return product.name;
     }

@@ -10,12 +10,11 @@ interface PurchaseQuery {
   dateTo?: string;
 }
 
-const parseOptionalNumber = (value?: string | null) => {
+const parseOptionalString = (value?: string | null) => {
   if (value === undefined || value === null || value === "") {
     return null;
   }
-  const numeric = Number(value);
-  return Number.isNaN(numeric) ? null : numeric;
+  return String(value);
 };
 
 export default defineEventHandler(async (event) => {
@@ -25,8 +24,8 @@ export default defineEventHandler(async (event) => {
     const limit = Math.max(1, Math.min(100, Number(query.limit ?? 10)));
     const skip = (page - 1) * limit;
 
-    const searchUserId = parseOptionalNumber(query.searchUser);
-    const searchProductId = parseOptionalNumber(query.searchProduct);
+    const searchUserId = parseOptionalString(query.searchUser);
+    const searchProductId = parseOptionalString(query.searchProduct);
 
     const where: any = {};
 

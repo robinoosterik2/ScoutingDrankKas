@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
     // First, get the order to be deleted
     const order = await prisma.order.findUnique({
-      where: { id: Number(id) },
+      where: { id: String(id) },
       include: { items: true },
     });
 
@@ -64,7 +64,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Delete the order
-    await prisma.order.delete({ where: { id: Number(id) } });
+    await prisma.order.delete({ where: { id: String(id) } });
 
     return { success: true, message: "Order deleted successfully" };
   } catch (error) {

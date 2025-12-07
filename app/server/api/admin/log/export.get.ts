@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
       where: {
         ...(startDate || endDate ? { createdAt } : {}),
         ...(userIds.length
-          ? { executorId: { in: userIds.map((id: string) => Number(id)) } }
+          ? { executorId: { in: userIds.map((id: string) => id) } }
           : {}),
         ...(actionTypes.length
           ? { action: { in: actionTypes as string[] } }

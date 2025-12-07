@@ -10,7 +10,6 @@ export default defineEventHandler(async (event) => {
     });
     return logs.map((l) => ({
       id: l.id,
-      _id: String(l.id),
       executor: l.executor,
       action: l.action,
       description: l.description,

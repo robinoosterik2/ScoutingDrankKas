@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
   // Find and update the custom role
   const role = await prisma.customRole.findUnique({
-    where: { id: Number(id) },
+    where: { id: String(id) },
   });
   if (!role) {
     throw createError({ statusCode: 404, statusMessage: "Role not found" });

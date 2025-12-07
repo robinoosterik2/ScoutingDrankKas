@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
   ) {
     try {
       const session = await getUserSession(event);
-      const user = session?.user as { id?: number | string; _id?: string } | undefined;
+      const user = session?.user as { id?: number | string } | undefined;
 
       if (!user) {
         return handleAuthError(
@@ -62,7 +62,7 @@ export default defineEventHandler(async (event) => {
         );
       }
 
-      const uid = user?.id ?? user?._id;
+      const uid = user?.id;
       const hasAdminAccess = await hasPermission(uid as any, "admin");
 
       if (!hasAdminAccess) {

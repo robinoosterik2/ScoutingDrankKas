@@ -91,7 +91,7 @@
             <div v-if="recentRaises.length > 0" class="space-y-2">
               <div
                 v-for="raise in recentRaises"
-                :key="raise._id"
+                :key="raise.id"
                 class="p-3 bg-gray-100 rounded-lg shadow-sm dark:bg-gray-700"
               >
                 <p class="text-sm font-medium text-gray-800 dark:text-gray-200">

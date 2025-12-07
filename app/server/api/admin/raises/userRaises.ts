@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
     const recentRaises = await prisma.raise.findMany({
-      where: { userId: Number(body.userId) },
+      where: { userId: String(body.userId) },
       orderBy: { createdAt: "desc" },
       take: body.limit || 5,
       include: {

@@ -4,10 +4,8 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
     const session = await getUserSession(event);
-    const adminUser = session?.user as
-      | { id?: number | string; _id?: string }
-      | undefined;
-    const admin_id = Number(adminUser?.id ?? adminUser?._id);
+    const adminUser = session?.user as { id?: string } | undefined;
+    const admin_id = adminUser?.id;
 
     const userId = body.userId;
 
@@ -38,7 +36,7 @@ export default defineEventHandler(async (event) => {
 
     // Find user to raise
     const user = await prisma.user.findUnique({
-      where: { id: Number(userId) },
+      where: { id: String(userId) },
     });
     if (!user) {
       throw createError({

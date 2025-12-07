@@ -120,8 +120,8 @@
         >
           <option
             v-for="category in availableCategories"
-            :key="category._id"
-            :value="category._id"
+            :key="category.id"
+            :value="category.id"
           >
             {{ category.name }}
           </option>
@@ -229,7 +229,7 @@ onMounted(async () => {
         price: product.price,
         stock: product.stock,
         categories: product.categories.map((cat) =>
-          typeof cat === "object" ? cat._id : cat
+          typeof cat === "object" ? cat.id : cat
         ), // Ensure categories are IDs
         imageUrl: product.imageUrl || "/images/placeholder.jpg",
         imageFile: null, // Reset on load
@@ -295,7 +295,7 @@ const saveProduct = async () => {
       Array.isArray(finalProductData.categories)
     ) {
       finalProductData.categories = finalProductData.categories.map((cat) =>
-        typeof cat === "object" && cat._id ? cat._id : cat
+        typeof cat === "object" && cat.id ? cat.id : cat
       );
     }
 

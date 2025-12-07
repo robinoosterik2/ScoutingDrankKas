@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   let user;
   try {
     user = await prisma.user.findUnique({
-      where: { id: Number(id) },
+      where: { id: String(id) },
       select: {
         id: true,
         username: true,

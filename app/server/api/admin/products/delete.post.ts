@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const product = await prisma.product.findUnique({
-      where: { id: Number(id) },
+      where: { id: String(id) },
     });
 
     if (!product) {
@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    await prisma.product.delete({ where: { id: Number(id) } });
+    await prisma.product.delete({ where: { id: String(id) } });
     return { message: `Successfully deleted product: ${product.name}` };
   } catch (error: any) {
     // If it's already an H3 error, rethrow it

@@ -60,7 +60,7 @@
       >
         <tr
           v-for="order in paginatedOrders"
-          :key="order._id"
+          :key="order.id"
           class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200"
         >
           <td class="px-6 py-2 whitespace-nowrap">
@@ -79,7 +79,7 @@
           <td class="px-6 py-2 whitespace-nowrap">{{ format(order.total) }}</td>
           <td class="px-6 py-2 whitespace-nowrap text-right">
             <CDropdown
-              :id="`order-${order._id}`"
+              :id="`order-${order.id}`"
               v-model="selectedValue"
               :items="dropdownItems"
               :placeholder="$t('Actions')"
@@ -197,7 +197,7 @@
   <DeleteConfirmationModal
     :is-open="isDeleteModalOpen"
     :title="$t('delete') + ' ' + $t('Order')"
-    :message="`${$t('orders.confirmDelete')} '${orderToDelete?._id}'? ${$t(
+    :message="`${$t('orders.confirmDelete')} '${orderToDelete?.id}'? ${$t(
       'cannotBeUndone'
     )}`"
     :confirm-text="$t('delete')"
@@ -316,10 +316,10 @@ const confirmDelete = async () => {
     try {
       await $fetch(`/api/admin/orders/delete`, {
         method: "POST",
-        body: JSON.stringify({ id: orderToDelete.value._id }),
+        body: JSON.stringify({ id: orderToDelete.value.id }),
       });
       orders.value = orders.value.filter(
-        (o) => o._id !== orderToDelete.value._id
+        (o) => o.id !== orderToDelete.value.id
       );
     } catch (error) {
       console.error("Failed to delete order:", error);
@@ -330,7 +330,7 @@ const confirmDelete = async () => {
 };
 
 const openViewPopup = (order) => {
-  selectedOrderId.value = order._id;
+  selectedOrderId.value = order.id;
   isPopupOpen.value = true;
 };
 

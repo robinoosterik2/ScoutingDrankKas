@@ -13,12 +13,12 @@ export default defineEventHandler(async (event) => {
 
   // Find and delete the custom role
   const role = await prisma.customRole.findUnique({
-    where: { id: Number(roleId) },
+    where: { id: String(roleId) },
   });
   if (!role) {
     throw createError({ statusCode: 404, statusMessage: "Role not found" });
   }
 
-  await prisma.customRole.delete({ where: { id: Number(roleId) } });
+  await prisma.customRole.delete({ where: { id: String(roleId) } });
   return { message: "Role deleted successfully" };
 });

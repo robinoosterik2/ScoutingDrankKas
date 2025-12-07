@@ -11,16 +11,16 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const productId = Number.parseInt(String(id), 10);
+  /* const productId = Number.parseInt(String(id), 10);
   if (Number.isNaN(productId)) {
     throw createError({
       statusCode: 400,
       statusMessage: "Product ID must be a number",
     });
-  }
+  } */
 
   const product = await prisma.product.findUnique({
-    where: { id: productId },
+    where: { id: String(id) },
     include: { categories: true },
   });
   if (!product) {

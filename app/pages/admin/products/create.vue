@@ -125,7 +125,7 @@
           :items="availableCategories"
           :placeholder="$t('categories.selectCategories')"
           item-text="name"
-          item-value="_id"
+          item-value="id"
           class="w-full"
         />
       </div>
@@ -242,7 +242,7 @@ onMounted(async () => {
         price: product.price,
         stock: product.stock,
         categories: product.categories.map((cat) =>
-          typeof cat === "object" ? cat._id : cat
+          typeof cat === "object" ? cat.id : cat
         ), // Ensure categories are IDs
         imageUrl: product.imageUrl || "/images/placeholder.jpg",
         imageFile: null, // Reset on load
@@ -347,7 +347,7 @@ const saveProduct = async () => {
       Array.isArray(finalProductData.categories)
     ) {
       finalProductData.categories = finalProductData.categories.map((cat) =>
-        typeof cat === "object" && cat._id ? cat._id : cat
+        typeof cat === "object" && cat.id ? cat.id : cat
       );
     }
 

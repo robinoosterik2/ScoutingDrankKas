@@ -4,13 +4,15 @@ import { hasPermission, findUserByUsername } from "~/server/utils/authPrisma";
 interface CustomError {
   statusCode?: number;
   statusMessage?: string;
+  message?: string;
+  data?: any;
 }
 
 function isCustomError(error: unknown): error is CustomError {
   return (
     typeof error === "object" &&
     error !== null &&
-    ("statusCode" in error || "statusMessage" in error)
+    ("statusCode" in error || "statusMessage" in error || "message" in error)
   );
 }
 
@@ -37,6 +39,19 @@ export default defineEventHandler(async (event) => {
       throw { statusCode: 401, statusMessage: "User not found" };
     }
 
+    if (user.accountStatus === "MIGRATED") {
+      throw {
+        statusCode: 403,
+        statusMessage: "account_activation_required",
+        message: "account_activation_required",
+        data: { requiresActivation: true },
+      };
+    }
+
+    if (!user.password) {
+      throw { statusCode: 401, statusMessage: "Invalid credentials" };
+    }
+
     const isPasswordValid = await verifyPassword(user.password, password);
     if (!isPasswordValid) {
       throw { statusCode: 401, statusMessage: "Invalid credentials" };
@@ -53,7 +68,6 @@ export default defineEventHandler(async (event) => {
         {
           user: {
             id: user.id,
-            _id: String(user.id),
             email: user.email,
             username: user.username,
             firstName: user.firstName,
@@ -75,7 +89,6 @@ export default defineEventHandler(async (event) => {
         {
           user: {
             id: user.id,
-            _id: String(user.id),
             email: user.email,
             username: user.username,
             firstName: user.firstName,
@@ -113,7 +126,8 @@ export default defineEventHandler(async (event) => {
     if (isCustomError(error)) {
       throw createError({
         statusCode: error.statusCode,
-        statusMessage: error.statusMessage,
+        statusMessage: error.statusMessage || error.message,
+        data: error.data,
       });
     } else {
       throw createError({ statusCode: 500, statusMessage: "Error logging in" });

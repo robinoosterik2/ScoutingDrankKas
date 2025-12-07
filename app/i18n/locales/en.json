@@ -130,7 +130,8 @@
   "login": {
     "errors": {
       "invalidCredentials": "Invalid credentials",
-      "userNotFound": "User not found"
+      "userNotFound": "User not found",
+      "accountActivationRequired": "Account activation required. Please ask a bar staff member."
     },
     "forgotPassword": "Forgot your password?",
     "noAccount": "Don't have an account?",
@@ -355,7 +356,43 @@
     "editUser": "Edit User",
     "getStarted": "Get started by creating a new user.",
     "noUsers": "No Users Found",
-    "title": "Manage Users"
+    "accountStatus": "Account Status",
+    "status": {
+      "active": "Active",
+      "migrated": "Migrated",
+      "guest": "Guest"
+    },
+    "activate": "Activate",
+    "activateTitle": "Activate User",
+    "activationSuccess": "User activated successfully",
+    "title": "Manage Users",
+    "migrateUser": "Migrate Users"
+  },
+  "guests": {
+    "title": "My Guests",
+    "createGuest": "Add Guest",
+    "totalSpent": "Total Spent",
+    "reset": "Settle Debt",
+    "resetConfirm": "Are you sure you want to settle the debt for this guest? This means they have paid you back.",
+    "deleteConfirm": "Are you sure you want to delete this guest?",
+    "noGuests": "You have no guests linked to your account.",
+    "owed": "owed",
+    "guestOf": "Guest of {host}",
+    "guest": "Guest"
+  },
+  "users.migrate": {
+    "title": "Migrate Users",
+    "bulkImport": "Bulk Import (CSV)",
+    "createAnother": "Create another user",
+    "csvDescription": "Enter users one per line in the format: username,balance,firstName(optional),lastName(optional)",
+    "csvPlaceholder": "john,100\njane,250,Jane,Doe",
+    "importUsers": "Import Users",
+    "successSingle": "User migrated successfully",
+    "bulkSuccess": "Successfully migrated {count} users.",
+    "bulkFailed": "Failed to migrate {count} users"
+  },
+  "getStarted": {
+    "singleUser": "Single User"
   },
   "userSelection": "User Selection",
   "yes": "Yes",

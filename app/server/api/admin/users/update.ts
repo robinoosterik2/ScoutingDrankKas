@@ -5,6 +5,7 @@ import { logAuditEvent } from "~/server/utils/logger";
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
+    console.log(body);
 
     const { id, email, username, firstName, lastName, role } = body;
 
@@ -12,7 +13,7 @@ export default defineEventHandler(async (event) => {
       throw new Error("User ID is required");
     }
 
-    const user = await prisma.user.findUnique({ where: { id: Number(id) } });
+    const user = await prisma.user.findUnique({ where: { id: String(id) } });
 
     if (!user) {
       throw new Error("User not found");
@@ -36,7 +37,7 @@ export default defineEventHandler(async (event) => {
       }
     }
     const roleObject = role
-      ? await prisma.customRole.findUnique({ where: { id: Number(role) } })
+      ? await prisma.customRole.findUnique({ where: { id: role } })
       : null;
     if (role && !roleObject) {
       throw createError("Error updating user, invalid role");
@@ -51,7 +52,7 @@ export default defineEventHandler(async (event) => {
       }
     }
     const updated = await prisma.user.update({
-      where: { id: user.id },
+      where: { id: String(id) },
       data: {
         email: email || user.email,
         username: username || user.username,

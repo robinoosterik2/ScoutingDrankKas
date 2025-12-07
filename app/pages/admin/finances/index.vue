@@ -159,7 +159,7 @@
           >
             <tr
               v-for="transaction in paginatedTransactions"
-              :key="transaction._id"
+              :key="transaction.id"
               class="hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               <td

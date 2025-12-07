@@ -8,7 +8,7 @@ interface UserInfo {
 
 // Transaction product type
 interface TransactionProduct {
-  _id: string;
+  id: string;
   name: string;
   price: number;
   quantity: number;
@@ -17,13 +17,13 @@ interface TransactionProduct {
 // Define the Transaction type as a union of specific transaction types
 type Transaction =
   | {
-      _id: string;
+      id: string;
       type: "order";
       displayAmount: number;
       user: UserInfo;
       bartender?: UserInfo;
       products: Array<{
-        _id: string;
+        id: string;
         name: string;
         price: number;
         quantity: number;
@@ -33,7 +33,7 @@ type Transaction =
       updatedAt: Date;
     }
   | {
-      _id: string;
+      id: string;
       type: "raise";
       displayAmount: number;
       user: UserInfo;
@@ -43,12 +43,12 @@ type Transaction =
       updatedAt: Date;
     }
   | {
-      _id: string;
+      id: string;
       type: "purchase";
       displayAmount: number;
       user: UserInfo;
       product: {
-        _id: string;
+        id: string;
         name: string;
         price: number;
         quantity: number;
@@ -142,13 +142,13 @@ export default defineEventHandler(async (event) => {
         : undefined;
 
       return {
-        _id: String(order.id),
+        id: order.id,
         type: "order",
         displayAmount: order.total,
         user: userInfo,
         bartender: bartenderInfo,
         products: (order.items || []).map((p: any) => ({
-          _id: String(p.product?.id || ""),
+          id: String(p.product?.id || ""),
           name: p.product?.name || "Unknown Product",
           price: p.product?.price || 0,
           quantity: p.count || 0,
@@ -162,7 +162,7 @@ export default defineEventHandler(async (event) => {
     // Transform raises to transactions
     const raiseTransactions = (raises || []).map(
       (raise: any): Transaction => ({
-        _id: String(raise.id),
+        id: raise.id,
         type: "raise",
         displayAmount: raise.amount,
         user: {
@@ -184,7 +184,7 @@ export default defineEventHandler(async (event) => {
     // Transform purchases to transactions
     const purchaseTransactions = (purchases || []).map(
       (purchase): Transaction => ({
-        _id: String(purchase.id),
+        id: purchase.id,
         type: "purchase",
         displayAmount: purchase.price,
         user: {
@@ -192,7 +192,7 @@ export default defineEventHandler(async (event) => {
           lastName: purchase.user?.lastName,
         },
         product: {
-          _id: String(purchase.product?.id ?? ""),
+          id: String(purchase.product?.id ?? ""),
           name: purchase.product?.name ?? "Unknown Product",
           price: purchase.product?.price ?? 0,
           quantity: purchase.quantity,

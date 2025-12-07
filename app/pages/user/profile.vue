@@ -11,9 +11,17 @@
 
     <!-- User Info -->
     <div class="dark:bg-gray-800 shadow-md rounded-lg p-4 mb-6">
-      <h2 class="text-xl font-semibold mb-2">
-        {{ $t("profile.accountInfo") }}
-      </h2>
+      <div class="flex flex-row justify-between items-center mb-2">
+        <h2 class="text-xl font-semibold">
+          {{ $t("profile.accountInfo") }}
+        </h2>
+        <NuxtLink
+          to="/user/guests"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+        >
+          {{ $t("guests.title") }}
+        </NuxtLink>
+      </div>
       <div class="grid grid-cols-2 gap-x-4 gap-y-2 max-w-md">
         <span class="font-medium">{{ $t("username") }}:</span>
         <span>{{ user?.username }}</span>
@@ -96,7 +104,7 @@
         <template #cell-actions="{ row: order }">
           <button
             class="px-3 py-1 rounded bg-blue-500 text-white text-sm hover:bg-blue-600 transition-colors"
-            @click="openOrderPopup(order._id)"
+            @click="openOrderPopup(order.id)"
           >
             {{ $t("profile.viewOrder") }}
           </button>
@@ -252,7 +260,7 @@ const updateRaisesPage = (page) => {
 const searchOrders = async () => {
   try {
     const params = new URLSearchParams({
-      userId: user.value._id,
+      userId: user.value.id,
       page: ordersPage.value.toString(),
       limit: ordersPageSize.value.toString(),
     });
@@ -275,7 +283,7 @@ const searchOrders = async () => {
 const fetchRaises = async () => {
   try {
     const data = await $fetch(
-      `/api/raises/${user.value._id}?page=${raisesPage.value}&limit=${raisesPageSize.value}`
+      `/api/raises/${user.value.id}?page=${raisesPage.value}&limit=${raisesPageSize.value}`
     );
     raises.value = data.raises || [];
     raisesTotal.value = data.total || 0;
@@ -285,7 +293,7 @@ const fetchRaises = async () => {
 };
 
 const loadProfileData = async () => {
-  const userId = user.value._id;
+  const userId = user.value.id;
   const balanceData = await $fetch(`/api/users/balance?userId=${userId}`);
   balance.value = balanceData.balance;
 };
@@ -317,7 +325,7 @@ const formatDate = (dateString) => {
 
 // Watchers
 watch(activeTab, async (newTab) => {
-  if (newTab === "raises" && user?.value?._id) {
+  if (newTab === "raises" && user?.value?.id) {
     await fetchRaises();
   }
 });

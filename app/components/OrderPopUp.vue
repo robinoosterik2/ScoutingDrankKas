@@ -50,7 +50,7 @@
                   {{ $t("common.orderId") }}
                 </p>
                 <p class="text-gray-900 dark:text-white font-mono">
-                  {{ order._id }}
+                  {{ order.id }}
                 </p>
               </div>
               <div>
@@ -84,7 +84,7 @@
             </div>
 
             <!-- Divider -->
-            <hr class="border-gray-200 dark:border-gray-700" >
+            <hr class="border-gray-200 dark:border-gray-700" />
 
             <!-- Products List -->
             <div>

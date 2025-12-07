@@ -10,15 +10,6 @@ services:
     buildCommand: pnpm install --frozen-lockfile && pnpm prisma generate && pnpm run build
     startCommand: sh -c "pnpm exec prisma migrate deploy || pnpm exec prisma db push; node .output/server/index.mjs"
 
-    # Environment variables
-    # envVars:
-    #   - key: NODE_ENV
-    #     value: production
-    #   - key: DATABASE_URL
-    #     value: file:/var/data/prod.db
-    #   - key: PORT
-    #     value: 3000
-
     # Persistent disk for SQLite
     disk:
       name: sqlite-data
@@ -27,4 +18,4 @@ services:
 
     # Auto-deploy and branch settings
     autoDeploy: true
-    branch: master # or your master branch name
+    branch: master

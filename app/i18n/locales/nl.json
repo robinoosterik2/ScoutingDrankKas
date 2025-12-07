@@ -107,7 +107,8 @@
   "login": {
     "errors": {
       "invalidCredentials": "Ongeldige inloggegevens",
-      "userNotFound": "Gebruiker niet gevonden"
+      "userNotFound": "Gebruiker niet gevonden",
+      "accountActivationRequired": "Account activatie vereist. Vraag een barmedewerker."
     },
     "forgotPassword": "Wachtwoord vergeten?",
     "noAccount": "Nog geen account?",
@@ -333,7 +334,30 @@
     "editUser": "Gebruiker bewerken",
     "getStarted": "Ga aan de slag door een nieuwe gebruiker aan te maken.",
     "noUsers": "Geen gebruikers gevonden",
-    "title": "Gebruikersbeheer"
+    "accountStatus": "Account Status",
+    "status": {
+      "active": "Actief",
+      "migrated": "Gemigreerd"
+    },
+    "activate": "Activeren",
+    "activateTitle": "Gebruiker activeren",
+    "activationSuccess": "Gebruiker succesvol geactiveerd",
+    "title": "Gebruikersbeheer",
+    "migrateUser": "Gebruikers Migreren"
+  },
+  "users.migrate": {
+    "title": "Gebruikers Migreren",
+    "bulkImport": "Bulk Import (CSV)",
+    "createAnother": "Nog een gebruiker aanmaken",
+    "csvDescription": "Voer gebruikers in, één per regel in het formaat: gebruikersnaam,saldo,voornaam(optioneel),achternaam(optioneel)",
+    "csvPlaceholder": "jan,100\npip,250,Pip,Pelikaan",
+    "importUsers": "Gebruikers Importeren",
+    "successSingle": "Gebruiker succesvol gemigreerd",
+    "bulkSuccess": "{count} gebruikers succesvol gemigreerd.",
+    "bulkFailed": "{count} gebruikers mislukt"
+  },
+  "getStarted": {
+    "singleUser": "Enkele Gebruiker"
   },
   "userSelection": "Gebruikersselectie",
   "yes": "Ja",

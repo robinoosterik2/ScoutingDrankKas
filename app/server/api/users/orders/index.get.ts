@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const user = await prisma.user.findUnique({ where: { id: Number(userId) } });
+  const user = await prisma.user.findUnique({ where: { id: String(userId) } });
   if (!user) {
     throw createError({
       statusCode: 404,

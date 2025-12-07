@@ -13,13 +13,11 @@ export default defineEventHandler(async () => {
     });
     return orders.map((o) => ({
       id: o.id,
-      _id: String(o.id),
       user: o.user,
       bartender: o.bartender,
       products: o.items.map((it) => ({
         productId: {
           id: it.product.id,
-          _id: String(it.product.id),
           name: it.product.name,
         },
         count: it.count,

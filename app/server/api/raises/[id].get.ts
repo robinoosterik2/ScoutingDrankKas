@@ -2,10 +2,10 @@ import { defineEventHandler } from "h3";
 import { prisma } from "~/server/utils/prisma";
 
 interface RaiseDocument {
-  _id: any;
+  id: any;
   user: any;
   raiser?: {
-    _id: any;
+    id: any;
     firstName: string;
     lastName: string;
   } | null;
@@ -15,10 +15,10 @@ interface RaiseDocument {
 }
 
 interface RaiseResponse {
-  _id: string;
+  id: string;
   user: string;
   raiser: {
-    _id: string;
+    id: string;
     firstName: string;
     lastName: string;
   } | null;
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
 
     const [raises, total] = await Promise.all([
       prisma.raise.findMany({
-        where: { userId: Number(userId) },
+        where: { userId: String(userId) },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
@@ -52,16 +52,16 @@ export default defineEventHandler(async (event) => {
           raiser: { select: { id: true, firstName: true, lastName: true } },
         },
       }),
-      prisma.raise.count({ where: { userId: Number(userId) } }),
+      prisma.raise.count({ where: { userId: String(userId) } }),
     ]);
 
     return {
       raises: raises.map((raise: any) => ({
-        _id: String(raise.id),
-        user: String(raise.userId),
+        id: raise.id,
+        user: raise.userId,
         raiser: raise.raiser
           ? {
-              _id: String(raise.raiser.id),
+              id: raise.raiser.id,
               firstName: raise.raiser.firstName,
               lastName: raise.raiser.lastName,
             }

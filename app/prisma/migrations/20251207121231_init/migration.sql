@@ -1,27 +1,31 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "email" TEXT NOT NULL,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "email" TEXT,
     "username" TEXT NOT NULL,
-    "firstName" TEXT NOT NULL,
-    "lastName" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "firstName" TEXT,
+    "lastName" TEXT,
+    "password" TEXT,
+    "accountStatus" TEXT NOT NULL DEFAULT 'ACTIVE',
     "loggedInAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "balance" INTEGER NOT NULL DEFAULT 0,
     "resetPasswordToken" TEXT,
     "resetPasswordExpires" DATETIME,
-    "roleId" INTEGER,
-    "settingsId" INTEGER,
+    "isGuest" BOOLEAN NOT NULL DEFAULT false,
+    "hostId" TEXT,
+    "roleId" TEXT,
+    "settingsId" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "User_hostId_fkey" FOREIGN KEY ("hostId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "CustomRole" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "User_settingsId_fkey" FOREIGN KEY ("settingsId") REFERENCES "Settings" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "CustomRole" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "roleName" TEXT NOT NULL,
     "roleDescription" TEXT NOT NULL,
     "rolePermissions" TEXT,
@@ -31,7 +35,7 @@ CREATE TABLE "CustomRole" (
 
 -- CreateTable
 CREATE TABLE "Settings" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "language" TEXT NOT NULL DEFAULT 'nl',
     "darkMode" BOOLEAN NOT NULL DEFAULT true,
     "speedMode" BOOLEAN NOT NULL DEFAULT false
@@ -39,7 +43,7 @@ CREATE TABLE "Settings" (
 
 -- CreateTable
 CREATE TABLE "Category" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "ageRestriction" BOOLEAN NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -48,7 +52,7 @@ CREATE TABLE "Category" (
 
 -- CreateTable
 CREATE TABLE "Product" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
@@ -66,8 +70,8 @@ CREATE TABLE "Product" (
 
 -- CreateTable
 CREATE TABLE "ProductOnCategory" (
-    "productId" INTEGER NOT NULL,
-    "categoryId" INTEGER NOT NULL,
+    "productId" TEXT NOT NULL,
+    "categoryId" TEXT NOT NULL,
 
     PRIMARY KEY ("productId", "categoryId"),
     CONSTRAINT "ProductOnCategory_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -76,21 +80,23 @@ CREATE TABLE "ProductOnCategory" (
 
 -- CreateTable
 CREATE TABLE "Order" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "userId" INTEGER NOT NULL,
-    "bartenderId" INTEGER,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "bartenderId" TEXT,
     "total" INTEGER NOT NULL,
     "dayOfOrder" DATETIME NOT NULL,
+    "guestId" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Order_bartenderId_fkey" FOREIGN KEY ("bartenderId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT "Order_bartenderId_fkey" FOREIGN KEY ("bartenderId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Order_guestId_fkey" FOREIGN KEY ("guestId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "OrderItem" (
-    "orderId" INTEGER NOT NULL,
-    "productId" INTEGER NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
     "count" INTEGER NOT NULL,
 
     PRIMARY KEY ("orderId", "productId"),
@@ -100,9 +106,9 @@ CREATE TABLE "OrderItem" (
 
 -- CreateTable
 CREATE TABLE "Purchase" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "productId" INTEGER NOT NULL,
-    "userId" INTEGER,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "productId" TEXT NOT NULL,
+    "userId" TEXT,
     "quantity" INTEGER NOT NULL,
     "price" INTEGER NOT NULL,
     "packSize" INTEGER,
@@ -117,9 +123,9 @@ CREATE TABLE "Purchase" (
 
 -- CreateTable
 CREATE TABLE "Raise" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "userId" INTEGER NOT NULL,
-    "raiserId" INTEGER,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "raiserId" TEXT,
     "amount" INTEGER NOT NULL,
     "paymentMethod" TEXT NOT NULL DEFAULT 'cash',
     "dayOfOrder" DATETIME NOT NULL,
@@ -131,13 +137,13 @@ CREATE TABLE "Raise" (
 
 -- CreateTable
 CREATE TABLE "Log" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "executorId" INTEGER,
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "executorId" TEXT,
     "action" TEXT NOT NULL,
     "level" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "targetType" TEXT NOT NULL,
-    "targetId" INTEGER,
+    "targetId" TEXT,
     "snapshot" TEXT,
     "changes" TEXT,
     "description" TEXT NOT NULL,

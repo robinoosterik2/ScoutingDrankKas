@@ -4,8 +4,8 @@ export async function hasPermission(
   userId: number | string,
   permission: string
 ): Promise<boolean> {
-  const id = typeof userId === "string" ? Number(userId) : userId;
-  if (!id || Number.isNaN(id)) return false;
+  const id = String(userId);
+  if (!id) return false;
 
   const user = await prisma.user.findUnique({
     where: { id },

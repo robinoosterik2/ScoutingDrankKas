@@ -3,8 +3,7 @@ import { prisma } from "~/server/utils/prisma";
 import { logAuditEvent } from "~/server/utils/logger";
 
 type SessionUser = {
-  id?: number | string;
-  _id?: string;
+  id?: string;
 };
 
 export default defineEventHandler(async (event) => {
@@ -19,7 +18,7 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const productId = Number(body.productId);
+    const productId = String(body.productId);
     const quantity = Number(body.quantity);
     const price = Number(body.price);
     const packSize = body.packSize !== undefined ? Number(body.packSize) : null;
@@ -28,11 +27,7 @@ export default defineEventHandler(async (event) => {
     const notes = typeof body.notes === "string" ? body.notes.trim() : null;
     const dayOfOrder = body.dayOfOrder ? new Date(body.dayOfOrder) : new Date();
 
-    if (
-      Number.isNaN(productId) ||
-      Number.isNaN(quantity) ||
-      Number.isNaN(price)
-    ) {
+    if (Number.isNaN(quantity) || Number.isNaN(price)) {
       throw createError({
         statusCode: 400,
         statusMessage:
@@ -52,15 +47,12 @@ export default defineEventHandler(async (event) => {
 
     const session = await getUserSession(event);
     const sessionUser = session?.user as SessionUser | undefined;
-    const executorValue = sessionUser?.id ?? sessionUser?._id;
+    const executorValue = sessionUser?.id;
     const parsedExecutorId =
       executorValue !== undefined && executorValue !== null
-        ? Number(executorValue)
+        ? String(executorValue)
         : null;
-    const executorId =
-      parsedExecutorId !== null && !Number.isNaN(parsedExecutorId)
-        ? parsedExecutorId
-        : null;
+    const executorId = parsedExecutorId;
 
     const [purchase] = await prisma.$transaction([
       prisma.purchase.create({

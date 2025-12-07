@@ -25,7 +25,7 @@
             type="text"
             required
             class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-          >
+          />
         </div>
 
         <!-- Last Name -->
@@ -42,7 +42,7 @@
             type="text"
             required
             class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-          >
+          />
         </div>
       </div>
 
@@ -60,7 +60,7 @@
           type="text"
           required
           class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-        >
+        />
       </div>
 
       <!-- Email -->
@@ -77,7 +77,7 @@
           type="email"
           required
           class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-        >
+        />
       </div>
 
       <!-- Password (only for new users or reset) -->
@@ -94,7 +94,7 @@
           type="password"
           required
           class="w-full px-3 py-2 border dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-white"
-        >
+        />
       </div>
 
       <!-- Role Selection -->
@@ -110,8 +110,8 @@
         >
           <option
             v-for="role in availableRoles"
-            :key="role._id"
-            :value="role._id"
+            :key="role.id"
+            :value="role.id"
           >
             {{ role.roleName }} - {{ role.roleDescription }}
           </option>
@@ -190,7 +190,9 @@ onMounted(async () => {
 // Save user method (create or update)
 const saveUser = async () => {
   try {
-    const result = await $fetch("/api/admin/users/update", {
+    console.log(userId);
+    console.log(userId.value);
+    const result = await $fetch(`/api/admin/users/update`, {
       method: "POST",
       body: JSON.stringify({
         id: userId.value,

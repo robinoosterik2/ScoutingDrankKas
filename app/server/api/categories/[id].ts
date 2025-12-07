@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const category = await prisma.category.findUnique({
-    where: { id: Number(id) },
+    where: { id: String(id) },
   });
 
   if (!category) {

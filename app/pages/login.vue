@@ -11,6 +11,15 @@
       <div v-if="resetSuccess" class="text-center text-green-500">
         {{ $t("login.resetSuccess") }}
       </div>
+
+      <!-- General Error Alert -->
+      <div
+        v-if="generalError"
+        class="p-2 bg-red-100 text-red-700 rounded text-sm text-center"
+      >
+        {{ generalError }}
+      </div>
+
       <form class="space-y-2" @submit.prevent="handleLogin">
         <div>
           <label for="username">{{ $t("login.username") }}</label>
@@ -21,9 +30,13 @@
             type="text"
             required
             class="appearance-none rounded-md relative block w-full px-3 py-1 mt-2 border text-white border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            :class="{ 'border-red-500': usernameError }"
             :placeholder="$t('login.usernamePlaceholder')"
+            @input="usernameError = ''"
           />
-          <div id="errorUsername" class="text-red-500 mt-1" />
+          <div v-if="usernameError" class="text-red-500 mt-1 text-sm">
+            {{ usernameError }}
+          </div>
         </div>
         <div>
           <label for="password">{{ $t("login.password") }}</label>
@@ -34,9 +47,13 @@
             type="password"
             required
             class="appearance-none rounded-md relative block w-full px-3 py-1 mt-2 border text-white border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            :class="{ 'border-red-500': passwordError }"
             placeholder="••••••••••"
+            @input="passwordError = ''"
           />
-          <div id="errorPassword" class="text-red-500 mt-1" />
+          <div v-if="passwordError" class="text-red-500 mt-1 text-sm">
+            {{ passwordError }}
+          </div>
         </div>
         <!-- Remember me -->
         <div class="flex items-center">
@@ -56,9 +73,11 @@
         <div class="pt-4">
           <button
             type="submit"
-            class="group relative w-full flex justify-center py-1 px-4 border border-transparent font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            :disabled="isLoading"
+            class="group relative w-full flex justify-center py-1 px-4 border border-transparent font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ $t("login.submit") }}
+            <span v-if="isLoading">Loading...</span>
+            <span v-else>{{ $t("login.submit") }}</span>
           </button>
         </div>
         <div>
@@ -100,6 +119,11 @@ const password = ref("");
 const rememberMe = ref(false);
 const resetSuccess = ref(false);
 
+const usernameError = ref("");
+const passwordError = ref("");
+const generalError = ref("");
+const isLoading = ref(false);
+
 onMounted(async () => {
   await clear();
   if (route.query.resetSuccess === "true") {
@@ -108,8 +132,11 @@ onMounted(async () => {
 });
 
 const handleLogin = async () => {
-  document.getElementById("errorUsername").textContent = "";
-  document.getElementById("errorPassword").textContent = "";
+  usernameError.value = "";
+  passwordError.value = "";
+  generalError.value = "";
+  isLoading.value = true;
+
   try {
     const data = await $fetch("/api/auth/login", {
       method: "POST",
@@ -123,15 +150,23 @@ const handleLogin = async () => {
       router.push("/");
     }
   } catch (error) {
-    if (error.statusMessage === "User not found") {
-      document.getElementById("errorUsername").textContent = t(
-        "login.errors.userNotFound"
-      );
-    } else if (error.statusMessage === "Invalid credentials") {
-      document.getElementById("errorPassword").textContent = t(
-        "login.errors.invalidCredentials"
-      );
+    const statusMessage = error.statusMessage || error.data?.statusMessage;
+
+    if (statusMessage === "User not found") {
+      usernameError.value = t("login.errors.userNotFound");
+    } else if (statusMessage === "Invalid credentials") {
+      passwordError.value = t("login.errors.invalidCredentials");
+    } else if (statusMessage === "account_activation_required") {
+      generalError.value =
+        "Account requires activation. Please check your email or contact support.";
+      // Optionally redirect or show more specific instruction
+    } else {
+      generalError.value =
+        t("login.errors.generic") ||
+        "An error occurred during login. Please try again.";
     }
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>

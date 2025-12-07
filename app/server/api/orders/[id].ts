@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const order = await prisma.order.findUnique({
-      where: { id: Number(id) },
+      where: { id: String(id) },
       include: {
         user: { select: { id: true, firstName: true, lastName: true } },
         bartender: { select: { id: true, firstName: true, lastName: true } },
@@ -27,13 +27,11 @@ export default defineEventHandler(async (event) => {
     }
     return {
       id: order.id,
-      _id: String(order.id),
       user: order.user,
       bartender: order.bartender,
       products: order.items.map((it) => ({
         productId: {
           id: it.product.id,
-          _id: String(it.product.id),
           name: it.product.name,
           price: it.product.price,
         },

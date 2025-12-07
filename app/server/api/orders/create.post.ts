@@ -7,31 +7,62 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     // Get the user session
     const session = await getUserSession(event);
-    const bartenderUser = session?.user as
-      | { id?: number | string; _id?: string }
-      | undefined;
-    const bartenderId = bartenderUser?.id ?? bartenderUser?._id;
+    const bartenderUser = session?.user as { id?: string } | undefined;
+    const bartenderId = bartenderUser?.id;
     if (!bartenderId) {
       throw createError({
         statusCode: 401,
         statusMessage: "Bartender user not found",
       });
     }
+    console.log(body);
 
-    // Find the customer user
-    const userIdNum = Number(body.userId);
-    const user = await prisma.user.findUnique({ where: { id: userIdNum } });
-    if (!user) {
-      throw createError({ statusCode: 400, statusMessage: "User not found" });
+    const userIdNum = body.userId ? String(body.userId) : null;
+    const guestIdNum = body.guestId ? String(body.guestId) : null;
+
+    let targetUser = null;
+    let targetGuest = null;
+    let payerUser = null;
+
+    if (guestIdNum) {
+      targetGuest = await prisma.user.findUnique({
+        where: { id: guestIdNum },
+        include: { host: true },
+      });
+      if (!targetGuest || !targetGuest.isGuest) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: "Guest not found",
+        });
+      }
+      if (!targetGuest.host) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: "Guest does not have a linked host",
+        });
+      }
+      payerUser = targetGuest.host;
+    } else if (userIdNum) {
+      targetUser = await prisma.user.findUnique({ where: { id: userIdNum } });
+      if (!targetUser) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: "User not found",
+        });
+      }
+      payerUser = targetUser;
+    } else {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "No user or guest specified",
+      });
     }
-
-    // Use the bartender's user ID from the session
-    body.bartenderId = session.user._id;
+    console.log(payerUser);
 
     let totalInCents = 0;
 
     for (const item of body.products) {
-      const productIdNum = Number(item.productId);
+      const productIdNum = String(item.productId);
       const productData = await prisma.product.findUnique({
         where: { id: productIdNum },
       });
@@ -75,38 +106,54 @@ export default defineEventHandler(async (event) => {
     if (day.getHours() < 8) day.setDate(day.getDate() - 1);
     day.setHours(0, 0, 0, 0);
 
+    // Update Payer Balance (Host or self)
     await prisma.user.update({
-      where: { id: user.id },
+      where: { id: payerUser.id },
       data: { balance: { decrement: totalInCents } },
     });
 
+    // If Guest, update guest balance (decrement since they are spending)
+    // Assuming balance starts at 0 -> -total.
+    if (targetGuest) {
+      await prisma.user.update({
+        where: { id: targetGuest.id },
+        data: { balance: { decrement: totalInCents } },
+      });
+    }
+
     const order = await prisma.order.create({
       data: {
-        userId: user.id,
-        bartenderId: Number(bartenderId),
+        userId: payerUser.id,
+        guestId: targetGuest ? targetGuest.id : null,
+        bartenderId: String(bartenderId),
         total: totalInCents,
         dayOfOrder: day,
         items: {
           create: body.products.map((p: any) => ({
-            productId: Number(p.productId),
+            productId: String(p.productId),
             count: p.count,
           })),
         },
       },
     });
+
+    const targetName = targetGuest
+      ? `${targetGuest.username} (Guest)`
+      : payerUser.username;
+
     await logAuditEvent({
       event,
       action: "order_created",
       category: "order",
       targetType: "Order",
       targetId: order.id,
-      description: `Order ${order.id} created for user ${user.username} (${user.id}) totaling ${totalInCents} cents.`,
+      description: `Order ${order.id} created for ${targetName} totaling ${totalInCents} cents.`,
     });
     return { message: "Order created successfully" };
-  } catch (error) {
+  } catch (error: any) {
     throw createError({
       statusCode: 500,
-      statusMessage: "Error while creating new order " + error,
+      statusMessage: "Error while creating new order " + error.message,
     });
   }
 });

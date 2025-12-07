@@ -28,8 +28,8 @@
       <option value="">{{ $t("categories.allCategories") }}</option>
       <option
         v-for="category in categories"
-        :key="category._id"
-        :value="category._id"
+        :key="category.id"
+        :value="category.id"
       >
         {{ category.name }}
       </option>
@@ -208,7 +208,7 @@ const filteredAndSortedProducts = computed(() => {
 
 // Edit product method (navigate to edit page)
 const editProduct = (product) => {
-  const productId = product.id ?? product._id;
+  const productId = product.id ?? product.id;
   if (productId === undefined || productId === null) {
     console.error("Missing product identifier", product);
     alert("Cannot edit this product because it lacks an identifier.");
@@ -246,7 +246,7 @@ const deleteProduct = async (productId) => {
       body: JSON.stringify({ productId }),
     });
     products.value = products.value.filter(
-      (product) => (product.id ?? product._id) !== productId
+      (product) => (product.id ?? product.id) !== productId
     );
   } catch (error) {
     alert("Failed to delete product. Please try again.");
@@ -256,7 +256,7 @@ const deleteProduct = async (productId) => {
 // Confirm delete action
 const confirmDelete = () => {
   if (productToDelete.value) {
-    const identifier = productToDelete.value.id ?? productToDelete.value._id;
+    const identifier = productToDelete.value.id ?? productToDelete.value.id;
     if (identifier === undefined || identifier === null) {
       console.error("Missing product identifier", productToDelete.value);
       alert("Cannot delete this product because it lacks an identifier.");

@@ -54,7 +54,7 @@ export default defineEventHandler(async (event) => {
       };
     } else {
       const found = await prisma.category.findUnique({
-        where: { id: Number(categories[i]) },
+        where: { id: String(categories[i]) },
       });
       if (!found) {
         return {
@@ -70,11 +70,11 @@ export default defineEventHandler(async (event) => {
 
   // Update if id exists
   let found = await prisma.product.findUnique({
-    where: { id: Number(body.id) },
+    where: { id: String(body.id) },
   });
   if (found) {
     const updated = await prisma.product.update({
-      where: { id: Number(body.id) },
+      where: { id: String(body.id) },
       data: {
         name,
         price: Number(price),
@@ -91,7 +91,7 @@ export default defineEventHandler(async (event) => {
           // reset and set categories
           deleteMany: {},
           create: categories.map((cid: string) => ({
-            categoryId: Number(cid),
+            categoryId: String(cid),
           })),
         },
       },
@@ -132,7 +132,7 @@ export default defineEventHandler(async (event) => {
       packSize: body.packSize ?? null,
       imageUrl,
       categories: {
-        create: categories.map((cid: string) => ({ categoryId: Number(cid) })),
+        create: categories.map((cid: string) => ({ categoryId: String(cid) })),
       },
     },
   });

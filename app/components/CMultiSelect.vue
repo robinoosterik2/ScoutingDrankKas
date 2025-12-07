@@ -10,7 +10,7 @@
       <div v-if="selectedItems.length > 0" class="flex flex-wrap gap-1">
         <span
           v-for="item in selectedItems"
-          :key="item._id"
+          :key="item.id"
           class="inline-flex items-center px-2 py-1 text-xs font-medium text-indigo-700 bg-indigo-100 rounded-full dark:bg-indigo-900 dark:text-indigo-100"
         >
           {{ item.name }}
@@ -40,7 +40,7 @@
         @click.stop
         @input="onSearch"
         @focus="openDropdown"
-      >
+      />
 
       <!-- Dropdown icon -->
       <svg
@@ -71,7 +71,7 @@
       </div>
       <div
         v-for="item in filteredItems"
-        :key="item._id"
+        :key="item.id"
         class="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
         :class="{ 'bg-gray-100 dark:bg-gray-700': isSelected(item) }"
         @click="toggleItem(item)"
@@ -81,7 +81,7 @@
           :checked="isSelected(item)"
           class="h-4 w-4 text-indigo-600 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-indigo-500"
           @click.stop
-        >
+        />
         <span class="ml-2">{{ item.name }}</span>
       </div>
     </div>
@@ -113,7 +113,7 @@ const props = defineProps({
   },
   itemValue: {
     type: String,
-    default: "_id",
+    default: "id",
   },
 });
 

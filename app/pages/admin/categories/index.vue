@@ -39,7 +39,7 @@
       >
         <tr
           v-for="category in categories"
-          :key="category._id"
+          :key="category.id"
           class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200"
         >
           <td class="px-6 py-4 whitespace-nowrap">
@@ -119,14 +119,14 @@ onMounted(async () => {
 });
 
 const editCategory = (category) => {
-  navigateTo(`/admin/categories/edit/${category._id}`);
+  navigateTo(`/admin/categories/edit/${category.id}`);
 };
 
 const deleteCategory = async (category) => {
   if (!confirm($t("categories.confirmDelete", { name: category.name }))) return;
   try {
-    await $fetch(`/api/categories/${category._id}`, { method: "DELETE" });
-    categories.value = categories.value.filter((c) => c._id !== category._id);
+    await $fetch(`/api/categories/${category.id}`, { method: "DELETE" });
+    categories.value = categories.value.filter((c) => c.id !== category.id);
   } catch (error) {
     console.error("Failed to delete category:", error);
     alert("Failed to delete category. Please try again.");

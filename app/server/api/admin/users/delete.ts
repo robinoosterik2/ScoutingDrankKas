@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const userToBeAnonymized = await prisma.user.findUnique({
-    where: { id: Number(userId) },
+    where: { id: String(userId) },
   });
   if (!userToBeAnonymized) {
     throw createError({ statusCode: 404, statusMessage: "User not found" });

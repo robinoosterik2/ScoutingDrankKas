@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: Number(userId) },
+    where: { id: String(userId) },
     select: { balance: true },
   });
 

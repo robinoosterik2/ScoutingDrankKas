@@ -2,17 +2,16 @@ import type { H3Event } from "h3";
 import { prisma } from "~/server/utils/prisma";
 
 type SessionUser = {
-  id?: number | string;
-  _id?: string;
+  id?: string;
 };
 
 interface LogParams {
   event?: H3Event;
-  executorId?: number | null;
+  executorId?: string | null;
   action: string;
   category: string;
   targetType: string;
-  targetId?: number | null;
+  targetId?: string | null;
   description: string;
   level?: string;
 }
@@ -38,12 +37,9 @@ export async function logAuditEvent({
       try {
         const session = await getUserSession(event);
         const sessionUser = session?.user as SessionUser | undefined;
-        const sessionId = sessionUser?.id ?? sessionUser?._id;
+        const sessionId = sessionUser?.id ?? null;
         if (sessionId !== undefined && sessionId !== null) {
-          const numericId = Number(sessionId);
-          if (!Number.isNaN(numericId)) {
-            resolvedExecutorId = numericId;
-          }
+          resolvedExecutorId = sessionId;
         }
       } catch (sessionError) {
         console.warn(

@@ -1,7 +1,13 @@
 <template>
   <CTitle :text="$t('users.title')" />
   <div class="flex items-center justify-between mb-2">
-    <BackLink to="/admin" :back-page="$t('admin.title')"/>
+    <BackLink to="/admin" :back-page="$t('admin.title')" />
+    <button
+      @click="navigateTo('/admin/users/migrate')"
+      class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+    >
+      {{ $t("users.migrateUser") }}
+    </button>
   </div>
 
   <!-- Filters and Sorting -->
@@ -9,8 +15,8 @@
     <input
       v-model="searchQuery"
       :placeholder="$t('Search') + '...'"
-      class="flex-grow px-3 py-2 mb-4 me-4 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-    >
+      class="grow px-3 py-2 mb-4 me-4 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+    />
     <select
       v-model="selectedRole"
       class="px-3 py-2 mb-4 me-4 text-sm border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
@@ -19,6 +25,14 @@
       <option v-for="role in roles" :key="role" :value="role">
         {{ role.roleName }}
       </option>
+    </select>
+    <select
+      v-model="selectedStatus"
+      class="px-3 py-2 mb-4 me-4 text-sm border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+    >
+      <option value="">{{ $t("users.accountStatus") }}</option>
+      <option value="ACTIVE">{{ $t("users.status.active") }}</option>
+      <option value="MIGRATED">{{ $t("users.status.migrated") }}</option>
     </select>
   </div>
 
@@ -49,6 +63,12 @@
         align: 'left',
         sortable: true,
       },
+      {
+        header: $t('users.accountStatus'),
+        field: 'accountStatus',
+        align: 'center',
+        sortable: true,
+      },
       { header: $t('actions'), field: 'actions', align: 'right' },
     ]"
     :data="
@@ -62,6 +82,15 @@
     :no-data-text="$t('users.noUsers')"
     @sort="handleSort"
   >
+    <template #cell-username="{ row: user }">
+      <div class="flex flex-col">
+        <span class="font-medium">{{ user.username }}</span>
+        <span v-if="user.type === 'guest'" class="text-xs text-gray-500">
+          {{ $t("guests.guestOf", { host: user.hostName }) }}
+        </span>
+      </div>
+    </template>
+
     <template #cell-role="{ row: user }">
       <span
         v-if="user.role"
@@ -73,6 +102,8 @@
             user.role.roleName === 'Stam',
           'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200':
             user.role.roleName === 'Lid',
+          'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200':
+            user.role.roleName === 'Guest',
         }"
       >
         {{ user.role.roleName }}
@@ -87,6 +118,23 @@
 
     <template #cell-balance="{ row: user }">
       <div
+        v-if="user.type === 'guest'"
+        class="text-sm"
+        :class="{
+          'text-red-500 dark:text-red-300': user.balance < 0,
+          'text-gray-500 dark:text-gray-400': user.balance === 0,
+        }"
+      >
+        <!-- Guests usually have negative balance (debt) -->
+        <span v-if="user.balance < 0">
+          {{ format(Math.abs(user.balance)) }} {{ $t("guests.owed") }}
+        </span>
+        <span v-else>
+          {{ format(user.balance) }}
+        </span>
+      </div>
+      <div
+        v-else
         class="text-sm"
         :class="{
           'text-red-500 dark:text-red-300': user.balance < 0,
@@ -97,12 +145,28 @@
       </div>
     </template>
 
+    <template #cell-accountStatus="{ row: user }">
+      <span
+        class="px-2 py-1 text-xs font-medium rounded-full"
+        :class="{
+          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200':
+            user.accountStatus === 'ACTIVE',
+          'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200':
+            user.accountStatus === 'MIGRATED',
+          'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200':
+            user.accountStatus === 'GUEST',
+        }"
+      >
+        {{ $t(`users.status.${user.accountStatus.toLowerCase()}`) }}
+      </span>
+    </template>
+
     <template #cell-actions="{ row: user }">
       <div class="flex justify-end">
         <CDropdown
-          :id="`user-dropdown-${user._id}`"
+          :id="`user-dropdown-${user.id}`"
           :model-value="null"
-          :items="dropdownItems"
+          :items="getDropdownItems(user)"
           :placeholder="$t('Actions')"
           class="min-w-24"
           @update:model-value="(value) => handleAction(user, value)"
@@ -138,7 +202,11 @@
   <!-- Delete Confirmation Modal -->
   <DeleteConfirmationModal
     :is-open="isDeleteModalOpen"
-    :title="$t('delete') + ' ' + $t('User')"
+    :title="
+      $t('delete') +
+      ' ' +
+      (userToDelete?.type === 'guest' ? $t('guests.guest') : $t('User'))
+    "
     :message="`${$t('users.confirmDelete')} '${userToDelete?.username}'? ${$t(
       'cannotBeUndone'
     )}`"
@@ -159,6 +227,7 @@
 <script setup>
 import DeleteConfirmationModal from "@/components/ConfirmDelete.vue";
 import RaisePopUpModal from "@/components/RaisePopUp";
+
 import DataTable from "~/components/DataTable.vue";
 
 const { format } = useMoney();
@@ -167,6 +236,7 @@ const roles = ref([]);
 const users = ref([]);
 const searchQuery = ref("");
 const selectedRole = ref("");
+const selectedStatus = ref("");
 const sortBy = ref("username"); // Changed from "name" to "username" to match the actual field
 const sortDirection = ref("asc");
 const isPopupOpen = ref(false);
@@ -174,11 +244,24 @@ const selectedUserId = ref(null);
 const { t } = useI18n();
 
 // Define the items for the dropdown
-const dropdownItems = ref([
-  { label: t("edit"), value: "edit" },
-  { label: t("delete"), value: "delete" },
-  { label: t("Raise"), value: "raise" },
-]);
+const getDropdownItems = (user) => {
+  if (user.type === "guest") {
+    return [
+      { label: t("edit"), value: "edit" },
+      { label: t("delete"), value: "delete" },
+      { label: t("guests.reset"), value: "reset" },
+    ];
+  }
+  const items = [
+    { label: t("edit"), value: "edit" },
+    { label: t("delete"), value: "delete" },
+    { label: t("Raise"), value: "raise" },
+  ];
+  if (user.accountStatus === "MIGRATED") {
+    items.unshift({ label: t("users.activate"), value: "activate" });
+  }
+  return items;
+};
 
 try {
   roles.value = await $fetch("/api/roles/all", { method: "GET" });
@@ -192,7 +275,8 @@ const filteredAndSortedUsers = computed(() => {
     .filter((user) => {
       const matchesSearch =
         user.username.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.value.toLowerCase());
+        (user.email &&
+          user.email.toLowerCase().includes(searchQuery.value.toLowerCase()));
 
       // Only apply role filter if a role is selected
       if (selectedRole.value) {
@@ -205,6 +289,11 @@ const filteredAndSortedUsers = computed(() => {
       }
 
       // If no role is selected, only apply search filter
+
+      if (selectedStatus.value) {
+        if (user.accountStatus !== selectedStatus.value) return false;
+      }
+
       return matchesSearch;
     })
     .sort((a, b) => {
@@ -212,7 +301,9 @@ const filteredAndSortedUsers = computed(() => {
       if (sortBy.value === "username") {
         return a.username.localeCompare(b.username) * direction;
       } else if (sortBy.value === "email") {
-        return a.email.localeCompare(b.email) * direction;
+        const aEmail = a.email || "";
+        const bEmail = b.email || "";
+        return aEmail.localeCompare(bEmail) * direction;
       } else if (sortBy.value === "role") {
         const aRole = a.role?.roleName || "";
         const bRole = b.role?.roleName || "";
@@ -231,18 +322,42 @@ const handleSort = ({ field, direction }) => {
 };
 
 // Modified handleAction to accept the selected value directly
-const handleAction = (user, action) => {
+const handleAction = async (user, action) => {
   if (action === "edit") {
     editUser(user);
   } else if (action === "delete") {
     openDeleteConfirmation(user);
   } else if (action === "raise") {
     openRaisePopUp(user);
+  } else if (action === "activate") {
+    navigateTo(`/admin/users/activate/${user.id}`);
+  } else if (action === "reset") {
+    try {
+      const result = await $fetch(`/api/guests/${user.id}/reset`, {
+        method: "POST",
+      });
+      // Update local state
+      const idx = users.value.findIndex(
+        (u) => u.id === user.id && u.type === "guest"
+      );
+      if (idx !== -1) users.value[idx].balance = 0;
+    } catch (e) {
+      console.error(e);
+      alert("Failed to reset");
+    }
   }
 };
 
 // Edit user method (navigate to edit page)
 const editUser = (user) => {
+  if (user.type === "guest") {
+    // Navigate to guest edit page (TODO: define/link it)
+    // For now, assume generic user edit might behave weirdly or we need new page
+    // Plan mentioned "app/pages/account/guests/index.vue" for HOST management.
+    // Admin editing guest? Maybe strict edit dialog or separate page.
+    alert("Guest editing not yet implemented for admins");
+    return;
+  }
   navigateTo(`/admin/users/edit/${user.id}`);
 };
 
@@ -287,14 +402,25 @@ const toggleSortDirection = () => {
   sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
 };
 
-const deleteUser = async (userId) => {
+const deleteUser = async (userId, type) => {
   try {
-    await $fetch(`/api/admin/users/delete`, {
-      method: "POST",
-      body: JSON.stringify({ userId }),
-    });
-    users.value = users.value.filter((user) => user.id !== userId);
+    if (type === "guest") {
+      await $fetch(`/api/guests/delete`, {
+        method: "POST",
+        body: JSON.stringify({ guestId: userId }),
+      });
+    } else {
+      await $fetch(`/api/admin/users/delete`, {
+        method: "POST",
+        body: JSON.stringify({ userId }),
+      });
+    }
+    // Update local list filtering by both ID and Type to avoid collisions
+    users.value = users.value.filter(
+      (user) => !(user.id === userId && user.type === type)
+    );
   } catch (error) {
+    console.error(error);
     alert("Failed to delete user. Please try again.");
   }
 };
@@ -302,7 +428,8 @@ const deleteUser = async (userId) => {
 // Confirm delete action
 const confirmDelete = () => {
   if (userToDelete.value) {
-    deleteUser(userToDelete.value.id);
+    const type = userToDelete.value.type || "user";
+    deleteUser(userToDelete.value.id, type);
     closeDeleteConfirmation();
   }
 };

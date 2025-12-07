@@ -12,7 +12,7 @@
         {{
           selectedUser
             ? $t("orders.userRecentOrders", {
-                name: users.find((u) => u._id === selectedUser)?.name || "",
+                name: users.find((u) => u.id === selectedUser)?.firstName || "",
               })
             : $t("orders.recentOrders")
         }}
@@ -20,12 +20,16 @@
       <div v-if="recentOrders.length > 0" class="grid gap-4 md:grid-cols-3">
         <div
           v-for="order in recentOrders"
-          :key="order._id"
+          :key="order.id"
           class="p-4 bg-white rounded-lg shadow dark:bg-gray-800"
         >
           <div class="flex justify-between mb-2">
             <h3 class="font-medium text-gray-700 dark:text-gray-300">
-              {{ order.user?.firstName }} {{ order.user?.lastName }}
+              <!-- if no firstname and lastname use username -->
+              <span v-if="order.user?.firstName && order.user?.lastName">
+                {{ order.user?.firstName }} {{ order.user?.lastName }}
+              </span>
+              <span v-else>{{ order.user?.username }}</span>
             </h3>
             <span class="text-sm">{{ formatDate(order.createdAt) }}</span>
           </div>
@@ -65,8 +69,15 @@
             v-model="selectedUser"
             :items="users"
             :placeholder="$t('orders.selectUser')"
-            item-text="username"
-            :search-keys="['username', 'firstName', 'lastName', 'email']"
+            item-text="dropdownLabel"
+            item-value="id"
+            :search-keys="[
+              'dropdownLabel',
+              'username',
+              'firstName',
+              'lastName',
+              'email',
+            ]"
             @update:model-value="
               (val) => {
                 selectedUser = val || null;
@@ -111,8 +122,8 @@
         <option value="">{{ $t("orders.allCategories") }}</option>
         <option
           v-for="category in categories"
-          :key="category._id"
-          :value="category._id"
+          :key="category.id"
+          :value="category.id"
         >
           {{ category.name }}
         </option>
@@ -182,9 +193,20 @@ watch(selectedUser, async () => {
 
 const fetchRecentOrders = async () => {
   try {
+    const query = {};
+    const userObj = users.value.find((u) => u.id === selectedUser.value);
+
+    if (userObj) {
+      if (userObj.type === "guest") {
+        query.guestId = userObj.id;
+      } else {
+        query.userId = userObj.id;
+      }
+    }
+
     const response = await $fetch("/api/orders/recent", {
       method: "GET",
-      query: selectedUser.value ? { userId: selectedUser.value } : {},
+      query,
     });
     recentOrders.value = response.orders || [];
   } catch (error) {
@@ -205,8 +227,8 @@ const formatDate = (dateString) => {
 
 const reorderItems = (items, order) => {
   // Set the user who made the original order
-  if (order?.user?._id) {
-    selectedUser.value = order.user._id;
+  if (order?.user?.id) {
+    selectedUser.value = String(order.user.id);
   }
 
   // Reset current order
@@ -216,8 +238,8 @@ const reorderItems = (items, order) => {
 
   // Set new quantities from the selected order
   items.forEach((item) => {
-    if (item.productId && item.productId._id) {
-      productCounts.value[item.productId._id] = item.count;
+    if (item.productId && item.productId.id) {
+      productCounts.value[item.productId.id] = item.count;
     }
   });
 
@@ -352,12 +374,22 @@ const placeOrder = async () => {
     .map(([productId, count]) => ({ productId, count }));
 
   try {
+    const userObj = users.value.find((u) => u.id === selectedUser.value);
+
+    // Construct payload dynamically based on if it's a guest or user
+    const payload = {
+      products: selectedProducts,
+    };
+
+    if (userObj && userObj.type === "guest") {
+      payload.guestId = userObj.id;
+    } else {
+      payload.userId = selectedUser.value;
+    }
+
     await $fetch("/api/orders/create", {
       method: "POST",
-      body: JSON.stringify({
-        userId: selectedUser.value,
-        products: selectedProducts,
-      }),
+      body: JSON.stringify(payload),
     });
 
     showConfirmation.value = false;
@@ -372,9 +404,18 @@ const placeOrder = async () => {
         userSelectRef.value.focusInput();
       }
     });
+
+    // Refresh recent orders
+    await fetchRecentOrders();
+
+    // Refresh products to show updated stock
+    const productsResponse = await $fetch("/api/products/ordered", {
+      method: "GET",
+    });
+    products.value = productsResponse;
   } catch (error) {
     console.error("Failed to place order: ", error);
-    alert("Failed to place order. Please try again.: ", error);
+    alert("Failed to place order. Please try again.");
   }
 };
 </script>

@@ -9,29 +9,42 @@ datasource db {
   provider = "sqlite"
 }
 
-// --- Domain models migrated from Mongoose ---
+// --- Domain models migrated ---
+
+enum AccountStatus {
+  ACTIVE
+  MIGRATED
+  GUEST
+}
 
 model User {
-  id                   Int       @id @default(autoincrement())
-  email                String    @unique
-  username             String    @unique
-  firstName            String
-  lastName             String
-  password             String
+  id                   String           @id @default(uuid())
+  email                String?       @unique
+  username             String        @unique
+  firstName            String?
+  lastName             String?
+  password             String?
+  accountStatus        AccountStatus @default(ACTIVE)
   loggedInAt           DateTime  @default(now())
   active               Boolean   @default(true)
   balance              Int       @default(0)
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
 
-  roleId Int?
+  isGuest Boolean @default(false)
+  hostId  String?
+  host    User?   @relation("HostGuests", fields: [hostId], references: [id], onDelete: Cascade)
+  guests  User[]  @relation("HostGuests")
+
+  roleId String?
   role   CustomRole? @relation(fields: [roleId], references: [id])
 
-  settingsId Int?
+  settingsId String?
   settings   Settings? @relation(fields: [settingsId], references: [id])
 
   orders          Order[] @relation("UserOrders")
   bartendedOrders Order[] @relation("BartenderOrders")
+  guestOrders     Order[] @relation("GuestOrders")
   raises          Raise[] @relation("UserRaises")
   raisedBy        Raise[] @relation("RaiserRaises")
   logs            Log[]
@@ -42,7 +55,7 @@ model User {
 }
 
 model CustomRole {
-  id              Int    @id @default(autoincrement())
+  id              String    @id @default(uuid())
   roleName        String @unique
   roleDescription String
   rolePermissions String?
@@ -53,7 +66,7 @@ model CustomRole {
 }
 
 model Settings {
-  id        Int     @id @default(autoincrement())
+  id        String     @id @default(uuid())
   language  String  @default("nl")
   darkMode  Boolean @default(true)
   speedMode Boolean @default(false)
@@ -62,7 +75,7 @@ model Settings {
 }
 
 model Category {
-  id             Int      @id @default(autoincrement())
+  id             String      @id @default(uuid())
   name           String   @unique
   ageRestriction Boolean
   createdAt      DateTime @default(now())
@@ -72,7 +85,7 @@ model Category {
 }
 
 model Product {
-  id                Int      @id @default(autoincrement())
+  id                String      @id @default(uuid())
   name              String   @unique
   description       String
   price             Int
@@ -93,8 +106,8 @@ model Product {
 }
 
 model ProductOnCategory {
-  productId  Int
-  categoryId Int
+  productId  String
+  categoryId String
 
   product  Product  @relation(fields: [productId], references: [id])
   category Category @relation(fields: [categoryId], references: [id])
@@ -103,14 +116,16 @@ model ProductOnCategory {
 }
 
 model Order {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  bartenderId Int?
+  id          String      @id @default(uuid())
+  userId      String
+  bartenderId String?
   total       Int
   dayOfOrder  DateTime
 
   user      User        @relation("UserOrders", fields: [userId], references: [id])
   bartender User?       @relation("BartenderOrders", fields: [bartenderId], references: [id])
+  guestId   String?
+  guest     User?       @relation("GuestOrders", fields: [guestId], references: [id])
   items     OrderItem[]
 
   createdAt DateTime @default(now())
@@ -118,8 +133,8 @@ model Order {
 }
 
 model OrderItem {
-  orderId   Int
-  productId Int
+  orderId   String
+  productId String
   count     Int
 
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -129,10 +144,10 @@ model OrderItem {
 }
 
 model Purchase {
-  id           Int      @id @default(autoincrement())
-  productId    Int
+  id           String      @id @default(uuid())
+  productId    String
   product      Product  @relation(fields: [productId], references: [id])
-  userId       Int?
+  userId       String?
   user         User?    @relation(fields: [userId], references: [id])
   quantity     Int
   price        Int
@@ -150,9 +165,9 @@ enum PaymentMethod {
 }
 
 model Raise {
-  id            Int           @id @default(autoincrement())
-  userId        Int
-  raiserId      Int?
+  id            String           @id @default(uuid())
+  userId        String
+  raiserId      String?
   amount        Int
   paymentMethod PaymentMethod @default(cash)
   dayOfOrder    DateTime
@@ -165,14 +180,14 @@ model Raise {
 }
 
 model Log {
-  id                    Int       @id @default(autoincrement())
-  executorId            Int?
+  id                    String       @id @default(uuid())
+  executorId            String?
   executor              User?     @relation(fields: [executorId], references: [id])
   action                String
   level                 String
   category              String
   targetType            String
-  targetId              Int?
+  targetId              String?
   snapshot              String?
   changes               String?
   description           String

@@ -73,17 +73,17 @@
 						</div>
 						<div
 							v-for="user in filteredUsers"
-							:key="user._id"
+							:key="user.id"
 							class="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
 						>
 							<input
-								:id="'user-' + user._id"
+								:id="'user-' + user.id"
 								v-model="selectedUsers"
 								type="checkbox"
-								:value="user._id"
+								:value="user.id"
 								class="h-5 w-5 text-indigo-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-indigo-500"
 							>
-							<label :for="'user-' + user._id" class="ml-2 text-sm text-gray-700 dark:text-gray-300 truncate">
+							<label :for="'user-' + user.id" class="ml-2 text-sm text-gray-700 dark:text-gray-300 truncate">
 								{{ user.username }} ({{ user.email }})
 							</label>
 						</div>
