@@ -95,8 +95,8 @@ export default defineNuxtConfig({
       { code: "en", iso: "en-US", name: "English", file: "en.json" },
       { code: "nl", iso: "nl-NL", name: "Dutch", file: "nl.json" },
     ],
-    langDir: "locales/",
-    defaultLocale: "en",
+    defaultLocale: "nl",
+    langDir: "locales",
   },
 
   nitro: {
