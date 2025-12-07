@@ -4,6 +4,9 @@ import { prisma } from "~/server/utils/prisma";
 export default defineEventHandler(async () => {
   try {
     const products = await prisma.product.findMany({
+      where: {
+        archived: false,
+      },
       orderBy: { name: "asc" },
     });
     return products;

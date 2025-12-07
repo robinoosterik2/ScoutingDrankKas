@@ -170,6 +170,7 @@ const sortDirection = ref("asc");
 try {
   categories.value = await $fetch("/api/categories/all", { method: "GET" });
   products.value = await $fetch("/api/products/all", { method: "GET" });
+  console.log(products.value);
 } catch (error) {
   console.error("Failed to fetch products:", error);
   alert("Failed to fetch products. Please try again.");

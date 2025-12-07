@@ -28,7 +28,7 @@
             type="text"
             required
             class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-          >
+          />
         </div>
 
         <!-- Product Price -->
@@ -42,11 +42,22 @@
           <input
             id="productPrice"
             v-model="formData.price"
-            type="number"
-            min="0"
+            type="text"
             required
             class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            :class="
+              priceError
+                ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                : ''
+            "
+            @blur="validatePrice"
+          />
+          <p
+            v-if="priceError"
+            class="mt-1 text-sm text-red-600 dark:text-red-400"
           >
+            {{ priceError }}
+          </p>
         </div>
       </div>
 
@@ -82,7 +93,7 @@
           min="0"
           required
           class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-        >
+        />
       </div>
 
       <!-- Pack Size (Optional) -->
@@ -100,7 +111,7 @@
           min="1"
           class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
           :placeholder="$t('products.packSizePlaceholder')"
-        >
+        />
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {{ $t("products.packSizeHelp") }}
         </p>
@@ -113,19 +124,14 @@
         >
           {{ $t("products.categories") }}
         </label>
-        <select
+        <CMultiSelect
           v-model="formData.categories"
-          multiple
-          class="w-full px-3 py-2 border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-        >
-          <option
-            v-for="category in availableCategories"
-            :key="category.id"
-            :value="category.id"
-          >
-            {{ category.name }}
-          </option>
-        </select>
+          :items="availableCategories"
+          :placeholder="$t('categories.selectCategories')"
+          item-text="name"
+          item-value="id"
+          class="w-full"
+        />
       </div>
 
       <!-- Product Image -->
@@ -142,7 +148,7 @@
           accept="image/*"
           class="block w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 dark:file:bg-indigo-500 dark:hover:file:bg-indigo-600"
           @change="handleImageUpload"
-        >
+        />
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {{ $t("products.imageAspectRatioTip") }}
         </p>
@@ -152,7 +158,7 @@
             :src="formData.imageUrl"
             alt="Product Image Preview"
             class="object-cover w-32 rounded aspect-video"
-          >
+          />
         </div>
       </div>
 
@@ -177,18 +183,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 const { parse } = useMoney();
 
 // Get product ID from route
 const route = useRoute();
 const initialProductId = route.params.id;
 const productId = ref(
-  initialProductId !== undefined
-    ? (() => {
-        const parsed = Number.parseInt(String(initialProductId), 10);
-        return Number.isNaN(parsed) ? null : parsed;
-      })()
+  initialProductId !== undefined &&
+    initialProductId !== "new" &&
+    initialProductId !== "create"
+    ? String(initialProductId)
     : null
 );
 
@@ -208,6 +213,7 @@ const formData = ref({
 });
 
 const originalImageUrl = ref("/images/placeholder.jpg"); // Store the initial/fetched image URL
+const priceError = ref("");
 
 // Fetch categories on component mount
 onMounted(async () => {
@@ -216,13 +222,13 @@ onMounted(async () => {
     availableCategories.value = await $fetch("/api/categories/all", {
       method: "GET",
     });
-    console.log(productId.value)
+    console.log(productId.value);
     // Fetch product data if editing
     if (productId.value !== null) {
       const product = await $fetch(`/api/products/${productId.value}`, {
         method: "GET",
       });
-      console.log(product)
+      console.log(product);
       formData.value = {
         name: product.name,
         description: product.description,
@@ -268,9 +274,49 @@ const handleImageUpload = (event) => {
   }
 };
 
+const pricePattern = /^\d+(?:[.,]\d{1,2})?$/;
+
+const validatePrice = () => {
+  const rawPrice = formData.value.price;
+
+  if (rawPrice === null || rawPrice === undefined || rawPrice === "") {
+    priceError.value = "Price is required.";
+    return false;
+  }
+
+  const normalizedPrice = String(rawPrice).replace(",", ".");
+
+  if (!pricePattern.test(normalizedPrice)) {
+    priceError.value = "Enter a valid price using up to two decimals.";
+    return false;
+  }
+
+  const parsedPrice = parse(rawPrice);
+
+  if (parsedPrice <= 0) {
+    priceError.value = "Price must be greater than zero.";
+    return false;
+  }
+
+  priceError.value = "";
+  return true;
+};
+
+watch(
+  () => formData.value.price,
+  () => {
+    if (priceError.value) {
+      validatePrice();
+    }
+  }
+);
+
 // Save product method (create or update)
 const saveProduct = async () => {
   try {
+    if (!validatePrice()) {
+      return;
+    }
     const finalProductData = { ...formData.value };
 
     if (formData.value.imageFile) {

@@ -9,14 +9,17 @@ echo "Building ScoutingDrankKas..."
 echo "Installing dependencies..."
 pnpm install
 
-# Generate Prisma Client
-# This ensures that the Prisma client is up-to-date with your schema
-echo "Generating Prisma Client..."
-pnpm prisma generate
 
 # Build the application
 echo "Building Nuxt app..."
 pnpm run build
+
+pnpm prisma migrate deploy
+
+# Generate Prisma Client
+# This ensures that the Prisma client is up-to-date with your schema
+echo "Generating Prisma Client..."
+pnpm prisma generate
 
 # Ensure better-sqlite3 native bindings are available
 echo "Ensuring better-sqlite3 native bindings..."

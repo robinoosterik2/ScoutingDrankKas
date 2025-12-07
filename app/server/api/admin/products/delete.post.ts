@@ -26,6 +26,27 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    // Check for dependencies (OrderItems or Purchases)
+    const dependencyCount = await prisma.product.count({
+      where: {
+        id: String(id),
+        OR: [{ orderItems: { some: {} } }, { purchases: { some: {} } }],
+      },
+    });
+
+    if (dependencyCount > 0) {
+      // Soft delete (archive) if there are historical records
+      await prisma.product.update({
+        where: { id: String(id) },
+        data: { archived: true },
+      });
+      return {
+        message: `Product archived (due to existing history): ${product.name}`,
+      };
+    }
+
+    // No important dependencies, perform hard delete
+
     // Attempt to delete the image file
     if (product.imageUrl && product.imageUrl !== "/images/placeholder.jpg") {
       const imagePath = path.join(process.cwd(), "public", product.imageUrl);
@@ -41,6 +62,11 @@ export default defineEventHandler(async (event) => {
         }
       }
     }
+
+    // First remove from categories (Postgres/SQLite might strictly enforce this even if schema doesn't cascade)
+    await prisma.productOnCategory.deleteMany({
+      where: { productId: String(id) },
+    });
 
     await prisma.product.delete({ where: { id: String(id) } });
     return { message: `Successfully deleted product: ${product.name}` };
