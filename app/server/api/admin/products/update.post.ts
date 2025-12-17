@@ -21,10 +21,7 @@ export default defineEventHandler(async (event) => {
       body: { message: "Missing fields" },
     };
   }
-  console.log(id, name, price, description, stock, categories, imageUrl);
-  // make sure price is a number and not negative and no more than 2 decimal places
-  // check if . or , is used as decimal separator
-  // make sure price is a number and not negative and is an integer (cents)
+
   if (!Number.isInteger(body.price) || body.price < 0) {
     return {
       status: 400,

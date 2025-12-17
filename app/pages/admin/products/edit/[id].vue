@@ -241,7 +241,7 @@ onMounted(async () => {
         price: toEuro(product.price),
         stock: product.stock,
         categories: product.categories.map((cat) =>
-          typeof cat === "object" ? cat.id : cat
+          typeof cat === "object" ? cat.categoryId ?? cat.id : cat
         ), // Ensure categories are IDs
         imageUrl: product.imageUrl || "/images/placeholder.jpg",
         imageFile: null, // Reset on load
@@ -367,9 +367,9 @@ const saveProduct = async () => {
       finalProductData.categories &&
       Array.isArray(finalProductData.categories)
     ) {
-      finalProductData.categories = finalProductData.categories.map((cat) =>
-        typeof cat === "object" && cat.id ? cat.id : cat
-      );
+      finalProductData.categories = finalProductData.categories
+        .map((cat) => (typeof cat === "object" && cat.id ? cat.id : cat))
+        .filter((cat) => cat !== null && cat !== undefined);
     }
 
     finalProductData.price = parse(finalProductData.price);
