@@ -30,6 +30,9 @@ model User {
   balance              Int       @default(0)
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
+  
+  totalOrders       Int      @default(0)
+  popularityScore   Float    @default(0)
 
   isGuest Boolean @default(false)
   hostId  String?

@@ -26,6 +26,6 @@ export default defineEventHandler(async (event) => {
   if (!product) {
     throw createError({ statusCode: 400, statusMessage: "Product not found" });
   }
-
+  console.log(product);
   return product;
 });

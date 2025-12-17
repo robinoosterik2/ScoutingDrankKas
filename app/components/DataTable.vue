@@ -1,10 +1,14 @@
 <template>
   <div class="w-full relative">
-    <!-- Table -->
+    <!-- Table Container which might be scrollable -->
     <div
-      class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+      class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col"
     >
-      <div class="overflow-x-auto">
+      <div
+        class="overflow-x-auto"
+        :class="{ 'overflow-y-auto': scrollable }"
+        :style="scrollable ? { maxHeight: maxHeight } : {}"
+      >
         <div class="relative">
           <table
             class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
@@ -21,6 +25,7 @@
                       ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600'
                       : '',
                   ]"
+                  :style="{ width: column.width || 'auto' }"
                   @click="column.sortable ? sortColumn(column.field) : null"
                 >
                   <div class="flex items-center justify-between">
@@ -69,32 +74,15 @@
                     'px-6 py-2 whitespace-nowrap',
                     column.align === 'right' ? 'text-right' : 'text-left',
                     column.class,
-                    // Special handling for action columns that may contain dropdowns
-                    column.field === 'actions' ? 'relative' : '',
                   ]"
-                  :style="
-                    column.field === 'actions' ? 'overflow: visible;' : ''
-                  "
                 >
-                  <!-- Wrapper for dropdown overflow -->
-                  <div
-                    :class="[
-                      column.field === 'actions' ? 'relative' : '',
-                      // Ensure the dropdown container extends beyond table bounds
-                      column.field === 'actions' ? 'z-[100]' : '',
-                    ]"
-                    :style="
-                      column.field === 'actions' ? 'overflow: visible;' : ''
-                    "
+                  <slot
+                    :name="`cell-${column.field}`"
+                    :row="row"
+                    :value="row[column.field]"
                   >
-                    <slot
-                      :name="`cell-${column.field}`"
-                      :row="row"
-                      :value="row[column.field]"
-                    >
-                      {{ row[column.field] }}
-                    </slot>
-                  </div>
+                    {{ row[column.field] }}
+                  </slot>
                 </td>
               </tr>
               <tr v-if="!data || data.length === 0">
@@ -112,10 +100,10 @@
         </div>
       </div>
 
-      <!-- Pagination -->
+      <!-- Pagination (Fixed at bottom if scrollable) -->
       <div
         v-if="pagination"
-        class="flex justify-between items-center px-4 py-3 border-t border-gray-200 dark:border-gray-700"
+        class="flex justify-between items-center px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-lg z-20"
       >
         <div class="text-sm text-gray-500 dark:text-gray-400">
           {{ $t("showing") }}
@@ -196,6 +184,14 @@ const props = defineProps({
     default: "asc",
     validator: (value) => ["asc", "desc"].includes(value),
   },
+  scrollable: {
+    type: Boolean,
+    default: false,
+  },
+  maxHeight: {
+    type: String,
+    default: "70vh",
+  },
 });
 
 const emit = defineEmits(["update:page", "sort"]);
@@ -216,18 +212,5 @@ const sortColumn = (field) => {
 </script>
 
 <style scoped>
-/* Ensure table doesn't clip dropdowns */
-.overflow-x-auto {
-  overflow-y: visible !important;
-}
-
-/* Additional styling to ensure dropdowns aren't clipped */
-table {
-  overflow: visible;
-}
-
-/* Make sure action cells can overflow */
-td[style*="overflow: visible"] {
-  overflow: visible !important;
-}
+/* Removed overrides that prevented scrolling */
 </style>

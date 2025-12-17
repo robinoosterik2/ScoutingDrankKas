@@ -1,70 +1,66 @@
-import { PrismaClient } from '@prisma/client'
-import { execSync } from 'child_process'
-import { randomBytes } from 'crypto'
-import { join } from 'path'
-import { existsSync, unlinkSync } from 'fs'
+import { PrismaClient } from "@prisma/client";
+import { execSync } from "child_process";
+import { randomBytes } from "crypto";
+import { join } from "path";
+import { existsSync, unlinkSync } from "fs";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 export interface DatabaseTestHelper {
-  resetDatabase(): Promise<void>
-  seedTestData(fixtures: any): Promise<void>
-  cleanupTestData(): Promise<void>
-  createTestTransaction(): Promise<any>
-  rollbackTransaction(transaction: any): Promise<void>
-  getTestPrismaClient(): PrismaClient
-  closeConnection(): Promise<void>
+  resetDatabase(): Promise<void>;
+  seedTestData(fixtures: any): Promise<void>;
+  cleanupTestData(): Promise<void>;
+  createTestTransaction(): Promise<any>;
+  rollbackTransaction(transaction: any): Promise<void>;
+  getTestPrismaClient(): PrismaClient;
+  closeConnection(): Promise<void>;
 }
 
 class DatabaseTestHelperImpl implements DatabaseTestHelper {
-  private prisma: PrismaClient
-  private testDbPath: string
+  private prisma: PrismaClient;
+  private testDbPath: string;
 
   constructor() {
     // Create unique test database for each test run
-    const testId = randomBytes(8).toString('hex')
-    this.testDbPath = join(process.cwd(), `test-${testId}.db`)
-    
+    const testId = randomBytes(8).toString("hex");
+    this.testDbPath = join(process.cwd(), `test-${testId}.db`);
+
     // Set test database URL
-    process.env.DATABASE_URL = `file:${this.testDbPath}`
-    
-    this.prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL
-        }
-      }
-    })
+    process.env.DATABASE_URL = `file:${this.testDbPath}`;
+
+    const adapter = new PrismaBetterSqlite3({
+      url: process.env.DATABASE_URL,
+    });
+
+    this.prisma = new PrismaClient({ adapter });
   }
 
   async resetDatabase(): Promise<void> {
     try {
       // Close existing connection
-      await this.prisma.$disconnect()
-      
+      await this.prisma.$disconnect();
+
       // Remove existing test database file if it exists
       if (existsSync(this.testDbPath)) {
-        unlinkSync(this.testDbPath)
+        unlinkSync(this.testDbPath);
       }
-      
+
       // Update environment variable for this process
-      process.env.DATABASE_URL = `file:${this.testDbPath}`
-      
+      process.env.DATABASE_URL = `file:${this.testDbPath}`;
+
+      const adapter = new PrismaBetterSqlite3({
+        url: process.env.DATABASE_URL,
+      });
+
       // Create new Prisma client with test database
-      this.prisma = new PrismaClient({
-        datasources: {
-          db: {
-            url: `file:${this.testDbPath}`
-          }
-        }
-      })
-      
-      await this.prisma.$connect()
-      
+      this.prisma = new PrismaClient({ adapter });
+
+      await this.prisma.$connect();
+
       // Create schema directly using SQL from migration
-      await this.createSchema()
-      
+      await this.createSchema();
     } catch (error) {
-      console.error('Failed to reset test database:', error)
-      throw error
+      console.error("Failed to reset test database:", error);
+      throw error;
     }
   }
 
@@ -222,14 +218,16 @@ class DatabaseTestHelperImpl implements DatabaseTestHelper {
 
       -- CreateIndex
       CREATE UNIQUE INDEX "Product_name_key" ON "Product"("name");
-    `
+    `;
 
     // Split and execute each statement
-    const statements = schemaSql.split(';').filter(stmt => stmt.trim().length > 0)
-    
+    const statements = schemaSql
+      .split(";")
+      .filter((stmt) => stmt.trim().length > 0);
+
     for (const statement of statements) {
       if (statement.trim()) {
-        await this.prisma.$executeRawUnsafe(statement.trim() + ';')
+        await this.prisma.$executeRawUnsafe(statement.trim() + ";");
       }
     }
   }
@@ -237,91 +235,99 @@ class DatabaseTestHelperImpl implements DatabaseTestHelper {
   async seedTestData(fixtures: any): Promise<void> {
     try {
       // Seed in proper order to respect foreign key constraints
-      
+
       // Helper function to safely create data
       const safeCreate = async (operation: () => Promise<any>) => {
         try {
-          return await operation()
+          return await operation();
         } catch (error: any) {
           // Ignore table not found errors (P2021)
-          if (error.code !== 'P2021') {
-            throw error
+          if (error.code !== "P2021") {
+            throw error;
           }
         }
-      }
+      };
 
       // 1. Create settings first
       if (fixtures.settings) {
         for (const setting of fixtures.settings) {
-          await safeCreate(() => this.prisma.settings.create({ data: setting }))
+          await safeCreate(() =>
+            this.prisma.settings.create({ data: setting })
+          );
         }
       }
 
       // 2. Create custom roles
       if (fixtures.customRoles) {
         for (const role of fixtures.customRoles) {
-          await safeCreate(() => this.prisma.customRole.create({ data: role }))
+          await safeCreate(() => this.prisma.customRole.create({ data: role }));
         }
       }
 
       // 3. Create users
       if (fixtures.users) {
         for (const user of fixtures.users) {
-          await safeCreate(() => this.prisma.user.create({ data: user }))
+          await safeCreate(() => this.prisma.user.create({ data: user }));
         }
       }
 
       // 4. Create categories
       if (fixtures.categories) {
         for (const category of fixtures.categories) {
-          await safeCreate(() => this.prisma.category.create({ data: category }))
+          await safeCreate(() =>
+            this.prisma.category.create({ data: category })
+          );
         }
       }
 
       // 5. Create products
       if (fixtures.products) {
         for (const product of fixtures.products) {
-          await safeCreate(() => this.prisma.product.create({ data: product }))
+          await safeCreate(() => this.prisma.product.create({ data: product }));
         }
       }
 
       // 6. Create product-category relationships
       if (fixtures.productCategories) {
         for (const relation of fixtures.productCategories) {
-          await safeCreate(() => this.prisma.productOnCategory.create({ data: relation }))
+          await safeCreate(() =>
+            this.prisma.productOnCategory.create({ data: relation })
+          );
         }
       }
 
       // 7. Create orders
       if (fixtures.orders) {
         for (const order of fixtures.orders) {
-          await safeCreate(() => this.prisma.order.create({ 
-            data: {
-              ...order,
-              items: {
-                create: order.items || []
-              }
-            }
-          }))
+          await safeCreate(() =>
+            this.prisma.order.create({
+              data: {
+                ...order,
+                items: {
+                  create: order.items || [],
+                },
+              },
+            })
+          );
         }
       }
 
       // 8. Create raises
       if (fixtures.raises) {
         for (const raise of fixtures.raises) {
-          await safeCreate(() => this.prisma.raise.create({ data: raise }))
+          await safeCreate(() => this.prisma.raise.create({ data: raise }));
         }
       }
 
       // 9. Create logs
       if (fixtures.logs) {
         for (const log of fixtures.logs) {
-          await safeCreate(() => this.prisma.log.create({ data: log }))
+          await safeCreate(() => this.prisma.log.create({ data: log }));
         }
       }
     } catch (error) {
-      console.error('Failed to seed test data:', error)
-      throw error
+      console.error("Failed to seed test data:", error);
+      throw error;
     }
   }
 
@@ -339,74 +345,74 @@ class DatabaseTestHelperImpl implements DatabaseTestHelper {
         () => this.prisma.category.deleteMany(),
         () => this.prisma.user.deleteMany(),
         () => this.prisma.customRole.deleteMany(),
-        () => this.prisma.settings.deleteMany()
-      ]
+        () => this.prisma.settings.deleteMany(),
+      ];
 
       for (const operation of cleanupOperations) {
         try {
-          await operation()
+          await operation();
         } catch (error: any) {
           // Ignore table not found errors (P2021)
-          if (error.code !== 'P2021') {
-            throw error
+          if (error.code !== "P2021") {
+            throw error;
           }
         }
       }
     } catch (error) {
-      console.error('Failed to cleanup test data:', error)
-      throw error
+      console.error("Failed to cleanup test data:", error);
+      throw error;
     }
   }
 
   async createTestTransaction(): Promise<any> {
     // Prisma doesn't expose transactions directly for rollback in tests
     // Instead, we'll use the $transaction method for atomic operations
-    return this.prisma
+    return this.prisma;
   }
 
   async rollbackTransaction(transaction: any): Promise<void> {
     // For SQLite, we'll implement rollback by cleaning up data
     // This is a limitation of SQLite in test environments
-    await this.cleanupTestData()
+    await this.cleanupTestData();
   }
 
   getTestPrismaClient(): PrismaClient {
-    return this.prisma
+    return this.prisma;
   }
 
   async closeConnection(): Promise<void> {
     try {
-      await this.prisma.$disconnect()
-      
+      await this.prisma.$disconnect();
+
       // Clean up test database file
       if (existsSync(this.testDbPath)) {
-        unlinkSync(this.testDbPath)
+        unlinkSync(this.testDbPath);
       }
     } catch (error) {
-      console.error('Failed to close database connection:', error)
+      console.error("Failed to close database connection:", error);
     }
   }
 }
 
 // Singleton instance for test suite
-let testDbHelper: DatabaseTestHelperImpl | null = null
+let testDbHelper: DatabaseTestHelperImpl | null = null;
 
 export function getTestDatabaseHelper(): DatabaseTestHelper {
   if (!testDbHelper) {
-    testDbHelper = new DatabaseTestHelperImpl()
+    testDbHelper = new DatabaseTestHelperImpl();
   }
-  return testDbHelper
+  return testDbHelper;
 }
 
 export async function setupTestDatabase(): Promise<DatabaseTestHelper> {
-  const helper = getTestDatabaseHelper()
-  await helper.resetDatabase()
-  return helper
+  const helper = getTestDatabaseHelper();
+  await helper.resetDatabase();
+  return helper;
 }
 
 export async function teardownTestDatabase(): Promise<void> {
   if (testDbHelper) {
-    await testDbHelper.closeConnection()
-    testDbHelper = null
+    await testDbHelper.closeConnection();
+    testDbHelper = null;
   }
 }

@@ -131,7 +131,14 @@
           item-text="name"
           item-value="id"
           class="w-full"
+          :class="categoryError ? 'border-red-500' : ''"
         />
+        <p
+          v-if="categoryError"
+          class="mt-1 text-sm text-red-600 dark:text-red-400"
+        >
+          {{ categoryError }}
+        </p>
       </div>
 
       <!-- Product Image -->
@@ -184,7 +191,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from "vue";
-const { parse } = useMoney();
+const { parse, toEuro } = useMoney();
 
 // Get product ID from route
 const route = useRoute();
@@ -214,6 +221,7 @@ const formData = ref({
 
 const originalImageUrl = ref("/images/placeholder.jpg"); // Store the initial/fetched image URL
 const priceError = ref("");
+const categoryError = ref("");
 
 // Fetch categories on component mount
 onMounted(async () => {
@@ -222,17 +230,15 @@ onMounted(async () => {
     availableCategories.value = await $fetch("/api/categories/all", {
       method: "GET",
     });
-    console.log(productId.value);
     // Fetch product data if editing
     if (productId.value !== null) {
       const product = await $fetch(`/api/products/${productId.value}`, {
         method: "GET",
       });
-      console.log(product);
       formData.value = {
         name: product.name,
         description: product.description,
-        price: product.price,
+        price: toEuro(product.price),
         stock: product.stock,
         categories: product.categories.map((cat) =>
           typeof cat === "object" ? cat.id : cat
@@ -302,6 +308,15 @@ const validatePrice = () => {
   return true;
 };
 
+const validateCategory = () => {
+  if (!formData.value.categories || formData.value.categories.length === 0) {
+    categoryError.value = "Category is required.";
+    return false;
+  }
+  categoryError.value = "";
+  return true;
+};
+
 watch(
   () => formData.value.price,
   () => {
@@ -311,10 +326,22 @@ watch(
   }
 );
 
+watch(
+  () => formData.value.categories,
+  () => {
+    if (categoryError.value) {
+      validateCategory();
+    }
+  }
+);
+
 // Save product method (create or update)
 const saveProduct = async () => {
   try {
     if (!validatePrice()) {
+      return;
+    }
+    if (!validateCategory()) {
       return;
     }
     const finalProductData = { ...formData.value };

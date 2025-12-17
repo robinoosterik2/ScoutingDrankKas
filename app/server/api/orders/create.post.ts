@@ -15,7 +15,6 @@ export default defineEventHandler(async (event) => {
         statusMessage: "Bartender user not found",
       });
     }
-    console.log(body);
 
     const userIdNum = body.userId ? String(body.userId) : null;
     const guestIdNum = body.guestId ? String(body.guestId) : null;
@@ -57,7 +56,6 @@ export default defineEventHandler(async (event) => {
         statusMessage: "No user or guest specified",
       });
     }
-    console.log(payerUser);
 
     let totalInCents = 0;
 
@@ -117,7 +115,20 @@ export default defineEventHandler(async (event) => {
     if (targetGuest) {
       await prisma.user.update({
         where: { id: targetGuest.id },
-        data: { balance: { decrement: totalInCents } },
+        data: {
+          balance: { decrement: totalInCents },
+          totalOrders: { increment: 1 },
+          popularityScore: { increment: 1 },
+        },
+      });
+    } else {
+      // If not guest, update payer's stats
+      await prisma.user.update({
+        where: { id: payerUser.id },
+        data: {
+          totalOrders: { increment: 1 },
+          popularityScore: { increment: 1 },
+        },
       });
     }
 

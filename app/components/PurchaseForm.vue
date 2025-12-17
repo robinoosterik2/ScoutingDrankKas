@@ -472,6 +472,8 @@
 </template>
 
 <script setup>
+const { parse } = useMoney();
+
 const props = defineProps({
   isOpen: {
     type: Boolean,
@@ -556,67 +558,51 @@ const resetForm = () => {
 
 const handlePriceInput = (event) => {
   const value = event.target.value;
-
-  // Allow only numbers, dots, commas, and backspace/delete
+  // Allow any input, the validation happens on blur or submit via parse() from useMoney
+  // But we might want to restrict characters to numbers and separators
   const sanitized = value.replace(/[^0-9.,]/g, "");
-
-  // Replace comma with dot for decimal separator
-  const normalized = sanitized.replace(",", ".");
-
-  // Ensure only one decimal separator
-  const parts = normalized.split(".");
-  if (parts.length > 2) {
-    // Keep only the first decimal point
-    const reconstructed = parts[0] + "." + parts.slice(1).join("");
-    event.target.value = reconstructed;
-    priceInput.value = reconstructed;
-  } else {
-    event.target.value = normalized;
-    priceInput.value = normalized;
-  }
-
-  // Validate the price
-  validatePrice(priceInput.value);
+  event.target.value = sanitized;
+  priceInput.value = sanitized;
+  validatePrice(sanitized);
 };
 
 const validatePrice = (value) => {
-  if (value === "" || value === "0" || value === "0.") {
-    isPriceValid.value = true;
+  if (value === "" || value === null || value === undefined) {
+    isPriceValid.value = false; // Required field
     price.value = 0;
     return;
   }
 
-  const numValue = parseFloat(value);
-  if (isNaN(numValue) || numValue < 0) {
+  // Use useMoney parse to check if we get a valid integer (cents)
+  // But parse returns 0 if invalid or empty, so we need some check.
+  // Actually, parse() is designed to handle user input strings.
+  const cents = parse(value);
+  if (cents <= 0) {
+    // We treat 0 or negative as invalid for a purchase price?
+    // Usually a price should be positive.
     isPriceValid.value = false;
     price.value = 0;
   } else {
     isPriceValid.value = true;
-    price.value = numValue;
+    price.value = cents;
   }
 };
 
 const formatPrice = () => {
-  if (
-    priceInput.value === "" ||
-    priceInput.value === "0" ||
-    priceInput.value === "0."
-  ) {
-    priceInput.value = "0.00";
-    price.value = 0;
-    isPriceValid.value = true;
-    return;
-  }
-
-  const numValue = parseFloat(priceInput.value);
-  if (!isNaN(numValue) && numValue >= 0) {
-    priceInput.value = numValue.toFixed(2);
-    price.value = numValue;
-    isPriceValid.value = true;
-  } else {
-    priceInput.value = "0.00";
-    price.value = 0;
-    isPriceValid.value = false;
+  // Format the current cents value back to string for display if valid
+  if (isPriceValid.value && price.value > 0) {
+    // format() returns e.g. "€ 12,34". We might want just the number part for the input?
+    // But the input type is text.
+    // Actually, typically we want to show the formatted value in the input on blur?
+    // Or just keep the user's input?
+    // Let's use format() but strip the currency symbol if we want just the number,
+    // OR effectively, since useMoney.format returns a localized string,
+    // we can try to re-use it or just leave the input as '12.34' if the user typed that.
+    // The original code formatted to 2 decimals.
+    // simple way: convert cents to euro string.
+    const euros = price.value / 100;
+    priceInput.value = euros.toFixed(2); // Simple 2 decimal formatting
+    // optionally replace dot with comma for Dutch locale if preferred, but existing code used .toFixed
   }
 };
 

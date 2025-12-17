@@ -22,7 +22,8 @@
       class="px-3 py-2 mb-4 me-4 text-sm border rounded-md dark:border-gray-700 dark:bg-gray-800 dark:text-white"
     >
       <option value="">{{ $t("roles.roles") }}</option>
-      <option v-for="role in roles" :key="role" :value="role">
+      <option value="guest">{{ $t("roles.guest") }}</option>
+      <option v-for="role in roles" :key="role.id" :value="role.id">
         {{ role.roleName }}
       </option>
     </select>
@@ -44,43 +45,56 @@
         field: 'username',
         align: 'left',
         sortable: true,
+        width: '20%',
       },
       {
         header: $t('email'),
         field: 'email',
         align: 'left',
         sortable: true,
+        width: '25%',
       },
       {
         header: $t('role'),
         field: 'role',
         align: 'left',
         sortable: true,
+        width: '15%',
       },
       {
         header: $t('Balance'),
         field: 'balance',
         align: 'left',
         sortable: true,
+        width: '15%',
       },
       {
         header: $t('users.accountStatus'),
         field: 'accountStatus',
         align: 'center',
         sortable: true,
+        width: '15%',
       },
-      { header: $t('actions'), field: 'actions', align: 'right' },
+      { header: $t('actions'), field: 'actions', align: 'right', width: '10%' },
     ]"
     :data="
-      filteredAndSortedUsers.map((user) => ({
+      users.map((user) => ({
         ...user,
         actions: '',
       }))
     "
+    :pagination="{
+      page: currentPage,
+      pageSize: pageSize,
+      total: totalUsers,
+    }"
     :sort-field="sortBy"
     :sort-direction="sortDirection"
     :no-data-text="$t('users.noUsers')"
+    scrollable
+    max-height="calc(100vh - 300px)"
     @sort="handleSort"
+    @update:page="handlePageChange"
   >
     <template #cell-username="{ row: user }">
       <div class="flex flex-col">
@@ -157,7 +171,7 @@
             user.accountStatus === 'GUEST',
         }"
       >
-        {{ $t(`users.status.${user.accountStatus.toLowerCase()}`) }}
+        {{ getStatusTranslation(user.accountStatus) }}
       </span>
     </template>
 
@@ -231,17 +245,20 @@ import RaisePopUpModal from "@/components/RaisePopUp";
 import DataTable from "~/components/DataTable.vue";
 
 const { format } = useMoney();
+const { t } = useI18n(); // Ensure t is available
 
 const roles = ref([]);
 const users = ref([]);
+const totalUsers = ref(0);
 const searchQuery = ref("");
 const selectedRole = ref("");
 const selectedStatus = ref("");
-const sortBy = ref("username"); // Changed from "name" to "username" to match the actual field
+const sortBy = ref("username");
 const sortDirection = ref("asc");
+const currentPage = ref(1);
+const pageSize = ref(10);
 const isPopupOpen = ref(false);
 const selectedUserId = ref(null);
-const { t } = useI18n();
 
 // Define the items for the dropdown
 const getDropdownItems = (user) => {
@@ -263,62 +280,62 @@ const getDropdownItems = (user) => {
   return items;
 };
 
-try {
-  roles.value = await $fetch("/api/roles/all", { method: "GET" });
-  users.value = await $fetch("/api/users/all", { method: "GET" });
-} catch (error) {
-  console.error("Failed to fetch users:", error);
-}
+// Helper function to get status translation
+const getStatusTranslation = (accountStatus) => {
+  const statusKey = accountStatus.toLowerCase();
+  if (statusKey === "active") return t("users.status.active");
+  if (statusKey === "migrated") return t("users.status.migrated");
+  if (statusKey === "guest") return t("users.status.guest");
+  return t("users.status.inactive");
+};
 
-const filteredAndSortedUsers = computed(() => {
-  return users.value
-    .filter((user) => {
-      const matchesSearch =
-        user.username.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        (user.email &&
-          user.email.toLowerCase().includes(searchQuery.value.toLowerCase()));
-
-      // Only apply role filter if a role is selected
-      if (selectedRole.value) {
-        // If user has no role, don't show them when a role is selected
-        if (!user.role) return false;
-        // Check if user's role matches the selected role
-        return (
-          matchesSearch && user.role.roleName === selectedRole.value.roleName
-        );
-      }
-
-      // If no role is selected, only apply search filter
-
-      if (selectedStatus.value) {
-        if (user.accountStatus !== selectedStatus.value) return false;
-      }
-
-      return matchesSearch;
-    })
-    .sort((a, b) => {
-      const direction = sortDirection.value === "asc" ? 1 : -1;
-      if (sortBy.value === "username") {
-        return a.username.localeCompare(b.username) * direction;
-      } else if (sortBy.value === "email") {
-        const aEmail = a.email || "";
-        const bEmail = b.email || "";
-        return aEmail.localeCompare(bEmail) * direction;
-      } else if (sortBy.value === "role") {
-        const aRole = a.role?.roleName || "";
-        const bRole = b.role?.roleName || "";
-        return aRole.localeCompare(bRole) * -direction;
-      } else if (sortBy.value === "balance") {
-        return (a.balance - b.balance) * -direction;
-      }
-      return 0;
+const fetchUsers = async () => {
+  try {
+    const params = new URLSearchParams({
+      page: currentPage.value.toString(),
+      limit: pageSize.value.toString(),
+      sortBy: sortBy.value,
+      sortDir: sortDirection.value,
     });
+
+    if (searchQuery.value) params.append("search", searchQuery.value);
+    if (selectedRole.value) params.append("role", selectedRole.value);
+    if (selectedStatus.value) params.append("status", selectedStatus.value);
+
+    const response = await $fetch(`/api/users/all?${params.toString()}`, {
+      method: "GET",
+    });
+    users.value = response.data;
+    totalUsers.value = response.total;
+  } catch (error) {
+    console.error("Failed to fetch users:", error);
+  }
+};
+
+// Initial fetch
+onMounted(async () => {
+  roles.value = await $fetch("/api/roles/all", { method: "GET" });
+  fetchUsers();
+});
+
+// Watchers for filtering and pagination
+watch([searchQuery, selectedRole, selectedStatus], () => {
+  currentPage.value = 1; // Reset to first page on filter change
+  fetchUsers();
+});
+
+watch([currentPage, sortBy, sortDirection], () => {
+  fetchUsers();
 });
 
 // Handle sort event from DataTable
 const handleSort = ({ field, direction }) => {
   sortBy.value = field;
   sortDirection.value = direction;
+};
+
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage;
 };
 
 // Modified handleAction to accept the selected value directly
@@ -336,11 +353,8 @@ const handleAction = async (user, action) => {
       const result = await $fetch(`/api/guests/${user.id}/reset`, {
         method: "POST",
       });
-      // Update local state
-      const idx = users.value.findIndex(
-        (u) => u.id === user.id && u.type === "guest"
-      );
-      if (idx !== -1) users.value[idx].balance = 0;
+      // Update local state by refetching for simplicity or optimistic update
+      fetchUsers();
     } catch (e) {
       console.error(e);
       alert("Failed to reset");
@@ -415,10 +429,7 @@ const deleteUser = async (userId, type) => {
         body: JSON.stringify({ userId }),
       });
     }
-    // Update local list filtering by both ID and Type to avoid collisions
-    users.value = users.value.filter(
-      (user) => !(user.id === userId && user.type === type)
-    );
+    fetchUsers(); // Refresh list
   } catch (error) {
     console.error(error);
     alert("Failed to delete user. Please try again.");

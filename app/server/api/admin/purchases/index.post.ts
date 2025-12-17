@@ -27,11 +27,11 @@ export default defineEventHandler(async (event) => {
     const notes = typeof body.notes === "string" ? body.notes.trim() : null;
     const dayOfOrder = body.dayOfOrder ? new Date(body.dayOfOrder) : new Date();
 
-    if (Number.isNaN(quantity) || Number.isNaN(price)) {
+    if (Number.isNaN(quantity) || !Number.isInteger(price) || price < 0) {
       throw createError({
         statusCode: 400,
         statusMessage:
-          "Invalid numeric values supplied for productId, quantity, or price",
+          "Invalid numeric values. Quantity must be a number and Price must be a positive integer (cents).",
       });
     }
 

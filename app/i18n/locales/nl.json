@@ -108,7 +108,7 @@
     "errors": {
       "invalidCredentials": "Ongeldige inloggegevens",
       "userNotFound": "Gebruiker niet gevonden",
-      "accountActivationRequired": "Account activatie vereist. Vraag een barmedewerker."
+      "generic": "Er is een fout opgetreden tijdens het inloggen. Probeer het opnieuw."
     },
     "forgotPassword": "Wachtwoord vergeten?",
     "noAccount": "Nog geen account?",
@@ -258,8 +258,7 @@
     "pin": "PIN",
     "errors": {
       "raiseFailedWithReason": "Saldo verhogen mislukt. Probeer het opnieuw. Fout: {reason}",
-      "unknown": "Onbekende fout",
-      "selfTopUp": "Je kunt om veiligheidsredenen jezelf niet opwaarderen."
+      "unknown": "Onbekende fout"
     }
   },
   "raisedBy": "Verhoogd door",
@@ -314,7 +313,9 @@
     "roleNameExists": "Rolnaam bestaat al",
     "roleNameRequired": "Rolnaam is vereist",
     "roles": "Rollen",
-    "title": "Rollenbeheer"
+    "title": "Rollenbeheer",
+    "selectRole": "Selecteer een rol",
+    "guest": "Gast"
   },
   "Search": "Zoeken",
   "searchUsers": "Zoek gebruikers",
@@ -336,14 +337,18 @@
     "noUsers": "Geen gebruikers gevonden",
     "accountStatus": "Account Status",
     "status": {
+      "inactive": "Inactief",
       "active": "Actief",
-      "migrated": "Gemigreerd"
+      "migrated": "Gemigreerd",
+      "guest": "Gast"
     },
     "activate": "Activeren",
     "activateTitle": "Gebruiker activeren",
-    "activationSuccess": "Gebruiker succesvol geactiveerd",
     "title": "Gebruikersbeheer",
-    "migrateUser": "Gebruikers Migreren"
+    "migrateUser": "Gebruikers Migreren",
+    "name": "Naam",
+    "firstName": "Voornaam",
+    "lastName": "Achternaam"
   },
   "users.migrate": {
     "title": "Gebruikers Migreren",
@@ -387,5 +392,20 @@
   "Balance": "Saldo",
   "auth": {
     "loggedInAs": "Ingelogd als"
-  }
+  },
+  "guests": {
+    "title": "Mijn Gasten",
+    "createGuest": "Gast Toevoegen",
+    "totalSpent": "Totaal Uitgegeven",
+    "reset": "Schuld Vereffenen",
+    "resetConfirm": "Weet je zeker dat je de schuld voor deze gast wilt vereffenen? Dit betekent dat ze je hebben terugbetaald.",
+    "deleteConfirm": "Weet je zeker dat je deze gast wilt verwijderen?",
+    "noGuests": "Je hebt geen gasten gekoppeld aan je account.",
+    "owed": "verschuldigd",
+    "guestOf": "Gast van {host}",
+    "guest": "Gast"
+  },
+  "preview": "preview",
+  "error": "error",
+  "create": "create"
 }

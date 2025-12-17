@@ -3,7 +3,8 @@ import { prisma } from "~/server/utils/prisma";
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event);
-  if (!session?.user?.id) {
+  const user = session?.user as { id: string } | undefined;
+  if (!user?.id) {
     throw createError({ statusCode: 401, message: "Unauthorized" });
   }
 
@@ -25,7 +26,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Permission check
-  const requesterId = String(session.user.id);
+  const requesterId = String(user.id);
   const requester = await prisma.user.findUnique({
     where: { id: requesterId },
     include: { role: true },
@@ -43,7 +44,11 @@ export default defineEventHandler(async (event) => {
 
   const updatedGuest = await prisma.user.update({
     where: { id: guest.id },
-    data: { balance: 0 },
+    data: {
+      balance: 0,
+      totalOrders: 0,
+      popularityScore: 0,
+    },
   });
 
   return updatedGuest;

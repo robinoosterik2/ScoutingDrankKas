@@ -6,7 +6,7 @@
 
   <!-- Back to Admin Button -->
   <div class="flex justify-between items-center mb-2">
-    <BackLink to="/admin" :back-page="$t('admin.title')"/>
+    <BackLink to="/admin" :back-page="$t('admin.title')" />
     <div>
       <DashboardLink
         to="/admin/roles/create"
@@ -20,17 +20,47 @@
   <!-- Roles Table -->
   <DataTable
     :columns="[
-      { header: $t('roles.roleName'), field: 'roleName', align: 'left' },
-      { header: $t('roles.description'), field: 'roleDescription', align: 'left' },
-      { header: $t('roles.permissions'), field: 'rolePermissions', align: 'left' },
-      { header: $t('roles.actions'), field: 'actions', align: 'right' },
+      {
+        header: $t('roles.roleName'),
+        field: 'roleName',
+        align: 'left',
+        width: '20%',
+      },
+      {
+        header: $t('roles.description'),
+        field: 'roleDescription',
+        align: 'left',
+        width: '30%',
+      },
+      {
+        header: $t('roles.permissions'),
+        field: 'rolePermissions',
+        align: 'left',
+        width: '40%',
+      },
+      {
+        header: $t('roles.actions'),
+        field: 'actions',
+        align: 'right',
+        width: '10%',
+      },
     ]"
-    :data="roles.map(role => ({
-      ...role,
-      rolePermissions: role.rolePermissions,
-      actions: ''
-    }))"
+    :data="
+      roles.map((role) => ({
+        ...role,
+        rolePermissions: role.rolePermissions,
+        actions: '',
+      }))
+    "
+    :pagination="{
+      page: currentPage,
+      pageSize: pageSize,
+      total: totalRoles,
+    }"
     :no-data-text="$t('roles.emptyState')"
+    scrollable
+    max-height="calc(100vh - 300px)"
+    @update:page="handlePageChange"
   >
     <template #cell-rolePermissions="{ row: role }">
       <div class="flex flex-wrap gap-1">
@@ -43,7 +73,7 @@
         </span>
       </div>
     </template>
-    
+
     <template #cell-actions="{ row: role }">
       <div class="flex justify-end space-x-2">
         <button
@@ -60,7 +90,7 @@
         </button>
       </div>
     </template>
-    
+
     <template #empty>
       <div class="text-center py-12 px-4 sm:px-6 lg:px-8">
         <svg
@@ -101,23 +131,46 @@
 
 <script setup>
 import BackLink from "~/components/BackLink.vue";
-import DataTable from '~/components/DataTable.vue';
+import DataTable from "~/components/DataTable.vue";
 
 // Reactive roles array
 const roles = ref([]);
+const totalRoles = ref(0);
+const currentPage = ref(1);
+const pageSize = ref(10);
 
 // Delete confirmation modal state
 const isDeleteModalOpen = ref(false);
 const roleToDelete = ref(null);
 
-// Fetch roles on component mount
-onMounted(async () => {
+const fetchRoles = async () => {
   try {
-    roles.value = await $fetch("/api/roles/all", { method: "GET" });
+    const params = new URLSearchParams({
+      page: currentPage.value.toString(),
+      limit: pageSize.value.toString(),
+    });
+    const response = await $fetch(`/api/roles/all?${params.toString()}`, {
+      method: "GET",
+    });
+    roles.value = response.data;
+    totalRoles.value = response.total;
   } catch (error) {
     console.error("Failed to fetch roles:", error);
   }
+};
+
+// Fetch roles on component mount
+onMounted(async () => {
+  fetchRoles();
 });
+
+watch(currentPage, () => {
+  fetchRoles();
+});
+
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage;
+};
 
 // Edit role method (navigate to edit page)
 const editRole = (role) => {
@@ -143,7 +196,7 @@ const deleteRole = async (roleId) => {
       method: "POST",
       body: JSON.stringify({ roleId }),
     });
-    roles.value = roles.value.filter((role) => role.id !== roleId);
+    fetchRoles(); // Refresh list
   } catch (error) {
     alert("Failed to delete role. Please try again.");
   }

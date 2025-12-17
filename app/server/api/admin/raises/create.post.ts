@@ -17,10 +17,10 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    if (!body.amount || body.amount <= 0) {
+    if (!Number.isInteger(body.amount) || body.amount <= 0) {
       throw createError({
         statusCode: 400,
-        statusMessage: "Valid amount is required",
+        statusMessage: "Valid amount in cents (integer) is required",
       });
     }
 
@@ -55,7 +55,6 @@ export default defineEventHandler(async (event) => {
         statusMessage: "Invalid payment method. Must be 'cash' or 'pin'.",
       });
     }
-
     const created = await prisma.raise.create({
       data: {
         userId: user.id,

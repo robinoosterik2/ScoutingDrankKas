@@ -131,7 +131,14 @@
           item-text="name"
           item-value="id"
           class="w-full"
+          :class="categoryError ? 'border-red-500' : ''"
         />
+        <p
+          v-if="categoryError"
+          class="mt-1 text-sm text-red-600 dark:text-red-400"
+        >
+          {{ categoryError }}
+        </p>
       </div>
 
       <!-- Product Image -->
@@ -236,6 +243,7 @@ const formData = ref({
 
 const originalImageUrl = ref("/images/placeholder.jpg"); // Store the initial/fetched image URL
 const priceError = ref("");
+const categoryError = ref("");
 
 // Fetch categories on component mount
 onMounted(async () => {
@@ -323,6 +331,15 @@ const validatePrice = () => {
   return true;
 };
 
+const validateCategory = () => {
+  if (!formData.value.categories || formData.value.categories.length === 0) {
+    categoryError.value = "Category is required.";
+    return false;
+  }
+  categoryError.value = "";
+  return true;
+};
+
 watch(
   () => formData.value.price,
   () => {
@@ -332,10 +349,22 @@ watch(
   }
 );
 
+watch(
+  () => formData.value.categories,
+  () => {
+    if (categoryError.value) {
+      validateCategory();
+    }
+  }
+);
+
 // Save product method (create or update)
 const saveProduct = async () => {
   try {
     if (!validatePrice()) {
+      return;
+    }
+    if (!validateCategory()) {
       return;
     }
 

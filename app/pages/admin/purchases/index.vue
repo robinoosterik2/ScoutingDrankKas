@@ -500,7 +500,8 @@ const handlePurchaseSubmit = async (purchaseData) => {
     // Parse price properly
     const processedData = {
       ...purchaseData,
-      price: parse(purchaseData.price),
+      // PurchaseForm now emits price in cents, so we don't need to parse it again
+      price: purchaseData.price,
     };
 
     // Make API call to save the new stock purchase

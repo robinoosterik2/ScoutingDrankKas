@@ -131,7 +131,7 @@
     "errors": {
       "invalidCredentials": "Invalid credentials",
       "userNotFound": "User not found",
-      "accountActivationRequired": "Account activation required. Please ask a bar staff member."
+      "generic": "An error occurred during login. Please try again."
     },
     "forgotPassword": "Forgot your password?",
     "noAccount": "Don't have an account?",
@@ -280,8 +280,7 @@
     "raiseBalance": "Raise Balance",
     "errors": {
       "raiseFailedWithReason": "Failed to raise balance. Please try again. Error: {reason}",
-      "unknown": "Unknown error",
-      "selfTopUp": "You cannot top up yourself for security reasons."
+      "unknown": "Unknown error"
     }
   },
   "raisedBy": "Raised By",
@@ -336,7 +335,9 @@
     "roleNameExists": "Role name already exists",
     "roleNameRequired": "Role name is required",
     "roles": "Roles",
-    "title": "Manage Roles"
+    "title": "Manage Roles",
+    "selectRole": "Select a Role",
+    "guest": "Guest"
   },
   "Search": "Search",
   "searchUsers": "Search Users",
@@ -358,15 +359,18 @@
     "noUsers": "No Users Found",
     "accountStatus": "Account Status",
     "status": {
+      "inactive": "Inactive",
       "active": "Active",
       "migrated": "Migrated",
       "guest": "Guest"
     },
     "activate": "Activate",
     "activateTitle": "Activate User",
-    "activationSuccess": "User activated successfully",
     "title": "Manage Users",
-    "migrateUser": "Migrate Users"
+    "migrateUser": "Migrate Users",
+    "name": "Name",
+    "firstName": "First Name",
+    "lastName": "Last Name"
   },
   "guests": {
     "title": "My Guests",
@@ -400,5 +404,8 @@
   "loading": "Loading...",
   "auth": {
     "loggedInAs": "Logged in as"
-  }
+  },
+  "preview": "preview",
+  "error": "error",
+  "create": "create"
 }

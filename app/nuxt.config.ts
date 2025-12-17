@@ -3,7 +3,7 @@
 const modules: string[] = [
   "@nuxt/image",
   "@nuxt/fonts",
-  "@nuxtjs/color-mode",
+  ...(process.env.NODE_ENV !== "test" ? ["@nuxtjs/color-mode"] : []),
   "nuxt-auth-utils",
   "@nuxtjs/i18n",
   "@nuxt/test-utils/module",

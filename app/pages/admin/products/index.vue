@@ -44,43 +44,56 @@
         field: 'name',
         align: 'left',
         sortable: true,
+        width: '20%',
       },
       {
         header: $t('Description'),
         field: 'description',
         align: 'left',
         sortable: false,
+        width: '40%',
       },
       {
         header: $t('price'),
         field: 'price',
         align: 'left',
         sortable: true,
+        width: '15%',
       },
       {
         header: $t('stock'),
         field: 'stock',
         align: 'left',
         sortable: true,
+        width: '15%',
       },
       {
         header: $t('actions'),
         field: 'actions',
         align: 'right',
         sortable: false,
+        width: '10%',
       },
     ]"
     :data="
-      filteredAndSortedProducts.map((product) => ({
+      products.map((product) => ({
         ...product,
         price: format(product.price),
         actions: '',
       }))
     "
+    :pagination="{
+      page: currentPage,
+      pageSize: pageSize,
+      total: totalProducts,
+    }"
     :sort-field="sortBy"
     :sort-direction="sortDirection"
     :no-data-text="$t('products.noProducts')"
+    scrollable
+    max-height="calc(100vh - 300px)"
     @sort="handleSort"
+    @update:page="handlePageChange"
   >
     <template #cell-description="{ row: product }">
       <div class="text-sm text-gray-500 dark:text-gray-300">
@@ -162,49 +175,52 @@ const { format } = useMoney();
 
 const categories = ref([]);
 const products = ref([]);
+const totalProducts = ref(0);
 const searchQuery = ref("");
 const selectedCategory = ref("");
 const sortBy = ref("name");
 const sortDirection = ref("asc");
+const currentPage = ref(1);
+const pageSize = ref(10);
 
-try {
-  categories.value = await $fetch("/api/categories/all", { method: "GET" });
-  products.value = await $fetch("/api/products/all", { method: "GET" });
-  console.log(products.value);
-} catch (error) {
-  console.error("Failed to fetch products:", error);
-  alert("Failed to fetch products. Please try again.");
-}
-
-const filteredAndSortedProducts = computed(() => {
-  return products.value
-    .filter((product) => {
-      // Search filter
-      const matchesSearch =
-        product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        product.description
-          .toLowerCase()
-          .includes(searchQuery.value.toLowerCase());
-
-      // Category filter
-      const matchesCategory =
-        !selectedCategory.value ||
-        product.categories.includes(selectedCategory.value);
-
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      const direction = sortDirection.value === "asc" ? 1 : -1;
-      if (sortBy.value === "name") {
-        if (a.name < b.name) return -1 * direction;
-        if (a.name > b.name) return 1 * direction;
-      } else if (sortBy.value === "price") {
-        return (a.price - b.price) * direction;
-      } else if (sortBy.value === "stock") {
-        return (a.stock - b.stock) * direction;
-      }
-      return 0;
+const fetchProducts = async () => {
+  try {
+    const params = new URLSearchParams({
+      page: currentPage.value.toString(),
+      limit: pageSize.value.toString(),
+      sortBy: sortBy.value,
+      sortDir: sortDirection.value,
     });
+
+    if (searchQuery.value) params.append("search", searchQuery.value);
+    if (selectedCategory.value)
+      params.append("category", selectedCategory.value);
+
+    const response = await $fetch(`/api/products/all?${params.toString()}`, {
+      method: "GET",
+    });
+    products.value = response.data;
+    totalProducts.value = response.total;
+  } catch (error) {
+    console.error("Failed to fetch products:", error);
+    alert("Failed to fetch products. Please try again.");
+  }
+};
+
+// Initial fetch
+onMounted(async () => {
+  categories.value = await $fetch("/api/categories/all", { method: "GET" });
+  fetchProducts();
+});
+
+// Watchers
+watch([searchQuery, selectedCategory], () => {
+  currentPage.value = 1;
+  fetchProducts();
+});
+
+watch([currentPage, sortBy, sortDirection], () => {
+  fetchProducts();
 });
 
 // Edit product method (navigate to edit page)
@@ -240,15 +256,17 @@ const handleSort = ({ field, direction }) => {
   sortDirection.value = direction;
 };
 
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage;
+};
+
 const deleteProduct = async (productId) => {
   try {
     await $fetch(`/api/admin/products/delete`, {
       method: "POST",
       body: JSON.stringify({ productId }),
     });
-    products.value = products.value.filter(
-      (product) => (product.id ?? product.id) !== productId
-    );
+    fetchProducts(); // Refresh list
   } catch (error) {
     alert("Failed to delete product. Please try again.");
   }

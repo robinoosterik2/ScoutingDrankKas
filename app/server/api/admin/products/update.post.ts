@@ -11,6 +11,8 @@ export default defineEventHandler(async (event) => {
     !price ||
     !description ||
     !categories ||
+    !Array.isArray(categories) ||
+    categories.length === 0 ||
     typeof stock !== "number" ||
     !imageUrl
   ) {
@@ -19,30 +21,17 @@ export default defineEventHandler(async (event) => {
       body: { message: "Missing fields" },
     };
   }
+  console.log(id, name, price, description, stock, categories, imageUrl);
   // make sure price is a number and not negative and no more than 2 decimal places
   // check if . or , is used as decimal separator
-  if (
-    body.price.toString().includes(",") ||
-    body.price.toString().includes(".")
-  ) {
-    body.price = body.price.toString().replace(",", ".");
-    if (
-      isNaN(body.price) ||
-      body.price < 0 ||
-      body.price.split(".")[1].length > 2
-    ) {
-      return {
-        status: 400,
-        body: { message: "Invalid price" },
-      };
-    }
-  } else {
-    if (isNaN(body.price) || body.price < 0) {
-      return {
-        status: 400,
-        body: { message: "Invalid price" },
-      };
-    }
+  // make sure price is a number and not negative and is an integer (cents)
+  if (!Number.isInteger(body.price) || body.price < 0) {
+    return {
+      status: 400,
+      body: {
+        message: "Invalid price. Price must be a positive integer (cents).",
+      },
+    };
   }
 
   let ageRestriction = false;

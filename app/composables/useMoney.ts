@@ -38,5 +38,12 @@ export const useMoney = () => {
     return Math.round(parsedFloat * 100);
   };
 
-  return { format, parse };
+  const toEuro = (cents: string | number | null | undefined): number => {
+    if (cents === null || cents === undefined) {
+      return 0;
+    }
+    return Number(cents) / 100;
+  };
+
+  return { format, parse, toEuro };
 };
