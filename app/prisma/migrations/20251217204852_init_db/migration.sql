@@ -12,6 +12,8 @@ CREATE TABLE "User" (
     "balance" INTEGER NOT NULL DEFAULT 0,
     "resetPasswordToken" TEXT,
     "resetPasswordExpires" DATETIME,
+    "totalOrders" INTEGER NOT NULL DEFAULT 0,
+    "popularityScore" REAL NOT NULL DEFAULT 0,
     "isGuest" BOOLEAN NOT NULL DEFAULT false,
     "hostId" TEXT,
     "roleId" TEXT,
@@ -65,7 +67,8 @@ CREATE TABLE "Product" (
     "recentOrders" TEXT,
     "popularityScore" REAL NOT NULL DEFAULT 0,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "updatedAt" DATETIME NOT NULL,
+    "archived" BOOLEAN NOT NULL DEFAULT false
 );
 
 -- CreateTable

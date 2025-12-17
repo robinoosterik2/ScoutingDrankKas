@@ -7,9 +7,9 @@ const modules: string[] = [
   "nuxt-auth-utils",
   "@nuxtjs/i18n",
   "@nuxt/test-utils/module",
+  "@pinia/nuxt",
 ];
 
-// Only load ESLint module in dev and when not explicitly disabled
 if (
   process.env.NODE_ENV !== "production" &&
   process.env.DISABLE_NUXT_ESLINT !== "true"
@@ -21,12 +21,9 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
 
-  // Build configuration
   build: {},
 
-  // Vite configuration
   vite: {
-    // Faster HMR in Docker
     server: {
       watch: {
         usePolling: true,
@@ -38,17 +35,13 @@ export default defineNuxtConfig({
         port: 24678,
       },
     },
-    // Optimize dependencies
     optimizeDeps: {
       exclude: ["@prisma/engines"],
     },
-    // SSR configuration
     ssr: {
       noExternal: ["nodemailer"],
-      // Optimize SSR build
       target: "node",
     },
-    // Build optimization
     build: {
       target: "esnext",
       minify: "esbuild",
@@ -68,10 +61,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     authSecret: process.env.AUTH_SECRET,
     public: {
-      // Public environment variables accessible from client and server
       apiUrl: process.env.API_URL || "http://localhost:3000",
     },
-    // Server-only environment variables
     sessionPassword:
       process.env.NUXT_SESSION_PASSWORD || "default-session-password",
   },
@@ -103,8 +94,6 @@ export default defineNuxtConfig({
     experimental: {
       wasm: true,
     },
-    // Keep Prisma client and its internal .prisma folder external during bundling
-    // to avoid resolver errors like: Invalid module ".prisma" is not a valid package name
     moduleSideEffects: ["@prisma/client"],
     rollupConfig: {
       external: ["@prisma/client", ".prisma", ".prisma/client"],
