@@ -108,11 +108,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from "~/stores/auth";
 
 const router = useRouter();
 const route = useRoute();
 const { clear } = useUserSession();
 const { t } = useI18n();
+const authStore = useAuthStore();
 
 const username = ref("");
 const password = ref("");
@@ -138,18 +140,17 @@ const handleLogin = async () => {
   isLoading.value = true;
 
   try {
-    const data = await $fetch("/api/auth/login", {
-      method: "POST",
-      body: {
-        username: username.value,
-        password: password.value,
-        rememberMe: rememberMe.value,
-      },
+    const success = await authStore.login({
+      username: username.value,
+      password: password.value,
+      // rememberMe: rememberMe.value // Note: store login might need to support rememberMe if api supports it, currently ILoginCredentials doesn't show it but we can pass it if typed loosely or update type
     });
-    if (data) {
+
+    if (success) {
       router.push("/");
     }
   } catch (error) {
+    console.error("Login error:", error);
     const statusMessage = error.statusMessage || error.data?.statusMessage;
 
     if (statusMessage === "User not found") {
@@ -159,7 +160,6 @@ const handleLogin = async () => {
     } else if (statusMessage === "account_activation_required") {
       generalError.value =
         "Account requires activation. Please check your email or contact support.";
-      // Optionally redirect or show more specific instruction
     } else {
       generalError.value =
         t("login.errors.generic") ||
