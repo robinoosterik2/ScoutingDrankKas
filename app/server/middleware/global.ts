@@ -12,7 +12,7 @@ const noneLoginRequiredPaths = [
 ];
 
 export default defineEventHandler(async (event) => {
-  const currentPath = (event.path || event._path || "").split("?")[0]; // Get path without query params
+  const currentPath = (event.path || event._path || "").split("?")[0] || ""; // Get path without query params
 
   // Check if path is in the noneLoginRequiredPaths or starts with /api/auth
   if (
@@ -29,8 +29,10 @@ export default defineEventHandler(async (event) => {
     message: string,
     statusCode: number
   ) => {
+    console.log("handleAuthError", isApi, message, statusCode, currentPath);
     if (isApi) {
       if (currentPath.startsWith("/api/")) {
+        console.error("API Auth Error (Masked as 404):", message);
         throw createError({ statusCode: 404, statusMessage: "Not Found" });
       } else {
         throw createError({
@@ -77,6 +79,7 @@ export default defineEventHandler(async (event) => {
       return;
     } catch (error: unknown) {
       // Handle errors, ensure a proper HTTP response is sent.
+      console.error("Middleware Admin Access Error:", error);
       const isApi = currentPath.startsWith("/api/");
       const errorMessage =
         error instanceof Error ? error.message : "Authentication failed";

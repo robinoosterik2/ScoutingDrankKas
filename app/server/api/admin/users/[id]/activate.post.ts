@@ -3,6 +3,7 @@ import { prisma } from "~/server/utils/prisma";
 import { logAuditEvent } from "~/server/utils/logger";
 
 export default defineEventHandler(async (event) => {
+  console.log("activate user");
   const id = getRouterParam(event, "id");
   const body = await readBody(event);
   const { email, firstName, lastName, password, confirmPassword, roleId } =

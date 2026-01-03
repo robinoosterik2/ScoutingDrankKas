@@ -53,13 +53,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (status) {
-    if (status.includes(",")) {
-      where.accountStatus = {
-        in: status.split(",").map((s) => s.trim()),
-      };
-    } else {
-      where.accountStatus = status;
-    }
+    where.accountStatus = status;
   }
 
   // Build order by

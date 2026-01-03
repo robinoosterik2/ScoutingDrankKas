@@ -253,7 +253,10 @@ onMounted(async () => {
   try {
     const [usersResponse, productsResponse, categoriesResponse] =
       await Promise.all([
-        $fetch("/api/users/all", { method: "GET" }),
+        $fetch("/api/users/all", {
+          method: "GET",
+          query: { status: "ACTIVE,GUEST" },
+        }),
         $fetch("/api/products/ordered", { method: "GET" }),
         $fetch("/api/categories/all", { method: "GET" }),
       ]);
