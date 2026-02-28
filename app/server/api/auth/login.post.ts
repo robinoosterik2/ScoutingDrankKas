@@ -81,7 +81,7 @@ export default defineEventHandler(async (event) => {
             stam: isStam,
           },
         },
-        { maxAge: 60 * 60 * 24 * 30 }
+        { maxAge: 60 * 60 * 24 * 30 },
       );
     } else {
       await setUserSession(
@@ -102,7 +102,7 @@ export default defineEventHandler(async (event) => {
             stam: isStam,
           },
         },
-        { maxAge: 60 * 10 }
+        { maxAge: 60 * 10 },
       );
     }
     return {

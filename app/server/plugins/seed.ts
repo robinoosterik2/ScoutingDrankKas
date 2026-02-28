@@ -5,11 +5,41 @@ export default defineNitroPlugin(async (nitroApp) => {
     return;
   }
 
+  // Seed roles first so we can assign them to users
+  console.log("Seeding roles...");
+  const fs = await import("node:fs");
+  const path = await import("node:path");
+
+  const rolesPath = path.resolve(process.cwd(), "utils/roles.csv");
+  if (fs.existsSync(rolesPath)) {
+    const fileContent = fs.readFileSync(rolesPath, "utf-8");
+    const lines = fileContent
+      .split("\n")
+      .filter((l) => l.trim() !== "" && !l.startsWith("#"));
+
+    for (const line of lines) {
+      const [roleName, roleDescription, rolePermissions] = line.split(",");
+      if (!roleName) continue;
+
+      await prisma.customRole.upsert({
+        where: { roleName: roleName.trim() },
+        update: {
+          roleDescription: roleDescription ? roleDescription.trim() : "",
+          rolePermissions: rolePermissions ? rolePermissions.trim() : "",
+        },
+        create: {
+          roleName: roleName.trim(),
+          roleDescription: roleDescription ? roleDescription.trim() : "",
+          rolePermissions: rolePermissions ? rolePermissions.trim() : "",
+        },
+      });
+      console.log(`Seeded role: ${roleName}`);
+    }
+  }
+
   const userCount = await prisma.user.count();
   if (userCount <= 1) {
     console.log("Seeding users...");
-    const fs = await import("node:fs");
-    const path = await import("node:path");
 
     // Read users.csv
     const usersPath = path.resolve(process.cwd(), "utils/users.csv");
@@ -20,7 +50,7 @@ export default defineNitroPlugin(async (nitroApp) => {
         .filter((l) => l.trim() !== "" && !l.startsWith("#"));
 
       for (const line of lines) {
-        const [username, balance] = line.split(",");
+        const [username, balance, roleName] = line.split(",");
         if (!username || !balance) continue;
 
         const normalizedUsername = username.trim();
@@ -34,6 +64,16 @@ export default defineNitroPlugin(async (nitroApp) => {
             data: { language: "nl", darkMode: true, speedMode: false },
           });
 
+          let roleId = null;
+          if (roleName) {
+            const role = await prisma.customRole.findUnique({
+              where: { roleName: roleName.trim() },
+            });
+            if (role) {
+              roleId = role.id;
+            }
+          }
+
           await prisma.user.create({
             data: {
               username: normalizedUsername.toLowerCase(),
@@ -41,9 +81,14 @@ export default defineNitroPlugin(async (nitroApp) => {
               accountStatus: "MIGRATED",
               active: true,
               settingsId: settings.id,
+              roleId: roleId,
             },
           });
-          console.log(`Created user: ${normalizedUsername}`);
+          console.log(
+            `Created user: ${normalizedUsername} with role ${
+              roleName || "none"
+            }`
+          );
         }
       }
     } else {

@@ -1,0 +1,5 @@
+#rolename,roleDescription,rolePermissions
+admin,Admin,admin
+stam,Stam,stam
+lid,Lid,scouting-lid
+extern,Extern,extern
