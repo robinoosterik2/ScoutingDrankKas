@@ -30,8 +30,6 @@ export const useAuthStore = defineStore("auth", () => {
       await apiLogin(credentials);
       await fetchUser();
       return true;
-    } catch (error) {
-      return false;
     } finally {
       loading.value = false;
     }

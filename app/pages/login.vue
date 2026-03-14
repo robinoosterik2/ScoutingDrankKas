@@ -8,58 +8,67 @@
       >
         {{ $t("login.title") }}
       </h2>
+
       <div v-if="resetSuccess" class="text-center text-green-500">
         {{ $t("login.resetSuccess") }}
       </div>
 
-      <!-- General Error Alert -->
       <div
-        v-if="generalError"
+        v-if="errors.general"
         class="p-2 bg-red-100 text-red-700 rounded text-sm text-center"
       >
-        {{ generalError }}
+        {{ errors.general }}
       </div>
 
       <form class="space-y-2" @submit.prevent="handleLogin">
-        <div>
-          <label for="username">{{ $t("login.username") }}</label>
+        <div class="space-y-1">
+          <label
+            for="username"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >{{ $t("login.username") }}</label
+          >
           <input
             id="username"
-            v-model="username"
+            v-model="data.username"
             name="username"
             type="text"
             required
-            class="appearance-none rounded-md relative block w-full px-3 py-1 mt-2 border text-white border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-            :class="{ 'border-red-500': usernameError }"
+            class="appearance-none rounded-md relative block w-full px-3 py-2 mt-1 border border-gray-300 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            :class="{ 'border-red-500': errors.username }"
             :placeholder="$t('login.usernamePlaceholder')"
-            @input="usernameError = ''"
+            @input="clearUsernameError"
           />
-          <div v-if="usernameError" class="text-red-500 mt-1 text-sm">
-            {{ usernameError }}
+          <div v-if="errors.username" class="text-red-500 mt-1 text-sm">
+            {{ errors.username }}
           </div>
         </div>
-        <div>
-          <label for="password">{{ $t("login.password") }}</label>
+
+        <div class="space-y-1">
+          <label
+            for="password"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >{{ $t("login.password") }}</label
+          >
           <input
             id="password"
-            v-model="password"
+            v-model="data.password"
             name="password"
             type="password"
             required
-            class="appearance-none rounded-md relative block w-full px-3 py-1 mt-2 border text-white border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-            :class="{ 'border-red-500': passwordError }"
+            class="appearance-none rounded-md relative block w-full px-3 py-2 mt-1 border border-gray-300 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            :class="{ 'border-red-500': errors.password }"
             placeholder="••••••••••"
-            @input="passwordError = ''"
+            @input="clearPasswordError"
           />
-          <div v-if="passwordError" class="text-red-500 mt-1 text-sm">
-            {{ passwordError }}
+          <div v-if="errors.password" class="text-red-500 mt-1 text-sm">
+            {{ errors.password }}
           </div>
         </div>
-        <!-- Remember me -->
+
         <div class="flex items-center">
           <input
             id="rememberMe"
-            v-model="rememberMe"
+            v-model="data.rememberMe"
             type="checkbox"
             class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
           />
@@ -70,31 +79,33 @@
             {{ $t("login.rememberMe") }}
           </label>
         </div>
+
         <div class="pt-4">
           <button
             type="submit"
             :disabled="isLoading"
-            class="group relative w-full flex justify-center py-1 px-4 border border-transparent font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span v-if="isLoading">Loading...</span>
             <span v-else>{{ $t("login.submit") }}</span>
           </button>
         </div>
-        <div>
-          <div>
+
+        <div class="space-y-2">
+          <div class="text-sm text-center">
             {{ $t("login.noAccount") }}
             <NuxtLink
               :to="$localePath('/register')"
-              class="text-blue-600 hover:text-blue-800"
+              class="text-blue-600 hover:text-blue-800 ml-1"
             >
               {{ $t("login.register") }}
             </NuxtLink>
           </div>
-          <div>
+          <div class="text-sm text-center">
             {{ $t("login.forgotPassword") }}
             <NuxtLink
               :to="$localePath('/user/forgot-password')"
-              class="text-blue-600 hover:text-blue-800"
+              class="text-blue-600 hover:text-blue-800 ml-1"
             >
               {{ $t("login.resetHere") }}
             </NuxtLink>
@@ -105,66 +116,59 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
+<script setup lang="ts">
+import { onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "~/stores/auth";
+import { useLoginForm } from "~/composables/useLoginForm";
+import { useLoginErrorHandling } from "~/composables/useLoginErrorHandling";
+import type { ILoginCredentials } from "~/types";
 
 const router = useRouter();
 const route = useRoute();
 const { clear } = useUserSession();
-const { t } = useI18n();
 const authStore = useAuthStore();
 
-const username = ref("");
-const password = ref("");
-const rememberMe = ref(false);
-const resetSuccess = ref(false);
+const {
+  data,
+  errors,
+  isLoading,
+  resetSuccess,
+  clearErrors,
+  clearUsernameError,
+  clearPasswordError,
+  setResetSuccess,
+} = useLoginForm();
 
-const usernameError = ref("");
-const passwordError = ref("");
-const generalError = ref("");
-const isLoading = ref(false);
+const { handleLoginError } = useLoginErrorHandling();
 
 onMounted(async () => {
   await clear();
   if (route.query.resetSuccess === "true") {
-    resetSuccess.value = true;
+    setResetSuccess(true);
   }
 });
 
 const handleLogin = async () => {
-  usernameError.value = "";
-  passwordError.value = "";
-  generalError.value = "";
+  clearErrors();
   isLoading.value = true;
 
   try {
-    const success = await authStore.login({
-      username: username.value,
-      password: password.value,
-      // rememberMe: rememberMe.value // Note: store login might need to support rememberMe if api supports it, currently ILoginCredentials doesn't show it but we can pass it if typed loosely or update type
-    });
+    const credentials: ILoginCredentials = {
+      username: data.value.username,
+      password: data.value.password,
+    };
+
+    const success = await authStore.login(credentials);
 
     if (success) {
       router.push("/");
     }
-  } catch (error) {
-    console.error("Login error:", error);
-    const statusMessage = error.statusMessage || error.data?.statusMessage;
-
-    if (statusMessage === "User not found") {
-      usernameError.value = t("login.errors.userNotFound");
-    } else if (statusMessage === "Invalid credentials") {
-      passwordError.value = t("login.errors.invalidCredentials");
-    } else if (statusMessage === "account_activation_required") {
-      generalError.value =
-        "Account requires activation. Please check your email or contact support.";
-    } else {
-      generalError.value =
-        t("login.errors.generic") ||
-        "An error occurred during login. Please try again.";
-    }
+  } catch (error: unknown) {
+    const errorResult = handleLoginError(error);
+    errors.value.username = errorResult.usernameError;
+    errors.value.password = errorResult.passwordError;
+    errors.value.general = errorResult.generalError;
   } finally {
     isLoading.value = false;
   }
